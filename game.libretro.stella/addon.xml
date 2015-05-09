@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon id="game.libretro.stella"
 		name="Stella"
-		version="3.4.2"
+		version="3.4.1"
 		provider-name="Libretro">
 	<requires>
 		<import addon="game.libretro" version="1.0.0"/>
@@ -14,8 +14,8 @@
                    library_wingl="game.libretro.stella.dll">
 		<platforms>Atari 2600</platforms>
 		<extensions>a26|bin</extensions>
-		<allowvfs>true</allowvfs>
-		<blockextract>false</blockextract>
+		<supports_vfs>true</supports_vfs>
+		<supports_no_game>false</supports_no_game>
 	</extension>
 	<extension point="xbmc.addon.metadata">
 		<summary lang="en">Stella v3.4.1</summary>
@@ -25,7 +25,7 @@ Supported files: .a26, .bin
 
 Stella was originally developed for Linux by Bradford W. Mott, and is currently maintained by Stephen Anthony.
 
-Source: https://github.com/libretro/stella-libretro</description>
+License: GPL v2</description>
 		<platform>all</platform>
 	</extension>
 </addon>
