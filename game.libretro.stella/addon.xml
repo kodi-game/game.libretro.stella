@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon id="game.libretro.stella"
-		name="Stella"
+		name="Atari 2600 (Stella)"
 		version="3.4.1"
 		provider-name="Libretro">
 	<requires>
@@ -19,7 +19,7 @@
 	</extension>
 	<extension point="xbmc.addon.metadata">
 		<summary lang="en">Stella v3.4.1</summary>
-		<description>Stella is a multi-platform Atari 2600 VCS emulator. The Atari 2600 Video Computer System (VCS), introduced in 1977, was the most popular home video game system of the early 1980's. Now you can enjoy all of your favorite Atari 2600 games on your PC thanks to Stella!
+		<description>Stella is a multi-platform Atari 2600 VCS emulator. The Atari 2600 Video Computer System (VCS), introduced in 1977, was the most popular home video game system of the early 1980's.
 
 Supported files: .a26, .bin
 
