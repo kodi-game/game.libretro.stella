@@ -7,11 +7,7 @@
 		<import addon="game.libretro" version="1.0.0"/>
 	</requires>
 	<extension point="kodi.gameclient"
-                   library_android="libgame.libretro.stella.so"
-                   library_linux="game.libretro.stella.so"
-                   library_osx="game.libretro.stella.dylib"
-                   library_windx="game.libretro.stella.dll"
-                   library_wingl="game.libretro.stella.dll">
+                   library_@PLATFORM@="@LIBRARY_FILENAME@">
 		<platforms>Atari 2600</platforms>
 		<extensions>a26|bin</extensions>
 		<supports_vfs>true</supports_vfs>
@@ -26,7 +22,7 @@ Supported files: .a26, .bin
 Stella was originally developed for Linux by Bradford W. Mott, and is currently maintained by Stephen Anthony.
 
 License: GPLv2</description>
-		<platform>all</platform>
+		<platform>@PLATFORM@</platform>
 		<nofanart>true</nofanart>
 	</extension>
 </addon>
