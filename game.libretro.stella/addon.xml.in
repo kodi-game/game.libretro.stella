@@ -24,5 +24,10 @@ Supported files: .a26, .bin
 Stella was originally developed for Linux by Bradford W. Mott, and is currently maintained by Stephen Anthony.</description>
 		<license>GPLv2</license>
 		<platform>@PLATFORM@</platform>
+		<assets>
+			<screenshot>resources/screenshot-01.jpg</screenshot>
+			<screenshot>resources/screenshot-02.jpg</screenshot>
+			<screenshot>resources/screenshot-03.jpg</screenshot>
+		</assets>
 	</extension>
 </addon>
