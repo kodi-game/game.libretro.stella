@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <buttonmap version="2">
   <controller id="game.controller.atari.2600" type="RETRO_DEVICE_JOYPAD" subclass="0">
-    <feature name="fire" mapto="RETRO_DEVICE_ID_JOYPAD_A"/>
-    <!-- TODO: Direction buttons in controller profile -->
+    <feature name="fire" mapto="RETRO_DEVICE_ID_JOYPAD_B"/>
     <feature name="up" mapto="RETRO_DEVICE_ID_JOYPAD_UP"/>
     <feature name="right" mapto="RETRO_DEVICE_ID_JOYPAD_RIGHT"/>
     <feature name="down" mapto="RETRO_DEVICE_ID_JOYPAD_DOWN"/>
