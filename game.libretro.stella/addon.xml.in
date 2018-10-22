@@ -23,6 +23,7 @@ Stella was originally developed for Linux by Bradford W. Mott, and is currently 
 Supported files: .a26, .bin</description>
 		<license>GPLv2</license>
 		<platform>@PLATFORM@</platform>
+		<source>https://github.com/kodi-game/game.libretro.stella</source>
 		<assets>
 			<screenshot>resources/screenshot-01.jpg</screenshot>
 			<screenshot>resources/screenshot-02.jpg</screenshot>
