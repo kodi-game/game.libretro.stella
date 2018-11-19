@@ -4,7 +4,7 @@ project(game.libretro.stella)
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
 
 find_package(Kodi REQUIRED)
-find_package(libretro-stella REQUIRED)
+find_library(STELLA_LIB NAMES stella_libretro${CMAKE_SHARED_LIBRARY_SUFFIX} PATH_SUFFIXES libretro)
 
 set(STELLA_CUSTOM_BINARY ${STELLA_LIB}
     ${PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
