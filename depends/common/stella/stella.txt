@@ -1,1 +1,1 @@
-stella https://github.com/libretro/stella-libretro/archive/6a8e20909e0a39a4e01f9102dc935113e38cd62b.zip
+stella https://github.com/libretro/stella-libretro/archive/bf7070d81ee87e6fb4d9bbb5ad61a4ceec54ec7f.zip
