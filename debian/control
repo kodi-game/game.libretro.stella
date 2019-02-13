@@ -4,7 +4,7 @@ Maintainer: wsnipex <wsnipex@a1.net>
 Build-Depends: debhelper (>= 9.0.0),
                cmake,
                kodi-addon-dev,
-               stella (>= 3.9.3)
+               libretro-stella (>= 3.9.3) | stella (>= 3.9.3)
 Standards-Version: 3.9.8
 Section: libs
 
