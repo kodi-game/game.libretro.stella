@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon id="game.libretro.stella"
 		name="Atari - 2600 (Stella 2014)"
-		version="3.9.3.7"
+		version="3.9.3.8"
 		provider-name="Libretro">
 	<requires>
 		<import addon="game.libretro" version="1.0.0"/>
