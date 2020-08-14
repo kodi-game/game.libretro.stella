@@ -2,7 +2,7 @@
 <addon id="game.libretro.stella"
 		name="Atari - 2600 (Stella 2014)"
 		version="3.9.3.9"
-		provider-name="Libretro">
+		provider-name="Stephen Anthony, Bradford Mott, Eckhard Stolberg, Brian Watson">
 	<requires>
 		<import addon="game.libretro" version="1.0.0"/>
 		<import addon="game.controller.atari.2600" version="1.0.0"/>
