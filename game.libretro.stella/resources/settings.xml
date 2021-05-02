@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+	<category label="30000">
+		<setting label="30001" type="select" id="stella2014_color_depth" values="16bit|24bit" default="16bit"/>
+		<setting label="30002" type="select" id="stella2014_low_pass_filter" values="disabled|enabled" default="disabled"/>
+		<setting label="30003" type="select" id="stella2014_low_pass_range" values="60|5|10|15|20|25|30|35|40|45|50|55|65|70|75|80|85|90|95" default="60"/>
+		<setting label="30004" type="select" id="stella2014_mix_frames" values="disabled|mix|ghost_65|ghost_75|ghost_85|ghost_95" default="disabled"/>
+		<setting label="30005" type="select" id="stella2014_paddle_analog_deadzone" values="15|0|3|6|9|12|18|21|24|27|30" default="15"/>
+		<setting label="30006" type="select" id="stella2014_paddle_analog_response" values="linear|quadratic" default="linear"/>
+		<setting label="30007" type="select" id="stella2014_paddle_analog_sensitivity" values="50|10|15|20|25|30|35|40|45|55|60|65|70|75|80|85|90|95|100|105|110|115|120|125|130|135|140|145|150" default="50"/>
+		<setting label="30008" type="select" id="stella2014_paddle_digital_sensitivity" values="50|10|15|20|25|30|35|40|45|55|60|65|70|75|80|85|90|95|100" default="50"/>
+	</category>
+</settings>
