@@ -25,29 +25,29 @@ msgid "Color Depth (Restart)"
 msgstr ""
 
 msgctxt "#30002"
-msgid "Audio Filter"
-msgstr ""
-
-msgctxt "#30003"
-msgid "Audio Filter Level"
-msgstr ""
-
-msgctxt "#30004"
 msgid "Interframe Blending"
 msgstr ""
 
+msgctxt "#30003"
+msgid "Audio Filter"
+msgstr ""
+
+msgctxt "#30004"
+msgid "Audio Filter Level"
+msgstr ""
+
 msgctxt "#30005"
-msgid "Paddle Deadzone (Analog)"
+msgid "Paddle Sensitivity (Digital)"
 msgstr ""
 
 msgctxt "#30006"
-msgid "Paddle Response (Analog)"
-msgstr ""
-
-msgctxt "#30007"
 msgid "Paddle Sensitivity (Analog)"
 msgstr ""
 
+msgctxt "#30007"
+msgid "Paddle Response (Analog)"
+msgstr ""
+
 msgctxt "#30008"
-msgid "Paddle Sensitivity (Digital)"
+msgid "Paddle Deadzone (Analog)"
 msgstr ""
