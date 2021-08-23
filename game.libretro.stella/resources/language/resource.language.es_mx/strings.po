@@ -38,17 +38,25 @@ msgid "Audio Filter Level"
 msgstr ""
 
 msgctxt "#30005"
-msgid "Paddle Sensitivity (Digital)"
+msgid "Gamepad: Paddle Sensitivity (Digital)"
 msgstr ""
 
 msgctxt "#30006"
-msgid "Paddle Sensitivity (Analog)"
+msgid "Gamepad: Paddle Sensitivity (Analog)"
 msgstr ""
 
 msgctxt "#30007"
-msgid "Paddle Response (Analog)"
+msgid "Gamepad: Paddle Response (Analog)"
 msgstr ""
 
 msgctxt "#30008"
-msgid "Paddle Deadzone (Analog)"
+msgid "Gamepad: Paddle Deadzone (Analog)"
+msgstr ""
+
+msgctxt "#30009"
+msgid "Stelladaptor: Paddle Sensitivity"
+msgstr ""
+
+msgctxt "#30010"
+msgid "Stelladaptor: Paddle Centre Offset"
 msgstr ""
