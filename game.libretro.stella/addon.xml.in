@@ -15,8 +15,6 @@
 		<supports_standalone>false</supports_standalone>
 	</extension>
 	<extension point="xbmc.addon.metadata">
-		<summary lang="en_GB">Atari - 2600 (Stella 2014) 3.9.3</summary>
-		<description lang="en_GB">Stella is a multi-platform Atari 2600 VCS emulator. The Atari 2600 Video Computer System (VCS), introduced in 1977, was the most popular home video game system of the early 1980&#39;s.
 
 Stella was originally developed for Linux by Bradford W. Mott, and is currently maintained by Stephen Anthony.
 
@@ -29,5 +27,11 @@ Supported files: .a26, .bin</description>
 			<screenshot>resources/screenshot-02.jpg</screenshot>
 			<screenshot>resources/screenshot-03.jpg</screenshot>
 		</assets>
+		<summary lang="en_GB">Atari - 2600 (Stella 2014) 3.9.3</summary>
+		<description lang="en_GB">Stella is a multi-platform Atari 2600 VCS emulator. The Atari 2600 Video Computer System (VCS), introduced in 1977, was the most popular home video game system of the early 1980&#39;s.
+
+Stella was originally developed for Linux by Bradford W. Mott, and is currently maintained by Stephen Anthony.
+
+Supported files: .a26, .bin</description>
 	</extension>
 </addon>
