@@ -19,6 +19,7 @@
 		<platform>@PLATFORM@</platform>
 		<source>https://github.com/kodi-game/game.libretro.stella</source>
 		<assets>
+			<icon>resources/icon.png</icon>
 			<screenshot>resources/screenshot-01.jpg</screenshot>
 			<screenshot>resources/screenshot-02.jpg</screenshot>
 			<screenshot>resources/screenshot-03.jpg</screenshot>
