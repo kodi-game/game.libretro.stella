@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon id="game.libretro.stella"
 		name="Atari - 2600 (Stella 2014)"
-		version="3.9.3.19"
+		version="3.9.3.20"
 		provider-name="Stephen Anthony, Bradford Mott, Eckhard Stolberg, Brian Watson">
 	<requires>
 		<import addon="game.libretro" version="1.0.0"/>
@@ -13,6 +13,7 @@
 		<extensions>a26|bin</extensions>
 		<supports_vfs>true</supports_vfs>
 		<supports_standalone>false</supports_standalone>
+		<requires_opengl>false</requires_opengl>
 	</extension>
 	<extension point="xbmc.addon.metadata">
 		<license>GPLv2</license>
