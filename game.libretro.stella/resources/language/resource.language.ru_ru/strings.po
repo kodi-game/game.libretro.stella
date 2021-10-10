@@ -25,6 +25,10 @@ msgctxt "Addon Description"
 msgid "Supafaust is a SNES emulator for multicore ARM Linux platforms. It&#39;s particularly suitable for low-end devices."
 msgstr ""
 
+msgctxt "Addon Disclaimer"
+msgid "Stella was originally developed for Linux by Bradford W. Mott, and is currently maintained by Stephen Anthony."
+msgstr ""
+
 msgctxt "#30000"
 msgid "Settings"
 msgstr "Настройки"
