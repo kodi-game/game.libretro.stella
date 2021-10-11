@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon id="game.libretro.stella"
 		name="Atari - 2600 (Stella 2014)"
-		version="3.9.3.22"
+		version="3.9.3.23"
 		provider-name="Stephen Anthony, Bradford Mott, Eckhard Stolberg, Brian Watson">
 	<requires>
 		<import addon="game.libretro" version="1.0.0"/>
@@ -26,7 +26,7 @@
 			<screenshot>resources/screenshot-03.jpg</screenshot>
 		</assets>
 		<summary lang="en_GB">Atari - 2600 (Stella 2014) 3.9.3</summary>
-		<description lang="en_GB">Supafaust is a SNES emulator for multicore ARM Linux platforms. It&#39;s particularly suitable for low-end devices.</description>
+		<description lang="en_GB">Supafaust is a SNES emulator for multicore ARM Linux platforms. It&amp;#39;s particularly suitable for low-end devices.</description>
 		<disclaimer lang="en_GB">Stella was originally developed for Linux by Bradford W. Mott, and is currently maintained by Stephen Anthony.</disclaimer>
 	</extension>
 </addon>
