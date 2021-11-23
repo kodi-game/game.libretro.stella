@@ -26,7 +26,9 @@
 			<screenshot>resources/screenshot-03.jpg</screenshot>
 		</assets>
 		<summary lang="en_GB">Atari - 2600 (Stella 2014) 3.9.3</summary>
+		<description lang="da_DK">Stella er en Atari 2600 VCS-emulator til flere platforme.[CR][CR]Atari 2600 Video Computer System (VCS), der blev introduceret i 1977, var det mest populære hjemmevideospilsystem i begyndelsen af 1980'erne.</description>
 		<description lang="en_GB">Stella is a multi-platform Atari 2600 VCS emulator.[CR][CR]The Atari 2600 Video Computer System (VCS), introduced in 1977, was the most popular home video game system of the early 1980s.</description>
+		<disclaimer lang="da_DK">Stella blev oprindeligt udviklet til Linux af Bradford W. Mott og vedligeholdes i øjeblikket af Stephen Anthony.</disclaimer>
 		<disclaimer lang="en_GB">Stella was originally developed for Linux by Bradford W. Mott, and is currently maintained by Stephen Anthony.</disclaimer>
 	</extension>
 </addon>
