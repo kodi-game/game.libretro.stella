@@ -1,1 +1,1 @@
-stella https://github.com/libretro/stella2014-libretro/archive/1a2e96bc6ccf91de6fb4322048da05f67a9d21d4.tar.gz
+stella https://github.com/libretro/stella2014-libretro/archive/1351a4fe2ca6b1f3a66c7db0df2ec268ab002d41.tar.gz
