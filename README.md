@@ -15,7 +15,7 @@ GPLv2
 
 ### Icon
 
-![Icon](game.libretro.stella/resources/icon.png)
+![Atari - 2600 (Stella 2014) icon](game.libretro.stella/resources/icon.png)
 
 ### Fanart
 
@@ -23,9 +23,9 @@ Help make me fanart!
 
 ### Screenshots
 
-![Screenshot](game.libretro.stella/resources/screenshot-01.jpg)
-![Screenshot](game.libretro.stella/resources/screenshot-02.jpg)
-![Screenshot](game.libretro.stella/resources/screenshot-03.jpg)
+![Atari - 2600 (Stella 2014) screenshot](game.libretro.stella/resources/screenshot-01.jpg)
+![Atari - 2600 (Stella 2014) screenshot](game.libretro.stella/resources/screenshot-02.jpg)
+![Atari - 2600 (Stella 2014) screenshot](game.libretro.stella/resources/screenshot-03.jpg)
 
 ### Disclaimer
 
