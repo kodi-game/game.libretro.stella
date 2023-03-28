@@ -23,20 +23,17 @@ msgid "Atari - 2600 (Stella)"
 msgstr "Atari - 2600 (Stella 2014)"
 
 msgctxt "Addon Description"
-msgid ""
-"Stella is a multi-platform Atari 2600 VCS emulator.[CR][CR]The Atari 2600 "
-"Video Computer System (VCS), introduced in 1977, was the most popular home "
-"video game system of the early 1980s."
-msgstr ""
+msgid "Stella is a multi-platform Atari 2600 VCS emulator.[CR][CR]The Atari 2600 Video Computer System (VCS), introduced in 1977, was the most popular home video game system of the early 1980s."
+msgstr "[CR]Stella es un emulador multiplataforma de el Atari 2600 VCS[CR][CR]El Atari [CR]2600 Video Computer System (VCS), presentado en 1977, fue el sistema de [CR]videojuegos doméstico más popular de principios de la década de 1980."
+
+msgctxt "Addon Disclaimer"
+msgid "Stella was originally developed for Linux by Bradford W. Mott, and is currently maintained by Stephen Anthony."
+msgstr "[CR]Stella fue desarrollado originalmente para Linux por Bradford W. Mott, y [CR]actualmente lo mantiene Stephen Anthony."
+
 "Stella es un emulador multiplataforma de el Atari 2600 VCS[CR][CR]El Atari "
 "2600 Video Computer System (VCS), presentado en 1977, fue el sistema de "
 "videojuegos doméstico más popular de principios de la década de 1980."
 
-msgctxt "Addon Disclaimer"
-msgid ""
-"Stella was originally developed for Linux by Bradford W. Mott, and is "
-"currently maintained by Stephen Anthony."
-msgstr ""
 "Stella fue desarrollado originalmente para Linux por Bradford W. Mott, y "
 "actualmente lo mantiene Stephen Anthony."
 
