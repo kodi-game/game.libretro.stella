@@ -1,6 +1,3 @@
-[![Build Status](https://travis-ci.org/kodi-game/game.libretro.stella.svg?branch=master)](https://travis-ci.org/kodi-game/game.libretro.stella)
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/kodi-game/game.libretro.stella?svg=true)](https://ci.appveyor.com/project/kodi-game/game-libretro-stella)
-
 # Atari - 2600 (Stella)
 
 ### Description
