@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/kodi-game/game.libretro.stella.svg?branch=master)](https://travis-ci.org/kodi-game/game.libretro.stella)
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/kodi-game/game.libretro.stella?svg=true)](https://ci.appveyor.com/project/kodi-game/game-libretro-stella)
 
-# Atari - 2600 (Stella 2014)
+# Atari - 2600 (Stella)
 
 ### Description
 
@@ -15,7 +15,7 @@ GPLv2
 
 ### Icon
 
-![Atari - 2600 (Stella 2014) icon](game.libretro.stella/resources/icon.png)
+![Atari - 2600 (Stella) icon](game.libretro.stella/resources/icon.png)
 
 ### Fanart
 
@@ -23,9 +23,9 @@ Help make me fanart!
 
 ### Screenshots
 
-![Atari - 2600 (Stella 2014) screenshot](game.libretro.stella/resources/screenshot-01.jpg)
-![Atari - 2600 (Stella 2014) screenshot](game.libretro.stella/resources/screenshot-02.jpg)
-![Atari - 2600 (Stella 2014) screenshot](game.libretro.stella/resources/screenshot-03.jpg)
+![Atari - 2600 (Stella) screenshot](game.libretro.stella/resources/screenshot-01.jpg)
+![Atari - 2600 (Stella) screenshot](game.libretro.stella/resources/screenshot-02.jpg)
+![Atari - 2600 (Stella) screenshot](game.libretro.stella/resources/screenshot-03.jpg)
 
 ### Disclaimer
 

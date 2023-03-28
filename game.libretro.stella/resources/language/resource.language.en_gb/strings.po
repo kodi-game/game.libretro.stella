@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgctxt "Addon Summary"
-msgid "Atari - 2600 (Stella 2014)"
+msgid "Atari - 2600 (Stella)"
 msgstr ""
 
 msgctxt "Addon Description"
@@ -33,41 +33,45 @@ msgid "Settings"
 msgstr ""
 
 msgctxt "#30001"
-msgid "Color Depth (Restart)"
+msgid "Console display"
 msgstr ""
 
 msgctxt "#30002"
-msgid "Interframe Blending"
+msgid "Palette colors"
 msgstr ""
 
 msgctxt "#30003"
-msgid "Audio Filter"
+msgid "TV effects"
 msgstr ""
 
 msgctxt "#30004"
-msgid "Audio Filter Level"
+msgid "NTSC aspect %"
 msgstr ""
 
 msgctxt "#30005"
-msgid "Gamepad: Paddle Sensitivity (Digital)"
+msgid "PAL aspect %"
 msgstr ""
 
 msgctxt "#30006"
-msgid "Gamepad: Paddle Sensitivity (Analog)"
+msgid "Crop horizontal overscan"
 msgstr ""
 
 msgctxt "#30007"
-msgid "Gamepad: Paddle Response (Analog)"
+msgid "Stereo sound"
 msgstr ""
 
 msgctxt "#30008"
-msgid "Gamepad: Paddle Deadzone (Analog)"
+msgid "Phosphor mode"
 msgstr ""
 
 msgctxt "#30009"
-msgid "Stelladaptor: Paddle Sensitivity"
+msgid "Phosphor blend %"
 msgstr ""
 
 msgctxt "#30010"
-msgid "Stelladaptor: Paddle Centre Offset"
+msgid "Paddle joypad sensitivity"
+msgstr ""
+
+msgctxt "#30011"
+msgid "Paddle analog sensitivity"
 msgstr ""
