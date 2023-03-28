@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 msgctxt "Addon Summary"
-msgid "Atari - 2600 (Stella 2014)"
+msgid "Atari - 2600 (Stella)"
 msgstr ""
 
 msgctxt "Addon Description"

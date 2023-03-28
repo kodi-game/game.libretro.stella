@@ -18,7 +18,7 @@ msgstr ""
 "X-Generator: Weblate 4.15.2\n"
 
 msgctxt "Addon Summary"
-msgid "Atari - 2600 (Stella 2014)"
+msgid "Atari - 2600 (Stella)"
 msgstr ""
 
 msgctxt "Addon Description"
