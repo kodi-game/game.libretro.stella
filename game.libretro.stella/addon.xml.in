@@ -25,6 +25,7 @@
 			<screenshot>resources/screenshot-02.jpg</screenshot>
 			<screenshot>resources/screenshot-03.jpg</screenshot>
 		</assets>
+		<summary lang="da_DK">Atari - 2600 (Stella)</summary>
 		<summary lang="en_GB">Atari - 2600 (Stella)</summary>
 		<summary lang="es_ES">Atari - 2600 (Stella 2014)</summary>
 		<description lang="da_DK">Stella er en Atari 2600 VCS-emulator til flere platforme.[CR][CR]Atari 2600 Video Computer System (VCS), der blev introduceret i 1977, var det mest populære hjemmevideospilsystem i begyndelsen af 1980&apos;erne.</description>
