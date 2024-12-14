@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
-	<category label="30000">
+	<category label="128">
 		<setting label="30001" type="select" id="stella_console" values="auto|ntsc|pal|secam|ntsc50|pal60|secam60" default="auto"/>
 		<setting label="30002" type="select" id="stella_palette" values="standard|z26|user|custom" default="standard"/>
 		<setting label="30003" type="select" id="stella_filter" values="disabled|composite|s-video|rgb|badly adjusted" default="disabled"/>

@@ -28,9 +28,7 @@ msgctxt "Addon Disclaimer"
 msgid "Stella was originally developed for Linux by Bradford W. Mott, and is currently maintained by Stephen Anthony."
 msgstr ""
 
-msgctxt "#30000"
-msgid "Settings"
-msgstr ""
+# Empty string with ID 30000
 
 msgctxt "#30001"
 msgid "Console display"
