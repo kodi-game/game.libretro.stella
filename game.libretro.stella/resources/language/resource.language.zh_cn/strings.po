@@ -29,46 +29,91 @@ msgctxt "Addon Disclaimer"
 msgid "Stella was originally developed for Linux by Bradford W. Mott, and is currently maintained by Stephen Anthony."
 msgstr "Stella 最初由 Bradford W.Mott 为 Linux 开发，目前由 Stephen Anthony 维护。"
 
-msgctxt "#30000"
-msgid "Settings"
-msgstr "设置"
-
+# Empty string with ID 30000
 msgctxt "#30001"
-msgid "Color Depth (Restart)"
-msgstr "色深（重新启动）"
+msgid "Console display"
+msgstr ""
 
 msgctxt "#30002"
-msgid "Interframe Blending"
-msgstr "帧间混合"
+msgid "Palette colors"
+msgstr ""
 
 msgctxt "#30003"
-msgid "Audio Filter"
-msgstr "音频滤波器"
+msgid "TV effects"
+msgstr ""
 
 msgctxt "#30004"
-msgid "Audio Filter Level"
-msgstr "音频滤波器电平"
+msgid "NTSC aspect %"
+msgstr ""
 
 msgctxt "#30005"
-msgid "Gamepad: Paddle Sensitivity (Digital)"
-msgstr "游戏手柄：Paddle 灵敏度（数字）"
+msgid "PAL aspect %"
+msgstr ""
 
 msgctxt "#30006"
-msgid "Gamepad: Paddle Sensitivity (Analog)"
-msgstr "游戏手柄：Paddle 灵敏度（模拟）"
+msgid "Crop horizontal overscan"
+msgstr ""
 
 msgctxt "#30007"
-msgid "Gamepad: Paddle Response (Analog)"
-msgstr "游戏手柄：Paddle 响应（模拟）"
+msgid "Stereo sound"
+msgstr ""
 
 msgctxt "#30008"
-msgid "Gamepad: Paddle Deadzone (Analog)"
-msgstr "游戏手柄：Paddle 死区（模拟）"
+msgid "Phosphor mode"
+msgstr ""
 
 msgctxt "#30009"
-msgid "Stelladaptor: Paddle Sensitivity"
-msgstr "Stelladaptor：Paddle 灵敏度"
+msgid "Phosphor blend %"
+msgstr ""
 
 msgctxt "#30010"
-msgid "Stelladaptor: Paddle Centre Offset"
-msgstr "Stelladaptor：Paddle 中心偏移"
+msgid "Paddle joypad sensitivity"
+msgstr ""
+
+msgctxt "#30011"
+msgid "Paddle analog sensitivity"
+msgstr ""
+
+#~ msgctxt "#30000"
+#~ msgid "Settings"
+#~ msgstr "设置"
+
+#~ msgctxt "#30001"
+#~ msgid "Color Depth (Restart)"
+#~ msgstr "色深（重新启动）"
+
+#~ msgctxt "#30002"
+#~ msgid "Interframe Blending"
+#~ msgstr "帧间混合"
+
+#~ msgctxt "#30003"
+#~ msgid "Audio Filter"
+#~ msgstr "音频滤波器"
+
+#~ msgctxt "#30004"
+#~ msgid "Audio Filter Level"
+#~ msgstr "音频滤波器电平"
+
+#~ msgctxt "#30005"
+#~ msgid "Gamepad: Paddle Sensitivity (Digital)"
+#~ msgstr "游戏手柄：Paddle 灵敏度（数字）"
+
+#~ msgctxt "#30006"
+#~ msgid "Gamepad: Paddle Sensitivity (Analog)"
+#~ msgstr "游戏手柄：Paddle 灵敏度（模拟）"
+
+#~ msgctxt "#30007"
+#~ msgid "Gamepad: Paddle Response (Analog)"
+#~ msgstr "游戏手柄：Paddle 响应（模拟）"
+
+#~ msgctxt "#30008"
+#~ msgid "Gamepad: Paddle Deadzone (Analog)"
+#~ msgstr "游戏手柄：Paddle 死区（模拟）"
+
+#~ msgctxt "#30009"
+#~ msgid "Stelladaptor: Paddle Sensitivity"
+#~ msgstr "Stelladaptor：Paddle 灵敏度"
+
+#~ msgctxt "#30010"
+#~ msgid "Stelladaptor: Paddle Centre Offset"
+#~ msgstr "Stelladaptor：Paddle 中心偏移"

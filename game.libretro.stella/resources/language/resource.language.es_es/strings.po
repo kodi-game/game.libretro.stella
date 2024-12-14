@@ -29,46 +29,91 @@ msgctxt "Addon Disclaimer"
 msgid "Stella was originally developed for Linux by Bradford W. Mott, and is currently maintained by Stephen Anthony."
 msgstr "Stella fue desarrollado originalmente para Linux por Bradford W. Mott, y actualmente lo mantiene Stephen Anthony."
 
-msgctxt "#30000"
-msgid "Settings"
-msgstr "Ajustes"
-
+# Empty string with ID 30000
 msgctxt "#30001"
-msgid "Color Depth (Restart)"
-msgstr "Profundidad de Color (Reiniciar)"
+msgid "Console display"
+msgstr ""
 
 msgctxt "#30002"
-msgid "Interframe Blending"
-msgstr "Mezcla de Fotogramas"
+msgid "Palette colors"
+msgstr ""
 
 msgctxt "#30003"
-msgid "Audio Filter"
-msgstr "Filtro de Audio"
+msgid "TV effects"
+msgstr ""
 
 msgctxt "#30004"
-msgid "Audio Filter Level"
-msgstr "Nivel de Filtro de Audio"
+msgid "NTSC aspect %"
+msgstr ""
 
 msgctxt "#30005"
-msgid "Gamepad: Paddle Sensitivity (Digital)"
-msgstr "Gamepad: Sensibilidad de la Palanca (digital)"
+msgid "PAL aspect %"
+msgstr ""
 
 msgctxt "#30006"
-msgid "Gamepad: Paddle Sensitivity (Analog)"
-msgstr "Gamepad: Sensibilidad de la Palanca (analógica)"
+msgid "Crop horizontal overscan"
+msgstr ""
 
 msgctxt "#30007"
-msgid "Gamepad: Paddle Response (Analog)"
-msgstr "Gamepad: Respuesta de la Palanca (analógica)"
+msgid "Stereo sound"
+msgstr ""
 
 msgctxt "#30008"
-msgid "Gamepad: Paddle Deadzone (Analog)"
-msgstr "Gamepad: Palanca Zona Muerta (analógica)"
+msgid "Phosphor mode"
+msgstr ""
 
 msgctxt "#30009"
-msgid "Stelladaptor: Paddle Sensitivity"
-msgstr "Stelladaptor: Sensibilidad de la Palanca"
+msgid "Phosphor blend %"
+msgstr ""
 
 msgctxt "#30010"
-msgid "Stelladaptor: Paddle Centre Offset"
-msgstr "Stelladaptor: Desplazamiento del Centro de la Palanca"
+msgid "Paddle joypad sensitivity"
+msgstr ""
+
+msgctxt "#30011"
+msgid "Paddle analog sensitivity"
+msgstr ""
+
+#~ msgctxt "#30000"
+#~ msgid "Settings"
+#~ msgstr "Ajustes"
+
+#~ msgctxt "#30001"
+#~ msgid "Color Depth (Restart)"
+#~ msgstr "Profundidad de Color (Reiniciar)"
+
+#~ msgctxt "#30002"
+#~ msgid "Interframe Blending"
+#~ msgstr "Mezcla de Fotogramas"
+
+#~ msgctxt "#30003"
+#~ msgid "Audio Filter"
+#~ msgstr "Filtro de Audio"
+
+#~ msgctxt "#30004"
+#~ msgid "Audio Filter Level"
+#~ msgstr "Nivel de Filtro de Audio"
+
+#~ msgctxt "#30005"
+#~ msgid "Gamepad: Paddle Sensitivity (Digital)"
+#~ msgstr "Gamepad: Sensibilidad de la Palanca (digital)"
+
+#~ msgctxt "#30006"
+#~ msgid "Gamepad: Paddle Sensitivity (Analog)"
+#~ msgstr "Gamepad: Sensibilidad de la Palanca (analógica)"
+
+#~ msgctxt "#30007"
+#~ msgid "Gamepad: Paddle Response (Analog)"
+#~ msgstr "Gamepad: Respuesta de la Palanca (analógica)"
+
+#~ msgctxt "#30008"
+#~ msgid "Gamepad: Paddle Deadzone (Analog)"
+#~ msgstr "Gamepad: Palanca Zona Muerta (analógica)"
+
+#~ msgctxt "#30009"
+#~ msgid "Stelladaptor: Paddle Sensitivity"
+#~ msgstr "Stelladaptor: Sensibilidad de la Palanca"
+
+#~ msgctxt "#30010"
+#~ msgid "Stelladaptor: Paddle Centre Offset"
+#~ msgstr "Stelladaptor: Desplazamiento del Centro de la Palanca"

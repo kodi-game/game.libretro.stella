@@ -29,46 +29,55 @@ msgctxt "Addon Disclaimer"
 msgid "Stella was originally developed for Linux by Bradford W. Mott, and is currently maintained by Stephen Anthony."
 msgstr ""
 
-msgctxt "#30000"
-msgid "Settings"
-msgstr "Nastavitve"
-
+# Empty string with ID 30000
 msgctxt "#30001"
-msgid "Color Depth (Restart)"
-msgstr "Globina barve (ponovni zagon)"
+msgid "Console display"
+msgstr ""
 
 msgctxt "#30002"
-msgid "Interframe Blending"
+msgid "Palette colors"
 msgstr ""
 
 msgctxt "#30003"
-msgid "Audio Filter"
+msgid "TV effects"
 msgstr ""
 
 msgctxt "#30004"
-msgid "Audio Filter Level"
+msgid "NTSC aspect %"
 msgstr ""
 
 msgctxt "#30005"
-msgid "Gamepad: Paddle Sensitivity (Digital)"
+msgid "PAL aspect %"
 msgstr ""
 
 msgctxt "#30006"
-msgid "Gamepad: Paddle Sensitivity (Analog)"
+msgid "Crop horizontal overscan"
 msgstr ""
 
 msgctxt "#30007"
-msgid "Gamepad: Paddle Response (Analog)"
+msgid "Stereo sound"
 msgstr ""
 
 msgctxt "#30008"
-msgid "Gamepad: Paddle Deadzone (Analog)"
+msgid "Phosphor mode"
 msgstr ""
 
 msgctxt "#30009"
-msgid "Stelladaptor: Paddle Sensitivity"
+msgid "Phosphor blend %"
 msgstr ""
 
 msgctxt "#30010"
-msgid "Stelladaptor: Paddle Centre Offset"
+msgid "Paddle joypad sensitivity"
 msgstr ""
+
+msgctxt "#30011"
+msgid "Paddle analog sensitivity"
+msgstr ""
+
+#~ msgctxt "#30000"
+#~ msgid "Settings"
+#~ msgstr "Nastavitve"
+
+#~ msgctxt "#30001"
+#~ msgid "Color Depth (Restart)"
+#~ msgstr "Globina barve (ponovni zagon)"

@@ -29,46 +29,91 @@ msgctxt "Addon Disclaimer"
 msgid "Stella was originally developed for Linux by Bradford W. Mott, and is currently maintained by Stephen Anthony."
 msgstr "Stella wurde ursprünglich von Bradford W. Mott für Linux entwickelt und wird derzeit von Stephen Anthony gepflegt."
 
-msgctxt "#30000"
-msgid "Settings"
-msgstr "Einstellungen"
-
+# Empty string with ID 30000
 msgctxt "#30001"
-msgid "Color Depth (Restart)"
-msgstr "Farbtiefe (Neustart erforderlich)"
+msgid "Console display"
+msgstr ""
 
 msgctxt "#30002"
-msgid "Interframe Blending"
-msgstr "Zwischenframe-Überblendung"
+msgid "Palette colors"
+msgstr ""
 
 msgctxt "#30003"
-msgid "Audio Filter"
-msgstr "Audiofilter"
+msgid "TV effects"
+msgstr ""
 
 msgctxt "#30004"
-msgid "Audio Filter Level"
-msgstr "Audiofilterstufe"
+msgid "NTSC aspect %"
+msgstr ""
 
 msgctxt "#30005"
-msgid "Gamepad: Paddle Sensitivity (Digital)"
-msgstr "Gamepad: Paddelempfindlichkeit (Digital)"
+msgid "PAL aspect %"
+msgstr ""
 
 msgctxt "#30006"
-msgid "Gamepad: Paddle Sensitivity (Analog)"
-msgstr "Gamepad: Paddelempfindlichkeit (Analog)"
+msgid "Crop horizontal overscan"
+msgstr ""
 
 msgctxt "#30007"
-msgid "Gamepad: Paddle Response (Analog)"
-msgstr "Gamepad: Paddle-Antwortzeit (Analog)"
+msgid "Stereo sound"
+msgstr ""
 
 msgctxt "#30008"
-msgid "Gamepad: Paddle Deadzone (Analog)"
-msgstr "Gamepad: Paddle-Deadzone (Analog)"
+msgid "Phosphor mode"
+msgstr ""
 
 msgctxt "#30009"
-msgid "Stelladaptor: Paddle Sensitivity"
-msgstr "Stelladaptor: Paddle-Empfindlichkeit"
+msgid "Phosphor blend %"
+msgstr ""
 
 msgctxt "#30010"
-msgid "Stelladaptor: Paddle Centre Offset"
-msgstr "Stelladaptor: Paddel-Mitten-Offset"
+msgid "Paddle joypad sensitivity"
+msgstr ""
+
+msgctxt "#30011"
+msgid "Paddle analog sensitivity"
+msgstr ""
+
+#~ msgctxt "#30000"
+#~ msgid "Settings"
+#~ msgstr "Einstellungen"
+
+#~ msgctxt "#30001"
+#~ msgid "Color Depth (Restart)"
+#~ msgstr "Farbtiefe (Neustart erforderlich)"
+
+#~ msgctxt "#30002"
+#~ msgid "Interframe Blending"
+#~ msgstr "Zwischenframe-Überblendung"
+
+#~ msgctxt "#30003"
+#~ msgid "Audio Filter"
+#~ msgstr "Audiofilter"
+
+#~ msgctxt "#30004"
+#~ msgid "Audio Filter Level"
+#~ msgstr "Audiofilterstufe"
+
+#~ msgctxt "#30005"
+#~ msgid "Gamepad: Paddle Sensitivity (Digital)"
+#~ msgstr "Gamepad: Paddelempfindlichkeit (Digital)"
+
+#~ msgctxt "#30006"
+#~ msgid "Gamepad: Paddle Sensitivity (Analog)"
+#~ msgstr "Gamepad: Paddelempfindlichkeit (Analog)"
+
+#~ msgctxt "#30007"
+#~ msgid "Gamepad: Paddle Response (Analog)"
+#~ msgstr "Gamepad: Paddle-Antwortzeit (Analog)"
+
+#~ msgctxt "#30008"
+#~ msgid "Gamepad: Paddle Deadzone (Analog)"
+#~ msgstr "Gamepad: Paddle-Deadzone (Analog)"
+
+#~ msgctxt "#30009"
+#~ msgid "Stelladaptor: Paddle Sensitivity"
+#~ msgstr "Stelladaptor: Paddle-Empfindlichkeit"
+
+#~ msgctxt "#30010"
+#~ msgid "Stelladaptor: Paddle Centre Offset"
+#~ msgstr "Stelladaptor: Paddel-Mitten-Offset"

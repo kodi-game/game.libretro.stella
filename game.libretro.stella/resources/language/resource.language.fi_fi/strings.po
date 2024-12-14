@@ -29,46 +29,87 @@ msgctxt "Addon Disclaimer"
 msgid "Stella was originally developed for Linux by Bradford W. Mott, and is currently maintained by Stephen Anthony."
 msgstr ""
 
-msgctxt "#30000"
-msgid "Settings"
-msgstr "Asetukset"
-
+# Empty string with ID 30000
 msgctxt "#30001"
-msgid "Color Depth (Restart)"
+msgid "Console display"
 msgstr ""
 
 msgctxt "#30002"
-msgid "Interframe Blending"
-msgstr "Vuorokuvien sekoitus"
+msgid "Palette colors"
+msgstr ""
 
 msgctxt "#30003"
-msgid "Audio Filter"
-msgstr "Äänisuodatin"
+msgid "TV effects"
+msgstr ""
 
 msgctxt "#30004"
-msgid "Audio Filter Level"
-msgstr "Äänisuodatuksen taso"
+msgid "NTSC aspect %"
+msgstr ""
 
 msgctxt "#30005"
-msgid "Gamepad: Paddle Sensitivity (Digital)"
-msgstr "Peliohjain: Liipaisimen herkkyys (digitaalinen)"
+msgid "PAL aspect %"
+msgstr ""
 
 msgctxt "#30006"
-msgid "Gamepad: Paddle Sensitivity (Analog)"
-msgstr "Peliohjain: Liipaisimen herkkyys (analoginen)"
+msgid "Crop horizontal overscan"
+msgstr ""
 
 msgctxt "#30007"
-msgid "Gamepad: Paddle Response (Analog)"
-msgstr "Peliohjain: Liipaisimen vaste (analoginen)"
+msgid "Stereo sound"
+msgstr ""
 
 msgctxt "#30008"
-msgid "Gamepad: Paddle Deadzone (Analog)"
-msgstr "Peliohjain: Liipaisimen kuollut alue (analoginen)"
+msgid "Phosphor mode"
+msgstr ""
 
 msgctxt "#30009"
-msgid "Stelladaptor: Paddle Sensitivity"
-msgstr "Stelladaptor: Liipaisimen herkkyys"
+msgid "Phosphor blend %"
+msgstr ""
 
 msgctxt "#30010"
-msgid "Stelladaptor: Paddle Centre Offset"
-msgstr "Stelladaptor: Liipaisimen keskipisteen siirtymä"
+msgid "Paddle joypad sensitivity"
+msgstr ""
+
+msgctxt "#30011"
+msgid "Paddle analog sensitivity"
+msgstr ""
+
+#~ msgctxt "#30000"
+#~ msgid "Settings"
+#~ msgstr "Asetukset"
+
+#~ msgctxt "#30002"
+#~ msgid "Interframe Blending"
+#~ msgstr "Vuorokuvien sekoitus"
+
+#~ msgctxt "#30003"
+#~ msgid "Audio Filter"
+#~ msgstr "Äänisuodatin"
+
+#~ msgctxt "#30004"
+#~ msgid "Audio Filter Level"
+#~ msgstr "Äänisuodatuksen taso"
+
+#~ msgctxt "#30005"
+#~ msgid "Gamepad: Paddle Sensitivity (Digital)"
+#~ msgstr "Peliohjain: Liipaisimen herkkyys (digitaalinen)"
+
+#~ msgctxt "#30006"
+#~ msgid "Gamepad: Paddle Sensitivity (Analog)"
+#~ msgstr "Peliohjain: Liipaisimen herkkyys (analoginen)"
+
+#~ msgctxt "#30007"
+#~ msgid "Gamepad: Paddle Response (Analog)"
+#~ msgstr "Peliohjain: Liipaisimen vaste (analoginen)"
+
+#~ msgctxt "#30008"
+#~ msgid "Gamepad: Paddle Deadzone (Analog)"
+#~ msgstr "Peliohjain: Liipaisimen kuollut alue (analoginen)"
+
+#~ msgctxt "#30009"
+#~ msgid "Stelladaptor: Paddle Sensitivity"
+#~ msgstr "Stelladaptor: Liipaisimen herkkyys"
+
+#~ msgctxt "#30010"
+#~ msgid "Stelladaptor: Paddle Centre Offset"
+#~ msgstr "Stelladaptor: Liipaisimen keskipisteen siirtymä"

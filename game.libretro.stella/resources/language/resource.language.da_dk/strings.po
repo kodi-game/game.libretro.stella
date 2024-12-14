@@ -29,46 +29,91 @@ msgctxt "Addon Disclaimer"
 msgid "Stella was originally developed for Linux by Bradford W. Mott, and is currently maintained by Stephen Anthony."
 msgstr "Stella blev oprindeligt udviklet til Linux af Bradford W. Mott og vedligeholdes i øjeblikket af Stephen Anthony."
 
-msgctxt "#30000"
-msgid "Settings"
-msgstr "Indstillinger"
-
+# Empty string with ID 30000
 msgctxt "#30001"
-msgid "Color Depth (Restart)"
-msgstr "Farvedybde (genstart)"
+msgid "Console display"
+msgstr ""
 
 msgctxt "#30002"
-msgid "Interframe Blending"
-msgstr "Interframe-blanding"
+msgid "Palette colors"
+msgstr ""
 
 msgctxt "#30003"
-msgid "Audio Filter"
-msgstr "Lydfilter"
+msgid "TV effects"
+msgstr ""
 
 msgctxt "#30004"
-msgid "Audio Filter Level"
-msgstr "Niveau for lydfilter"
+msgid "NTSC aspect %"
+msgstr ""
 
 msgctxt "#30005"
-msgid "Gamepad: Paddle Sensitivity (Digital)"
-msgstr "Gamepad: Pedal sensitivitet (Digital)"
+msgid "PAL aspect %"
+msgstr ""
 
 msgctxt "#30006"
-msgid "Gamepad: Paddle Sensitivity (Analog)"
-msgstr "Gamepad: Pedal sensitivitet (analog)"
+msgid "Crop horizontal overscan"
+msgstr ""
 
 msgctxt "#30007"
-msgid "Gamepad: Paddle Response (Analog)"
-msgstr "Gamepad: svar fra pedal (analog)"
+msgid "Stereo sound"
+msgstr ""
 
 msgctxt "#30008"
-msgid "Gamepad: Paddle Deadzone (Analog)"
-msgstr "Gamepad: deadzone for pedal (analog)"
+msgid "Phosphor mode"
+msgstr ""
 
 msgctxt "#30009"
-msgid "Stelladaptor: Paddle Sensitivity"
-msgstr "Stelladaptor: følsomhed for pedal"
+msgid "Phosphor blend %"
+msgstr ""
 
 msgctxt "#30010"
-msgid "Stelladaptor: Paddle Centre Offset"
-msgstr "Stelladaptor: centerforskydning for paddle"
+msgid "Paddle joypad sensitivity"
+msgstr ""
+
+msgctxt "#30011"
+msgid "Paddle analog sensitivity"
+msgstr ""
+
+#~ msgctxt "#30000"
+#~ msgid "Settings"
+#~ msgstr "Indstillinger"
+
+#~ msgctxt "#30001"
+#~ msgid "Color Depth (Restart)"
+#~ msgstr "Farvedybde (genstart)"
+
+#~ msgctxt "#30002"
+#~ msgid "Interframe Blending"
+#~ msgstr "Interframe-blanding"
+
+#~ msgctxt "#30003"
+#~ msgid "Audio Filter"
+#~ msgstr "Lydfilter"
+
+#~ msgctxt "#30004"
+#~ msgid "Audio Filter Level"
+#~ msgstr "Niveau for lydfilter"
+
+#~ msgctxt "#30005"
+#~ msgid "Gamepad: Paddle Sensitivity (Digital)"
+#~ msgstr "Gamepad: Pedal sensitivitet (Digital)"
+
+#~ msgctxt "#30006"
+#~ msgid "Gamepad: Paddle Sensitivity (Analog)"
+#~ msgstr "Gamepad: Pedal sensitivitet (analog)"
+
+#~ msgctxt "#30007"
+#~ msgid "Gamepad: Paddle Response (Analog)"
+#~ msgstr "Gamepad: svar fra pedal (analog)"
+
+#~ msgctxt "#30008"
+#~ msgid "Gamepad: Paddle Deadzone (Analog)"
+#~ msgstr "Gamepad: deadzone for pedal (analog)"
+
+#~ msgctxt "#30009"
+#~ msgid "Stelladaptor: Paddle Sensitivity"
+#~ msgstr "Stelladaptor: følsomhed for pedal"
+
+#~ msgctxt "#30010"
+#~ msgid "Stelladaptor: Paddle Centre Offset"
+#~ msgstr "Stelladaptor: centerforskydning for paddle"
