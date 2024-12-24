@@ -1,7 +1,7 @@
 From b50c0f9d07b272a779fc3448713f1b6afb39b1d0 Mon Sep 17 00:00:00 2001
 From: Garrett Brown <themagnificentmrb@gmail.com>
 Date: Tue, 24 Dec 2024 12:28:48 -0800
-Subject: [PATCH 1/2] Android: Build with -std=c++2a for NDK 21
+Subject: [PATCH] Android: Build with -std=c++2a for NDK 21
 
 ---
  src/os/libretro/jni/Android.mk | 2 +-
