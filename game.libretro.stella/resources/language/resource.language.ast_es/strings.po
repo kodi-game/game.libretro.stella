@@ -74,6 +74,10 @@ msgctxt "#30011"
 msgid "Paddle analog sensitivity"
 msgstr ""
 
+msgctxt "#30012"
+msgid "Enable reload/next game"
+msgstr ""
+
 #~ msgctxt "#30000"
 #~ msgid "Settings"
 #~ msgstr "Axustes"
