@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: game.libretro.stella\n"
 "Report-Msgid-Bugs-To: translations@kodi.tv\n"
 "POT-Creation-Date: 2021-05-02 00:45i\n"
-"PO-Revision-Date: 2025-04-06 19:03+0000\n"
+"PO-Revision-Date: 2025-04-17 04:26+0000\n"
 "Last-Translator: Daniel Nylander <daniel@danielnylander.se>\n"
 "Language-Team: Swedish <https://kodi.weblate.cloud/projects/kodi-add-ons-game/game-libretro-stella/sv_se/>\n"
 "Language: sv_se\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.10.4\n"
+"X-Generator: Weblate 5.11\n"
 
 msgctxt "Addon Summary"
 msgid "Atari - 2600 (Stella)"
@@ -30,53 +30,60 @@ msgid "Stella was originally developed for Linux by Bradford W. Mott, and is cur
 msgstr "Stella utvecklades ursprungligen för Linux av Bradford W. Mott och underhålls för närvarande av Stephen Anthony."
 
 # Empty string with ID 30000
+#, fuzzy
 msgctxt "#30001"
 msgid "Console display"
-msgstr ""
+msgstr "Konsolens display"
 
 msgctxt "#30002"
 msgid "Palette colors"
-msgstr ""
+msgstr "Palettfärger"
 
 msgctxt "#30003"
 msgid "TV effects"
-msgstr ""
+msgstr "TV-effekter"
 
+#, fuzzy
 msgctxt "#30004"
 msgid "NTSC aspect %"
-msgstr ""
+msgstr "NTSC-aspekt %"
 
+#, fuzzy
 msgctxt "#30005"
 msgid "PAL aspect %"
-msgstr ""
+msgstr "PAL-aspektprocent"
 
+#, fuzzy
 msgctxt "#30006"
 msgid "Crop horizontal overscan"
-msgstr ""
+msgstr "Beskär horisontell överskanning"
 
 msgctxt "#30007"
 msgid "Stereo sound"
-msgstr ""
+msgstr "Stereoljud"
 
 msgctxt "#30008"
 msgid "Phosphor mode"
-msgstr ""
+msgstr "Fosfor-läge"
 
 msgctxt "#30009"
 msgid "Phosphor blend %"
-msgstr ""
+msgstr "Fosforblandning %"
 
+#, fuzzy
 msgctxt "#30010"
 msgid "Paddle joypad sensitivity"
-msgstr ""
+msgstr "Känslighet på paddelns joypad"
 
+#, fuzzy
 msgctxt "#30011"
 msgid "Paddle analog sensitivity"
-msgstr ""
+msgstr "Paddelns analoga känslighet"
 
+#, fuzzy
 msgctxt "#30012"
 msgid "Enable reload/next game"
-msgstr ""
+msgstr "Aktivera omladdning/nästa spel"
 
 #~ msgctxt "#30000"
 #~ msgid "Settings"
