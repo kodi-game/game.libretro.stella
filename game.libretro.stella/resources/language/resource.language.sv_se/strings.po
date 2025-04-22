@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: game.libretro.stella\n"
 "Report-Msgid-Bugs-To: translations@kodi.tv\n"
 "POT-Creation-Date: 2021-05-02 00:45i\n"
-"PO-Revision-Date: 2025-04-17 04:26+0000\n"
+"PO-Revision-Date: 2025-04-22 22:51+0000\n"
 "Last-Translator: Daniel Nylander <daniel@danielnylander.se>\n"
 "Language-Team: Swedish <https://kodi.weblate.cloud/projects/kodi-add-ons-game/game-libretro-stella/sv_se/>\n"
 "Language: sv_se\n"
@@ -30,10 +30,9 @@ msgid "Stella was originally developed for Linux by Bradford W. Mott, and is cur
 msgstr "Stella utvecklades ursprungligen för Linux av Bradford W. Mott och underhålls för närvarande av Stephen Anthony."
 
 # Empty string with ID 30000
-#, fuzzy
 msgctxt "#30001"
 msgid "Console display"
-msgstr "Konsolens display"
+msgstr "Konsolvisning"
 
 msgctxt "#30002"
 msgid "Palette colors"
