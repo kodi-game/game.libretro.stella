@@ -4,14 +4,19 @@
 		<setting label="30001" type="select" id="stella_console" values="auto|ntsc|pal|secam|ntsc50|pal60|secam60" default="auto"/>
 		<setting label="30002" type="select" id="stella_palette" values="standard|z26|user|custom" default="standard"/>
 		<setting label="30003" type="select" id="stella_filter" values="disabled|composite|s-video|rgb|badly adjusted" default="disabled"/>
-		<setting label="30004" type="select" id="stella_ntsc_aspect" values="par|100|101|102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117|118|119|120|121|122|123|124|125|50|75|76|77|78|79|80|81|82|83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99" default="par"/>
-		<setting label="30005" type="select" id="stella_pal_aspect" values="par|100|101|102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117|118|119|120|121|122|123|124|125|50|75|76|77|78|79|80|81|82|83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99" default="par"/>
 		<setting label="30006" type="select" id="stella_crop_hoverscan" values="disabled|enabled" default="disabled"/>
+		<setting label="30013" type="select" id="stella_crop_voverscan" values="0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24" default="0"/>
+		<setting label="30004" type="select" id="stella_ntsc_aspect" values="par|100|101|102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117|118|119|120|121|122|123|124|125|75|76|77|78|79|80|81|82|83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99" default="par"/>
+		<setting label="30005" type="select" id="stella_pal_aspect" values="par|100|101|102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117|118|119|120|121|122|123|124|125|75|76|77|78|79|80|81|82|83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99" default="par"/>
 		<setting label="30007" type="select" id="stella_stereo" values="auto|off|on" default="auto"/>
 		<setting label="30008" type="select" id="stella_phosphor" values="auto|off|on" default="auto"/>
 		<setting label="30009" type="select" id="stella_phosphor_blend" values="60|65|70|75|80|85|90|95|100|0|5|10|15|20|25|30|35|40|45|50|55" default="60"/>
+		<setting label="30014" type="select" id="stella_paddle_mouse_sensitivity" values="10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|1|2|3|4|5|6|7|8|9" default="10"/>
 		<setting label="30010" type="select" id="stella_paddle_joypad_sensitivity" values="3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|1|2" default="3"/>
 		<setting label="30011" type="select" id="stella_paddle_analog_sensitivity" values="20|21|22|23|24|25|26|27|28|29|30|0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19" default="20"/>
+		<setting label="30015" type="select" id="stella_paddle_analog_deadzone" values="15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|0|1|2|3|4|5|6|7|8|9|10|11|12|13|14" default="15"/>
+		<setting label="30016" type="select" id="stella_paddle_analog_absolute" values="disabled|enabled" default="disabled"/>
+		<setting label="30017" type="select" id="stella_lightgun_crosshair" values="disabled|enabled" default="disabled"/>
 		<setting label="30012" type="select" id="stella_reload" values="off|on" default="off"/>
 	</category>
 </settings>
