@@ -7,15 +7,15 @@ msgstr ""
 "Project-Id-Version: game.libretro.stella\n"
 "Report-Msgid-Bugs-To: translations@kodi.tv\n"
 "POT-Creation-Date: 2021-05-02 00:45i\n"
-"PO-Revision-Date: 2024-12-27 22:08+0000\n"
-"Last-Translator: taxigps <taxigps@sina.com>\n"
-"Language-Team: Chinese (China) <https://kodi.weblate.cloud/projects/kodi-add-ons-game/game-libretro-stella/zh_cn/>\n"
+"PO-Revision-Date: 2025-06-30 05:11+0000\n"
+"Last-Translator: wabisabi926 <liwenliang926@163.com>\n"
+"Language-Team: Chinese (Simplified Han script) <https://kodi.weblate.cloud/projects/kodi-add-ons-game/game-libretro-stella/zh_Hans/>\n"
 "Language: zh_cn\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.9.2\n"
+"X-Generator: Weblate 5.12.2\n"
 
 msgctxt "Addon Summary"
 msgid "Atari - 2600 (Stella)"
@@ -32,50 +32,70 @@ msgstr "Stella 最初由 Bradford W.Mott 为 Linux 开发，目前由 Stephen An
 # Empty string with ID 30000
 msgctxt "#30001"
 msgid "Console display"
-msgstr ""
+msgstr "主机显示"
 
 msgctxt "#30002"
 msgid "Palette colors"
-msgstr ""
+msgstr "调色板颜色"
 
 msgctxt "#30003"
 msgid "TV effects"
-msgstr ""
+msgstr "电视效果"
 
 msgctxt "#30004"
 msgid "NTSC aspect %"
-msgstr ""
+msgstr "NTSC 显示比例 %"
 
 msgctxt "#30005"
 msgid "PAL aspect %"
-msgstr ""
+msgstr "PAL 显示比例 %"
 
 msgctxt "#30006"
 msgid "Crop horizontal overscan"
-msgstr ""
+msgstr "裁剪水平过扫描区域"
 
 msgctxt "#30007"
 msgid "Stereo sound"
-msgstr ""
+msgstr "立体声"
 
 msgctxt "#30008"
 msgid "Phosphor mode"
-msgstr ""
+msgstr "磷光模式"
 
 msgctxt "#30009"
 msgid "Phosphor blend %"
-msgstr ""
+msgstr "磷光混合 %"
 
 msgctxt "#30010"
 msgid "Paddle joypad sensitivity"
-msgstr ""
+msgstr "游戏杆灵敏度"
 
 msgctxt "#30011"
 msgid "Paddle analog sensitivity"
-msgstr ""
+msgstr "拨盘模拟灵敏度"
 
 msgctxt "#30012"
 msgid "Enable reload/next game"
+msgstr "启用快速重启 / 切换游戏"
+
+msgctxt "#30013"
+msgid "Crop vertical overscan"
+msgstr ""
+
+msgctxt "#30014"
+msgid "Paddle mouse sensitivity"
+msgstr ""
+
+msgctxt "#30015"
+msgid "Paddle analog deadzone"
+msgstr ""
+
+msgctxt "#30016"
+msgid "Paddle analog absolute"
+msgstr ""
+
+msgctxt "#30017"
+msgid "Lightgun crosshair"
 msgstr ""
 
 #~ msgctxt "#30000"

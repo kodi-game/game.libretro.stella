@@ -76,3 +76,23 @@ msgstr ""
 msgctxt "#30012"
 msgid "Enable reload/next game"
 msgstr ""
+
+msgctxt "#30013"
+msgid "Crop vertical overscan"
+msgstr ""
+
+msgctxt "#30014"
+msgid "Paddle mouse sensitivity"
+msgstr ""
+
+msgctxt "#30015"
+msgid "Paddle analog deadzone"
+msgstr ""
+
+msgctxt "#30016"
+msgid "Paddle analog absolute"
+msgstr ""
+
+msgctxt "#30017"
+msgid "Lightgun crosshair"
+msgstr ""

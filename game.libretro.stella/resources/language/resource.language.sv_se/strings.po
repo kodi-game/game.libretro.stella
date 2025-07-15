@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: game.libretro.stella\n"
 "Report-Msgid-Bugs-To: translations@kodi.tv\n"
 "POT-Creation-Date: 2021-05-02 00:45i\n"
-"PO-Revision-Date: 2025-04-22 22:51+0000\n"
+"PO-Revision-Date: 2025-07-15 11:29+0000\n"
 "Last-Translator: Daniel Nylander <daniel@danielnylander.se>\n"
 "Language-Team: Swedish <https://kodi.weblate.cloud/projects/kodi-add-ons-game/game-libretro-stella/sv_se/>\n"
 "Language: sv_se\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.11\n"
+"X-Generator: Weblate 5.12.2\n"
 
 msgctxt "Addon Summary"
 msgid "Atari - 2600 (Stella)"
@@ -42,17 +42,14 @@ msgctxt "#30003"
 msgid "TV effects"
 msgstr "TV-effekter"
 
-#, fuzzy
 msgctxt "#30004"
 msgid "NTSC aspect %"
-msgstr "NTSC-aspekt %"
+msgstr "NTSC-bildformat %"
 
-#, fuzzy
 msgctxt "#30005"
 msgid "PAL aspect %"
-msgstr "PAL-aspektprocent"
+msgstr "PAL-bildformat %"
 
-#, fuzzy
 msgctxt "#30006"
 msgid "Crop horizontal overscan"
 msgstr "Beskär horisontell överskanning"
@@ -83,6 +80,26 @@ msgstr "Paddelns analoga känslighet"
 msgctxt "#30012"
 msgid "Enable reload/next game"
 msgstr "Aktivera omladdning/nästa spel"
+
+msgctxt "#30013"
+msgid "Crop vertical overscan"
+msgstr "Beskär vertikal överskanning"
+
+msgctxt "#30014"
+msgid "Paddle mouse sensitivity"
+msgstr ""
+
+msgctxt "#30015"
+msgid "Paddle analog deadzone"
+msgstr ""
+
+msgctxt "#30016"
+msgid "Paddle analog absolute"
+msgstr ""
+
+msgctxt "#30017"
+msgid "Lightgun crosshair"
+msgstr "Korshår för ljuspistol"
 
 #~ msgctxt "#30000"
 #~ msgid "Settings"
