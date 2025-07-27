@@ -19,8 +19,4 @@
     <feature name="trigger" mapto="RETRO_DEVICE_ID_LIGHTGUN_TRIGGER"/>
     <feature name="crosshair" mapto="RETRO_DEVICE_LIGHTGUN"/>
   </controller>
-  <controller id="game.controller.default" type="RETRO_DEVICE_ANALOG">
-    <feature name="a" mapto="RETRO_DEVICE_ID_JOYPAD_B"/>
-    <feature name="leftstick" mapto="RETRO_DEVICE_INDEX_ANALOG_LEFT"/>
-  </controller>
 </buttonmap>
