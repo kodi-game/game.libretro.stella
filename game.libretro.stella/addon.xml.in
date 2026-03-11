@@ -13,6 +13,7 @@
 		<extensions>a26|bin</extensions>
 		<supports_vfs>true</supports_vfs>
 		<supports_standalone>false</supports_standalone>
+		<supports_disc_control>false</supports_disc_control>
 		<requires_opengl>false</requires_opengl>
 	</extension>
 	<extension point="xbmc.addon.metadata">
