@@ -1,1 +1,1 @@
-stella https://github.com/stella-emu/stella/archive/fe8afc9455f7a59f1f2897a54530d4a98ce7de3a.tar.gz
+stella https://github.com/stella-emu/stella/archive/4c0a16afba7af14629cf48f6eb59c5dcd7022c39.tar.gz
