@@ -18,5 +18,14 @@
 		<setting label="30016" type="select" id="stella_paddle_analog_absolute" values="disabled|enabled" default="disabled"/>
 		<setting label="30017" type="select" id="stella_lightgun_crosshair" values="disabled|enabled" default="disabled"/>
 		<setting label="30012" type="select" id="stella_reload" values="off|on" default="off"/>
+		<setting label="30018" type="select" id="stella_detect_pal60" values="disabled|enabled" default="disabled"/>
+		<setting label="30019" type="select" id="stella_detect_ntsc50" values="disabled|enabled" default="disabled"/>
+		<setting label="30020" type="select" id="stella_pal_contrast" values="0|-1|-2|-3|-4|-5|-6|-7|-8|-9|-10|1|2|3|4|5|6|7|8|9|10" default="0"/>
+		<setting label="30021" type="select" id="stella_pal_brightness" values="0|-1|-2|-3|-4|-5|-6|-7|-8|-9|-10|1|2|3|4|5|6|7|8|9|10" default="0"/>
+		<setting label="30022" type="select" id="stella_pal_hue" values="0|-1|-2|-3|-4|-5|-6|-7|-8|-9|-10|1|2|3|4|5|6|7|8|9|10" default="0"/>
+		<setting label="30023" type="select" id="stella_pal_saturation" values="0|-1|-2|-3|-4|-5|-6|-7|-8|-9|-10|1|2|3|4|5|6|7|8|9|10" default="0"/>
+		<setting label="30024" type="select" id="stella_pal_gamma" values="0|-1|-2|-3|-4|-5|-6|-7|-8|-9|-10|1|2|3|4|5|6|7|8|9|10" default="0"/>
+		<setting label="30025" type="select" id="stella_dpc_pitch" values="20000|10000|11000|12000|13000|14000|15000|16000|17000|18000|19000|21000|22000|23000|24000|25000|26000|27000|28000|29000|30000" default="20000"/>
+		<setting label="30026" type="select" id="stella_messages" values="disabled|enabled" default="disabled"/>
 	</category>
 </settings>
