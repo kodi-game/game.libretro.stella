@@ -98,6 +98,42 @@ msgctxt "#30017"
 msgid "Lightgun crosshair"
 msgstr ""
 
+msgctxt "#30018"
+msgid "Auto-detect PAL-60"
+msgstr ""
+
+msgctxt "#30019"
+msgid "Auto-detect NTSC-50"
+msgstr ""
+
+msgctxt "#30020"
+msgid "Palette contrast"
+msgstr ""
+
+msgctxt "#30021"
+msgid "Palette brightness"
+msgstr ""
+
+msgctxt "#30022"
+msgid "Palette hue"
+msgstr ""
+
+msgctxt "#30023"
+msgid "Palette saturation"
+msgstr ""
+
+msgctxt "#30024"
+msgid "Palette gamma"
+msgstr ""
+
+msgctxt "#30025"
+msgid "Pitfall II music pitch"
+msgstr ""
+
+msgctxt "#30026"
+msgid "Info messages"
+msgstr ""
+
 #~ msgctxt "#30000"
 #~ msgid "Settings"
 #~ msgstr "Configurações"
