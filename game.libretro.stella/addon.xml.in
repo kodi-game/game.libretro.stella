@@ -26,6 +26,7 @@
 			<screenshot>resources/screenshot-02.jpg</screenshot>
 			<screenshot>resources/screenshot-03.jpg</screenshot>
 		</assets>
+		<summary lang="cs_CZ">Atari - 2600 (Stella)</summary>
 		<summary lang="da_DK">Atari - 2600 (Stella)</summary>
 		<summary lang="en_GB">Atari - 2600 (Stella)</summary>
 		<summary lang="es_ES">Atari - 2600 (Stella 2014)</summary>
@@ -33,6 +34,7 @@
 		<summary lang="ru_RU">Atari — 2600 (Stella)</summary>
 		<summary lang="sv_SE">Atari - 2600 (Stella)</summary>
 		<summary lang="zh_CN">雅达利 - 2600（Stella）</summary>
+		<description lang="cs_CZ">Stella je multiplatformní emulátor Atari 2600 VCS.[CR][CR]Atari 2600 Video Computer System (VCS), představený v roce 1977, byl nejpopulárnějším domácím videoherním systémem počátku 80. let.</description>
 		<description lang="da_DK">Stella er en Atari 2600 VCS-emulator til flere platforme.[CR][CR]Atari 2600 Video Computer System (VCS), der blev introduceret i 1977, var det mest populære hjemmevideospilsystem i begyndelsen af 1980&apos;erne.</description>
 		<description lang="de_DE">Stella ist ein plattformübergreifender Emulator für Atari 2600 VCS[CR][CR]Das Atari 2600 Video Computer System (VCS), das 1977 eingeführt wurde, war das beliebteste Heimvideospielsystem der frühen 1980er Jahre.</description>
 		<description lang="en_GB">Stella is a multi-platform Atari 2600 VCS emulator.[CR][CR]The Atari 2600 Video Computer System (VCS), introduced in 1977, was the most popular home video game system of the early 1980s.</description>
@@ -41,6 +43,7 @@
 		<description lang="ru_RU">Stella — это кроссплатформенный эмулятор Atari 2600 VCS.[CR][CR]Atari 2600 Video Computer System (VCS), представленная в 1977 году, была самой популярной домашней игровой системой начала 1980-х годов.</description>
 		<description lang="sv_SE">Stella är en multiplattformsemulator för Atari 2600 VCS.[CR][CR]Atari 2600 Video Computer System (VCS), som introducerades 1977, var det mest populära videospelskonsolen för hemmabruk i början av 1980-talet.</description>
 		<description lang="zh_CN">Stella 是一款多平台雅达利 2600 VCS 模拟器。[CR][CR]1977年推出的雅达利 2600 视频计算机系统（VCS）是20世纪80年代早期最流行的家庭视频游戏系统。</description>
+		<disclaimer lang="cs_CZ">Stella byla původně vyvinuta pro Linux Bradfordem W. Mottem a v současnosti ji spravuje Stephen Anthony.</disclaimer>
 		<disclaimer lang="da_DK">Stella blev oprindeligt udviklet til Linux af Bradford W. Mott og vedligeholdes i øjeblikket af Stephen Anthony.</disclaimer>
 		<disclaimer lang="de_DE">Stella wurde ursprünglich von Bradford W. Mott für Linux entwickelt und wird derzeit von Stephen Anthony gepflegt.</disclaimer>
 		<disclaimer lang="en_GB">Stella was originally developed for Linux by Bradford W. Mott, and is currently maintained by Stephen Anthony.</disclaimer>
