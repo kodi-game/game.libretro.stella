@@ -134,6 +134,22 @@ msgctxt "#30026"
 msgid "Info messages"
 msgstr ""
 
+msgctxt "#30027"
+msgid "System"
+msgstr ""
+
+msgctxt "#30028"
+msgid "Video"
+msgstr ""
+
+msgctxt "#30029"
+msgid "Audio"
+msgstr ""
+
+msgctxt "#30030"
+msgid "Input"
+msgstr ""
+
 #~ msgctxt "#30000"
 #~ msgid "Settings"
 #~ msgstr "Einstellungen"

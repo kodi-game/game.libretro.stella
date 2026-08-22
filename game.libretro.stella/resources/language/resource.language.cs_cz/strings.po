@@ -133,3 +133,19 @@ msgstr "Výška tónu hudby Pitfall II"
 msgctxt "#30026"
 msgid "Info messages"
 msgstr "Informační zprávy"
+
+msgctxt "#30027"
+msgid "System"
+msgstr ""
+
+msgctxt "#30028"
+msgid "Video"
+msgstr ""
+
+msgctxt "#30029"
+msgid "Audio"
+msgstr ""
+
+msgctxt "#30030"
+msgid "Input"
+msgstr ""
