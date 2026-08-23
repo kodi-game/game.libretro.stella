@@ -1,4 +1,4 @@
-From 0c512575d76da265e7dc4606e3a06bace449ff03 Mon Sep 17 00:00:00 2001
+From 8a168e6a33f0896e91d881aa81530cd8cfc45fe2 Mon Sep 17 00:00:00 2001
 From: Garrett Brown <themagnificentmrb@gmail.com>
 Date: Sat, 22 Aug 2026 18:39:53 -0700
 Subject: [PATCH 2/2] Support older C++ standard libraries
@@ -72,6 +72,7 @@ Subject: [PATCH 2/2] Support older C++ standard libraries
  src/emucore/KidVid.cxx                        |   6 +-
  src/emucore/M6502.cxx                         |  25 +-
  src/emucore/M6532.cxx                         |  14 +-
+ src/emucore/MicroChip24LC.hxx                 |  44 ++-
  src/emucore/OSystem.cxx                       |  82 ++---
  src/emucore/PlusROM.cxx                       |  24 +-
  src/emucore/Props.cxx                         |  11 +-
@@ -96,7 +97,7 @@ Subject: [PATCH 2/2] Support older C++ standard libraries
  src/gui/RomImageWidget.cxx                    |   2 +-
  src/os/libretro/FBBackendLIBRETRO.hxx         |   2 +-
  src/os/windows/SerialPortWINDOWS.cxx          |   2 +-
- 92 files changed, 935 insertions(+), 623 deletions(-)
+ 93 files changed, 962 insertions(+), 640 deletions(-)
 
 diff --git a/src/cheat/CheatManager.cxx b/src/cheat/CheatManager.cxx
 index f6a470eb7..cfb947cb2 100644
@@ -3707,6 +3708,113 @@ index 30176efcf..2491e5bb0 100644
    };
  
    // Helper: append a labeled section
+diff --git a/src/emucore/MicroChip24LC.hxx b/src/emucore/MicroChip24LC.hxx
+index df8752ba5..e1e781c9a 100644
+--- a/src/emucore/MicroChip24LC.hxx
++++ b/src/emucore/MicroChip24LC.hxx
+@@ -363,14 +363,6 @@ static inline void JPEE_LOG0(string_view msg) {
+   if constexpr(DEBUG_EEPROM_LOG)
+     jpee_logproc(msg);
+ }
+-static inline void JPEE_LOG1(string_view msg, int arg1) {
+-  if constexpr(DEBUG_EEPROM_LOG)
+-    jpee_logproc(std::vformat(msg, std::make_format_args(arg1)));
+-}
+-static inline void JPEE_LOG2(string_view msg, int arg1, int arg2) {
+-  if constexpr(DEBUG_EEPROM_LOG)
+-    jpee_logproc(std::vformat(msg, std::make_format_args(arg1, arg2)));
+-}
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ template<size_t FLASH_SIZE, size_t PAGE_SIZE>
+@@ -551,11 +543,15 @@ void MicroChip24LC<FLASH_SIZE, PAGE_SIZE>
+   if(jpee_state == JPEEState::ByteIn && jpee_nb == 1 && jpee_pptr > 3)
+   {
+     jpee_timercheck(TimerMode::Set);
+-    JPEE_LOG2("I2C_STOP(Write {} bytes at {:04X})", jpee_pptr - 3, jpee_address);
++    if constexpr(DEBUG_EEPROM_LOG)
++      jpee_logproc(BSPF::concat("I2C_STOP(Write ", jpee_pptr - 3,
++        " bytes at ", BSPF::formatInt(jpee_address, 16, 4, '0', true), ")"));
+     if(((jpee_address + jpee_pptr - 4) ^ jpee_address) & ~jpee_pagemask)
+     {
+       jpee_pptr = 4 + jpee_pagemask - (jpee_address & jpee_pagemask);
+-      JPEE_LOG1("I2C_WARNING PAGECROSSING!(Truncate to {} bytes)", jpee_pptr - 3);
++      if constexpr(DEBUG_EEPROM_LOG)
++        jpee_logproc(BSPF::concat(
++          "I2C_WARNING PAGECROSSING!(Truncate to ", jpee_pptr - 3, " bytes)"));
+     }
+     for(uInt32 i = 3; i < jpee_pptr; ++i)
+     {
+@@ -620,7 +616,10 @@ void MicroChip24LC<FLASH_SIZE, PAGE_SIZE>
+ 
+           if(jpee_nb == 0x1A0)
+           {
+-            JPEE_LOG1("I2C_SENT({:02X}--start write)", jpee_packet[0]);
++            if constexpr(DEBUG_EEPROM_LOG)
++              jpee_logproc(BSPF::concat("I2C_SENT(",
++                BSPF::formatInt(jpee_packet[0], 16, 2, '0', true),
++                "--start write)"));
+             jpee_state = JPEEState::Acknowledge;
+             jpee_sdat = false;
+           }
+@@ -629,8 +628,10 @@ void MicroChip24LC<FLASH_SIZE, PAGE_SIZE>
+             jpee_state = JPEEState::WaitAck;
+             if constexpr(DEBUG_EEPROM_LOG)
+             {
+-              JPEE_LOG2("I2C_SENT({:02X}--start read @{:04X})",
+-                        jpee_packet[0],jpee_address);
++              jpee_logproc(BSPF::concat("I2C_SENT(",
++                BSPF::formatInt(jpee_packet[0], 16, 2, '0', true),
++                "--start read @",
++                BSPF::formatInt(jpee_address, 16, 4, '0', true), ")"));
+               if(!jpee_ad_known)
+                 jpee_logproc("I2C_WARNING ADDRESS IS UNKNOWN");
+             }
+@@ -639,7 +640,9 @@ void MicroChip24LC<FLASH_SIZE, PAGE_SIZE>
+           }
+           else
+           {
+-            JPEE_LOG1("I2C_WARNING ODDBALL FIRST BYTE!({:02X})", jpee_nb);
++            if constexpr(DEBUG_EEPROM_LOG)
++              jpee_logproc(BSPF::concat("I2C_WARNING ODDBALL FIRST BYTE!(",
++                BSPF::formatInt(jpee_nb, 16, 2, '0', true), ")"));
+             jpee_state = JPEEState::Idle;
+           }
+         }
+@@ -664,7 +667,9 @@ void MicroChip24LC<FLASH_SIZE, PAGE_SIZE>
+         }
+         else if(jpee_pptr < static_cast<uInt32>(jpee_packet.size()))
+         {
+-          JPEE_LOG1("I2C_SENT({:02X})", jpee_nb);
++          if constexpr(DEBUG_EEPROM_LOG)
++            jpee_logproc(BSPF::concat("I2C_SENT(",
++              BSPF::formatInt(jpee_nb, 16, 2, '0', true), ")"));
+           jpee_packet[jpee_pptr++] = static_cast<uInt8>(jpee_nb);
+           jpee_address = (jpee_packet[1] << 8) | jpee_packet[2];
+           if(jpee_pptr > 2)
+@@ -697,7 +702,10 @@ void MicroChip24LC<FLASH_SIZE, PAGE_SIZE>
+       }
+ 
+       jpee_nb = (myData[jpee_address & jpee_sizemask] << 1) | 1;
+-      JPEE_LOG2("I2C_READ({:04X}={:02X})", jpee_address, jpee_nb >> 1);
++      if constexpr(DEBUG_EEPROM_LOG)
++        jpee_logproc(BSPF::concat("I2C_READ(",
++          BSPF::formatInt(jpee_address, 16, 4, '0', true), "=",
++          BSPF::formatInt(jpee_nb >> 1, 16, 2, '0', true), ")"));
+ 
+       [[fallthrough]];
+ 
+@@ -716,7 +724,9 @@ void MicroChip24LC<FLASH_SIZE, PAGE_SIZE>
+       /* Do nothing */
+       break;
+   }
+-  JPEE_LOG2("I2C_CLOCK (dat={}/{})", jpee_mdat, jpee_sdat);
++  if constexpr(DEBUG_EEPROM_LOG)
++    jpee_logproc(BSPF::concat("I2C_CLOCK (dat=",
++      static_cast<int>(jpee_mdat), "/", static_cast<int>(jpee_sdat), ")"));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 diff --git a/src/emucore/OSystem.cxx b/src/emucore/OSystem.cxx
 index 4baeee393..a72d732b0 100644
 --- a/src/emucore/OSystem.cxx
