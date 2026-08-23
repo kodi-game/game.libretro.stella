@@ -1,19 +1,29 @@
-From b422bcc9eaccb2c2faba61d0c2f8d9e445c31759 Mon Sep 17 00:00:00 2001
+From 7acd811dac4cc3cfb232ae3f272f5881da8b07dd Mon Sep 17 00:00:00 2001
 From: Garrett Brown <themagnificentmrb@gmail.com>
 Date: Sat, 22 Aug 2026 18:39:53 -0700
 Subject: [PATCH] Support older C++ standard libraries
 
 ---
  src/cheat/CheatManager.cxx             |   8 +-
- src/common/BitmaskEnum.hxx             |  27 ++-
+ src/common/BitmaskEnum.hxx             |  29 ++-
  src/common/FBBackendSDL.cxx            |   2 +-
- src/common/JoyMap.cxx                  |  30 ++--
- src/common/KeyMap.cxx                  |  26 ++-
- src/common/PJoystickHandler.cxx        |   4 +-
- src/common/RewindManager.cxx           |   6 +-
+ src/common/FSNodeZIP.cxx               |   2 +-
+ src/common/JoyMap.cxx                  |  40 ++--
+ src/common/KeyMap.cxx                  |  34 ++-
+ src/common/MouseControl.cxx            |  10 +-
+ src/common/PJoystickHandler.cxx        |  39 ++--
+ src/common/PKeyboardHandler.cxx        |   2 +-
+ src/common/PaletteHandler.cxx          |  12 +-
+ src/common/PhysicalJoystick.cxx        |  18 +-
+ src/common/RewindManager.cxx           |  28 +--
  src/common/Stack.hxx                   |   9 +-
- src/common/Variant.hxx                 |  30 +++-
- src/common/bspf.hxx                    | 225 +++++++++++++++++++++++--
+ src/common/StaggeredLogger.cxx         |  13 +-
+ src/common/StateManager.cxx            |  38 ++-
+ src/common/StellaKeys.hxx              |   8 +-
+ src/common/Variant.hxx                 |  30 ++-
+ src/common/VideoModeHandler.cxx        |   3 +-
+ src/common/bspf.hxx                    | 311 +++++++++++++++++++++++--
+ src/common/tv_filters/NTSCFilter.cxx   |  10 +-
  src/debugger/BreakpointMap.cxx         |   2 +-
  src/debugger/CartDebug.cxx             |   4 +-
  src/debugger/Debugger.cxx              |   2 +-
@@ -28,38 +38,54 @@ Subject: [PATCH] Support older C++ standard libraries
  src/debugger/gui/PromptWidget.cxx      |   2 +-
  src/debugger/gui/ToggleBitWidget.cxx   |   5 +-
  src/debugger/yacc/YaccParser.cxx       |   2 +-
- src/emucore/Bankswitch.hxx             |  33 ++--
- src/emucore/Cart.cxx                   |   6 +-
- src/emucore/CartAR.cxx                 |  22 +--
- src/emucore/CartCreator.cxx            |   2 +-
- src/emucore/CartDetector.cxx           |  34 ++--
+ src/emucore/Bankswitch.hxx             |  33 ++-
+ src/emucore/Cart.cxx                   |  23 +-
+ src/emucore/CartAR.cxx                 |  48 ++--
+ src/emucore/CartCreator.cxx            |  54 ++---
+ src/emucore/CartDetector.cxx           |  37 ++-
  src/emucore/CartDevCard.cxx            |   3 +-
+ src/emucore/CartELF.cxx                |  17 +-
+ src/emucore/CartEnhanced.cxx           |   8 +-
  src/emucore/CartFA2.cxx                |   4 +-
  src/emucore/CompuMate.cxx              |   2 +-
+ src/emucore/CompuMateCassette.cxx      |  16 +-
+ src/emucore/Console.cxx                |  68 +++---
  src/emucore/Control.cxx                |   5 +-
- src/emucore/ControllerDetector.cxx     |  50 +++---
+ src/emucore/Control.hxx                |   3 +-
+ src/emucore/ControllerDetector.cxx     |  56 ++---
+ src/emucore/CortexM0.cxx               |   8 +-
+ src/emucore/EmulationWorker.cxx        |   2 +-
  src/emucore/Event.hxx                  |   6 +-
- src/emucore/EventHandler.cxx           |   2 +-
+ src/emucore/EventHandler.cxx           |  11 +-
+ src/emucore/FBMessageHandler.cxx       |  12 +-
  src/emucore/FSNode.cxx                 |   4 +-
  src/emucore/FSNode.hxx                 |   2 +-
- src/emucore/GlobalKeyHandler.cxx       |   2 +-
- src/emucore/M6532.cxx                  |   4 +-
- src/emucore/OSystem.cxx                |   4 +-
- src/emucore/PlusROM.cxx                |   8 +-
+ src/emucore/FrameBuffer.cxx            |  24 +-
+ src/emucore/GlobalKeyHandler.cxx       |   4 +-
+ src/emucore/KidVid.cxx                 |   6 +-
+ src/emucore/M6502.cxx                  |  25 +-
+ src/emucore/M6532.cxx                  |  10 +-
+ src/emucore/OSystem.cxx                |  82 +++----
+ src/emucore/PlusROM.cxx                |  24 +-
  src/emucore/Props.cxx                  |  11 +-
  src/emucore/PropsSet.cxx               |  12 +-
+ src/emucore/QuadTari.cxx               |   3 +-
+ src/emucore/Random.hxx                 |   2 +-
  src/emucore/Serializer.cxx             |  12 +-
  src/emucore/Serializer.hxx             |   4 +-
  src/emucore/Settings.cxx               |   4 +-
  src/emucore/System.cxx                 |   2 +-
+ src/emucore/TIASurface.cxx             |  19 +-
+ src/emucore/tia/TIA.cxx                |  22 +-
  src/gui/EditableWidget.cxx             |   2 +-
  src/gui/FavoritesManager.cxx           |   9 +-
  src/gui/FileListWidget.cxx             |   2 +-
- src/gui/GameInfoDialog.cxx             |   4 +-
+ src/gui/GameInfoDialog.cxx             |  30 +--
  src/gui/LauncherFileListWidget.cxx     |   2 +-
  src/gui/RomImageWidget.cxx             |   2 +-
+ src/os/libretro/FBBackendLIBRETRO.hxx  |   2 +-
  src/os/windows/SerialPortWINDOWS.cxx   |   2 +-
- 55 files changed, 493 insertions(+), 224 deletions(-)
+ 81 files changed, 891 insertions(+), 583 deletions(-)
 
 diff --git a/src/cheat/CheatManager.cxx b/src/cheat/CheatManager.cxx
 index f6a470eb7..f47445e02 100644
@@ -100,9 +126,18 @@ index f6a470eb7..f47445e02 100644
 +  return std::all_of(code.begin(), code.end(), [](unsigned char c) { return std::isxdigit(c); });
  }
 diff --git a/src/common/BitmaskEnum.hxx b/src/common/BitmaskEnum.hxx
-index a269e9a4e..c9ac1e514 100644
+index a269e9a4e..c02b4081c 100644
 --- a/src/common/BitmaskEnum.hxx
 +++ b/src/common/BitmaskEnum.hxx
+@@ -20,7 +20,7 @@
+     From now on, MyBitmask's values can be used with bitwise operators.
+     Wrap in BitmaskEnum for ergonomic checks:
+ 
+-    Bitmask::Enum wbm{bm};
++    Bitmask::Enum<MyBitmask> wbm{bm};
+     wbm.any_of(MyBitmask::One | MyBitmask::Three);
+     wbm.all_of(MyBitmask::One | MyBitmask::Three);
+     if (wbm) { ... }                 // any bit set?
 @@ -56,9 +56,9 @@
  
  #include <bit>
@@ -165,8 +200,21 @@ index 8e3155a68..bb4530d04 100644
    }
    myCompositedSurface = std::make_unique<FBSurfaceSDL>
      (*this, sdlSurface, ScalingInterpolation::none);
+diff --git a/src/common/FSNodeZIP.cxx b/src/common/FSNodeZIP.cxx
+index 4ea6c8bb6..8e1c01d00 100644
+--- a/src/common/FSNodeZIP.cxx
++++ b/src/common/FSNodeZIP.cxx
+@@ -216,7 +216,7 @@ bool FSNodeZIP::getChildren(AbstractFSList& myList, ListMode) const
+   for(const auto& dir: dirs)
+   {
+     const string vpath = _virtualPath.empty() ? string{dir}
+-                       : std::format("{}/{}", _virtualPath, dir);
++                       : BSPF::concat(_virtualPath, "/", dir);
+     myList.emplace_back(makeShared(_zipFile, vpath, _realNode, 0, true));
+   }
+ 
 diff --git a/src/common/JoyMap.cxx b/src/common/JoyMap.cxx
-index 10207894e..62f728ca0 100644
+index 10207894e..ab97f433a 100644
 --- a/src/common/JoyMap.cxx
 +++ b/src/common/JoyMap.cxx
 @@ -24,8 +24,10 @@ using json = nlohmann::json;
@@ -233,8 +281,47 @@ index 10207894e..62f728ca0 100644
    return it != myMap.end() && it->first == mapping;
  }
  
+@@ -122,7 +132,7 @@ string JoyMap::getDesc(Event::Type event, const JoyMapping& mapping)
+ 
+   // button description
+   if(mapping.button != JOY_CTRL_NONE)
+-    desc += std::format("/B{}", mapping.button);
++    desc += BSPF::concat("/B", mapping.button);
+ 
+   // axis description
+   if(mapping.axis != JoyAxis::NONE)
+@@ -141,9 +151,9 @@ string JoyMap::getDesc(Event::Type event, const JoyMapping& mapping)
+       : mapping.adir == JoyDir::NEG ? "-" : "+";
+ 
+     if(axisName.empty())
+-      desc += std::format("/A{}{}", static_cast<int>(mapping.axis), axisDir);
++      desc += BSPF::concat("/A", static_cast<int>(mapping.axis), axisDir);
+     else
+-      desc += std::format("/A{}{}", axisName, axisDir);
++      desc += BSPF::concat("/A", axisName, axisDir);
+   }
+ 
+   // hat description
+@@ -159,7 +169,7 @@ string JoyMap::getDesc(Event::Type event, const JoyMapping& mapping)
+         default:               return "";
+       }
+     }();
+-    desc += std::format("/H{}{}", mapping.hat, hatDir);
++    desc += BSPF::concat("/H", mapping.hat, hatDir);
+   }
+ 
+   return desc;
+@@ -177,7 +187,7 @@ string JoyMap::getEventMappingDesc(int stick, Event::Type event,
+     {
+       if(!desc.empty())
+         desc += ", ";
+-      desc += std::format("C{}{}", stick, getDesc(event, _mapping));
++      desc += BSPF::concat("C", stick, getDesc(event, _mapping));
+     }
+   }
+   return desc;
 diff --git a/src/common/KeyMap.cxx b/src/common/KeyMap.cxx
-index 66bfc0c88..cab7c7f30 100644
+index 66bfc0c88..06f18246c 100644
 --- a/src/common/KeyMap.cxx
 +++ b/src/common/KeyMap.cxx
 @@ -70,7 +70,10 @@ namespace {
@@ -296,16 +383,115 @@ index 66bfc0c88..cab7c7f30 100644
    return it != myMap.end() && it->first == mapping;
  }
  
+@@ -171,12 +186,12 @@ string KeyMap::getDesc(const Mapping& mapping)
+   else if((mapping.mod & StellaMod::RCTRL) != StellaMod::NONE) append("Right Ctrl");
+ 
+   if((mapping.mod & MOD2) == MOD2) append(mod2);
+-  else if((mapping.mod & LMOD2) != StellaMod::NONE) append(std::format("Left {}", mod2));
+-  else if((mapping.mod & RMOD2) != StellaMod::NONE) append(std::format("Right {}", mod2));
++  else if((mapping.mod & LMOD2) != StellaMod::NONE) append(BSPF::concat("Left ", mod2));
++  else if((mapping.mod & RMOD2) != StellaMod::NONE) append(BSPF::concat("Right ", mod2));
+ 
+   if((mapping.mod & MOD3) == MOD3) append(mod3);
+-  else if((mapping.mod & LMOD3) != StellaMod::NONE) append(std::format("Left {}", mod3));
+-  else if((mapping.mod & RMOD3) != StellaMod::NONE) append(std::format("Right {}", mod3));
++  else if((mapping.mod & LMOD3) != StellaMod::NONE) append(BSPF::concat("Left ", mod3));
++  else if((mapping.mod & RMOD3) != StellaMod::NONE) append(BSPF::concat("Right ", mod3));
+ 
+   if((mapping.mod & StellaMod::SHIFT) == StellaMod::SHIFT) append("Shift");
+   else if((mapping.mod & StellaMod::LSHIFT) != StellaMod::NONE) append("Left Shift");
 @@ -320,4 +335,3 @@ void KeyMap::eraseEvent(Event::Type event, EventMode mode)
      return item.second == event && item.first.mode == mode;
    });
  }
 -
+diff --git a/src/common/MouseControl.cxx b/src/common/MouseControl.cxx
+index 67ba2067e..91dcc323e 100644
+--- a/src/common/MouseControl.cxx
++++ b/src/common/MouseControl.cxx
+@@ -78,7 +78,7 @@ MouseControl::MouseControl(Console& console, string_view mode)
+     const string_view xname = MControlToController(xaxis, xtype, xid);
+     const string_view yname = MControlToController(yaxis, ytype, yid);
+     myModeList.emplace_back(xtype, xid, ytype, yid,
+-      std::format("Mouse X-axis is {}, Y-axis is {}", xname, yname));
++      BSPF::concat("Mouse X-axis is ", xname, ", Y-axis is ", yname));
+   }
+ 
+   // Now consider the possible modes for the mouse based on the left
+@@ -142,7 +142,7 @@ void MouseControl::addLeftControllerModes(bool noswap)
+       const Controller::Type type = myLeftController.type();
+       const int id = noswap ? 0 : 1;
+       myModeList.emplace_back(type, id, type, id,
+-        std::format("Mouse is left {} controller", myLeftController.name()));
++        BSPF::concat("Mouse is left ", myLeftController.name(), " controller"));
+     }
+   }
+ }
+@@ -162,7 +162,7 @@ void MouseControl::addRightControllerModes(bool noswap)
+       const Controller::Type type = myRightController.type();
+       const int id = noswap ? 1 : 0;
+       myModeList.emplace_back(type, id, type, id,
+-        std::format("Mouse is right {} controller", myRightController.name()));
++        BSPF::concat("Mouse is right ", myRightController.name(), " controller"));
+     }
+   }
+ }
+@@ -172,9 +172,9 @@ void MouseControl::addPaddleModes(int lport, int rport, int lname, int rname)
+ {
+   const Controller::Type type = Controller::Type::Paddles;
+   MouseMode mode0(type, lport, type, lport,
+-    std::format("Mouse is Paddle {} controller", lname));
++    BSPF::concat("Mouse is Paddle ", lname, " controller"));
+   MouseMode mode1(type, rport, type, rport,
+-    std::format("Mouse is Paddle {} controller", rname));
++    BSPF::concat("Mouse is Paddle ", rname, " controller"));
+ 
+   if(BSPF::equalsIgnoreCase(myProps.get(PropType::Controller_SwapPaddles), "NO"))
+   {
 diff --git a/src/common/PJoystickHandler.cxx b/src/common/PJoystickHandler.cxx
-index a2191a39c..0dcff31bc 100644
+index a2191a39c..8317bbae3 100644
 --- a/src/common/PJoystickHandler.cxx
 +++ b/src/common/PJoystickHandler.cxx
-@@ -307,7 +307,7 @@ bool PhysicalJoystickHandler::hasStelladaptors() const
+@@ -123,7 +123,7 @@ int PhysicalJoystickHandler::add(const PhysicalJoystickPtr& stick)
+         ++count;
+ 
+     if(count > 0)
+-      stick->name = std::format("{} #{}", stick->name, count + 1);
++      stick->name = BSPF::concat(stick->name, " #", count + 1);
+ 
+     stick->type = PhysicalJoystick::Type::REGULAR;
+   }
+@@ -178,8 +178,7 @@ void PhysicalJoystickHandler::addToDatabase(const PhysicalJoystickPtr& stick)
+     setStickDefaultMapping(stick->ID, Event::NoType, EventMode::kEmulationMode);
+   }
+ 
+-  Logger::info(std::format("Added joystick {}:\n  {}\n",
+-                           stick->ID, stick->about()));
++  Logger::info(BSPF::concat("Added joystick ", stick->ID, ":\n  ", stick->about(), "\n"));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -197,8 +196,7 @@ bool PhysicalJoystickHandler::remove(int id)
+     const auto it = myDatabase.find(stick->name);
+     if(it != myDatabase.end() && it->second.joy == stick)
+     {
+-      Logger::info(std::format("Removed joystick {}:\n  {}\n",
+-        mySticks[id]->ID, mySticks[id]->about()));
++      Logger::info(BSPF::concat("Removed joystick ", mySticks[id]->ID, ":\n  ", mySticks[id]->about(), "\n"));
+ 
+       // Remove joystick, but remember mapping
+       it->second.mapping = stick->getMap();
+@@ -263,8 +261,7 @@ bool PhysicalJoystickHandler::mapStelladaptors(string_view saport, int ID)
+     if(pos != std::string::npos && ID != -1 && ID < _stick->ID)
+     {
+       // Erase a previously added Stelladapter with a higher ID
+-      Logger::info(std::format("Erased joystick {}:\n  {}\n",
+-                               _stick->ID, _stick->about()));
++      Logger::info(BSPF::concat("Erased joystick ", _stick->ID, ":\n  ", _stick->about(), "\n"));
+ 
+       _stick->name.erase(pos);
+       erased = true;
+@@ -307,7 +304,7 @@ bool PhysicalJoystickHandler::hasStelladaptors() const
  {
    // Note: this has side effect of changing joystick name; removes part of
    //       name that starts with " (emulates " to end of string
@@ -314,7 +500,16 @@ index a2191a39c..0dcff31bc 100644
      const auto& [_id, _joyptr] = stick;
  
      // remove previously added emulated ports
-@@ -1067,7 +1067,7 @@ PhysicalJoystickHandler::MinStickInfoList PhysicalJoystickHandler::minStickList(
+@@ -1023,7 +1020,7 @@ void PhysicalJoystickHandler::handleHatEvent(int stick, int hat, JoyHatMask valu
+   if(j)
+   {
+     const int button = j->buttonLast;
+-    const Bitmask::Enum hat_value{value};
++    const Bitmask::Enum<JoyHatMask> hat_value{value};
+ 
+     if(myHandler.state() == EventHandlerState::EMULATION)
+     {
+@@ -1067,7 +1064,7 @@ PhysicalJoystickHandler::MinStickInfoList PhysicalJoystickHandler::minStickList(
    MinStickInfoList list;
    list.reserve(myDatabase.size());
  
@@ -323,8 +518,183 @@ index a2191a39c..0dcff31bc 100644
      [](const auto& entry) {
        const auto& [_name, _info] = entry;
        return MinStickInfo(_name,
+@@ -1107,8 +1104,8 @@ void PhysicalJoystickHandler::changeDigitalDeadZone(int direction)
+ 
+   myOSystem.frameBuffer().showGaugeMessage(
+     "Digital controller dead zone",
+-    std::format("{}%", static_cast<int>(
+-      std::round(Controller::digitalDeadZoneValue(deadZone) * 100.F / 32768))),
++    BSPF::concat(static_cast<int>(
++      std::round(Controller::digitalDeadZoneValue(deadZone) * 100.F / 32768)), "%"),
+     deadZone,
+     Controller::MIN_DIGITAL_DEADZONE, Controller::MAX_DIGITAL_DEADZONE);
+ }
+@@ -1125,8 +1122,8 @@ void PhysicalJoystickHandler::changeAnalogPaddleDeadZone(int direction)
+ 
+   myOSystem.frameBuffer().showGaugeMessage(
+     "Analog controller dead zone",
+-    std::format("{}%", static_cast<int>(
+-      std::round(Controller::analogDeadZoneValue(deadZone) * 100.F / 32768))),
++    BSPF::concat(static_cast<int>(
++      std::round(Controller::analogDeadZoneValue(deadZone) * 100.F / 32768)), "%"),
+     deadZone,
+     Controller::MIN_ANALOG_DEADZONE, Controller::MAX_ANALOG_DEADZONE);
+ }
+@@ -1143,8 +1140,8 @@ void PhysicalJoystickHandler::changeAnalogPaddleSensitivity(int direction)
+ 
+   myOSystem.frameBuffer().showGaugeMessage(
+     "Analog paddle sensitivity",
+-    std::format("{}%", static_cast<int>(
+-      std::round(Paddles::analogSensitivityValue(sense) * 100.F))),
++    BSPF::concat(static_cast<int>(
++      std::round(Paddles::analogSensitivityValue(sense) * 100.F)), "%"),
+     sense,
+     Paddles::MIN_ANALOG_SENSE, Paddles::MAX_ANALOG_SENSE);
+ }
+@@ -1161,7 +1158,7 @@ void PhysicalJoystickHandler::changeAnalogPaddleLinearity(int direction)
+ 
+   myOSystem.frameBuffer().showGaugeMessage(
+     "Analog paddle linearity",
+-    linear ? std::format("{}%", linear) : "Off",
++    linear ? BSPF::concat(linear, "%") : "Off",
+     linear,
+     Paddles::MIN_ANALOG_LINEARITY, Paddles::MAX_ANALOG_LINEARITY);
+ }
+@@ -1212,7 +1209,7 @@ void PhysicalJoystickHandler::changeDigitalPaddleSensitivity(int direction)
+ 
+   myOSystem.frameBuffer().showGaugeMessage(
+     "Digital sensitivity",
+-    sense ? std::format("{}%", sense * 10) : "Off",
++    sense ? BSPF::concat(sense * 10, "%") : "Off",
+     sense,
+     Paddles::MIN_DIGITAL_SENSE, Paddles::MAX_DIGITAL_SENSE);
+ }
+@@ -1229,7 +1226,7 @@ void PhysicalJoystickHandler::changeMousePaddleSensitivity(int direction)
+ 
+   myOSystem.frameBuffer().showGaugeMessage(
+     "Mouse paddle sensitivity",
+-    std::format("{}%", sense * 10),
++    BSPF::concat(sense * 10, "%"),
+     sense,
+     Controller::MIN_MOUSE_SENSE, Controller::MAX_MOUSE_SENSE);
+ }
+@@ -1246,7 +1243,7 @@ void PhysicalJoystickHandler::changeMouseTrackballSensitivity(int direction)
+ 
+   myOSystem.frameBuffer().showGaugeMessage(
+     "Mouse trackball sensitivity",
+-    std::format("{}%", sense * 10),
++    BSPF::concat(sense * 10, "%"),
+     sense,
+     PointingDevice::MIN_SENSE, PointingDevice::MAX_SENSE);
+ }
+@@ -1263,7 +1260,7 @@ void PhysicalJoystickHandler::changeDrivingSensitivity(int direction)
+ 
+   myOSystem.frameBuffer().showGaugeMessage(
+     "Driving controller sensitivity",
+-    std::format("{}%", sense * 10),
++    BSPF::concat(sense * 10, "%"),
+     sense,
+     Driving::MIN_SENSE, Driving::MAX_SENSE);
+ }
+diff --git a/src/common/PKeyboardHandler.cxx b/src/common/PKeyboardHandler.cxx
+index 819c367b8..d005eaca4 100644
+--- a/src/common/PKeyboardHandler.cxx
++++ b/src/common/PKeyboardHandler.cxx
+@@ -603,7 +603,7 @@ void PhysicalKeyboardHandler::toggleModKeys(bool toggle)
+   }
+ 
+   myOSystem.frameBuffer().showTextMessage(
+-    std::format("Modifier key combos {}", modCombo ? "enabled" : "disabled")
++    BSPF::concat("Modifier key combos ", modCombo ? "enabled" : "disabled")
+   );
+ }
+ 
+diff --git a/src/common/PaletteHandler.cxx b/src/common/PaletteHandler.cxx
+index 5b0d4911b..9e2891b01 100644
+--- a/src/common/PaletteHandler.cxx
++++ b/src/common/PaletteHandler.cxx
+@@ -67,7 +67,7 @@ void PaletteHandler::cyclePalette(int direction)
+   } while(type == PaletteType::User && !myUserPaletteDefined);
+ 
+   myOSystem.frameBuffer().showTextMessage(
+-    std::format("{} palette", MESSAGES[type]));
++    BSPF::concat(MESSAGES[type], " palette"));
+ 
+   setPalette(toPaletteName(static_cast<PaletteType>(type)));
+ }
+@@ -109,7 +109,7 @@ void PaletteHandler::showAdjustableMessage()
+         timing == ConsoleTiming::pal ? myPhasePAL : myPhaseNTSC;
+     myOSystem.frameBuffer().showGaugeMessage(
+         "Palette phase shift",
+-        std::format("{:.1f}{}", value, DEGREE),
++        BSPF::concat(BSPF::formatFixed(value, 1), DEGREE),
+         value,
+         (isNTSC ? DEF_NTSC_SHIFT : DEF_PAL_SHIFT) - MAX_PHASE_SHIFT,
+         (isNTSC ? DEF_NTSC_SHIFT : DEF_PAL_SHIFT) + MAX_PHASE_SHIFT);
+@@ -118,8 +118,8 @@ void PaletteHandler::showAdjustableMessage()
+   {
+     const float value = *myAdjustables[myCurrentAdjustable].value;
+     myOSystem.frameBuffer().showGaugeMessage(
+-      std::format("Palette {}", name),
+-      std::format("{:.1f}{}", value, DEGREE),
++      BSPF::concat("Palette ", name),
++      BSPF::concat(BSPF::formatFixed(value, 1), DEGREE),
+       value, -MAX_RGB_SHIFT, +MAX_RGB_SHIFT);
+   }
+   else
+@@ -128,8 +128,8 @@ void PaletteHandler::showAdjustableMessage()
+       ? scaleRGBTo100(*myAdjustables[myCurrentAdjustable].value)
+       : scaleTo100(*myAdjustables[myCurrentAdjustable].value);
+     myOSystem.frameBuffer().showGaugeMessage(
+-      std::format("Palette {}", name),
+-      std::format("{}%", value),
++      BSPF::concat("Palette ", name),
++      BSPF::concat(value, "%"),
+       value);
+   }
+ }
+diff --git a/src/common/PhysicalJoystick.cxx b/src/common/PhysicalJoystick.cxx
+index 56dd40ebc..b650f6653 100644
+--- a/src/common/PhysicalJoystick.cxx
++++ b/src/common/PhysicalJoystick.cxx
+@@ -89,17 +89,18 @@ bool PhysicalJoystick::setMap(const json& map)
+     try {
+       joyMap.loadMapping(entry.value(), eventModeFromJsonName(entry.key()));
+     } catch (const json::exception&) {
+-      Logger::error(std::format("ignoring invalid json mapping for {}", entry.key()));
++      Logger::error(BSPF::concat("ignoring invalid json mapping for ", entry.key()));
+     }
+     i++;
+   }
+ 
+   if(i != 6)
+   {
+-    Logger::error(std::format("invalid controller mappings found for {}",
+-      (map.contains("name") && map.at("name").is_string())
+-        ? std::format("stick {}", map["name"].get<string>())
+-        : "unknown stick"));
++    const string stickName = map.contains("name") && map.at("name").is_string()
++      ? BSPF::concat("stick ", map["name"].get<string>())
++      : "unknown stick";
++    Logger::error(BSPF::concat(
++      "invalid controller mappings found for ", stickName));
+ 
+     return false;
+   }
+@@ -166,8 +167,7 @@ string PhysicalJoystick::about() const
+   static constexpr std::array<string_view, 3> PORT_NAMES = {
+     "auto", "left", "right"
+   };
+-  return std::format("'{}' in {} port with: {} axes, {} buttons, {} hats",
+-    name,
+-    PORT_NAMES[std::to_underlying(port)],
+-    numAxes, numButtons, numHats);
++  return BSPF::concat("'", name, "' in ",
++    PORT_NAMES[std::to_underlying(port)], " port with: ", numAxes, " axes, ",
++    numButtons, " buttons, ", numHats, " hats");
+ }
 diff --git a/src/common/RewindManager.cxx b/src/common/RewindManager.cxx
-index b4f7d587c..50648151a 100644
+index b4f7d587c..9ccaa5fa7 100644
 --- a/src/common/RewindManager.cxx
 +++ b/src/common/RewindManager.cxx
 @@ -51,13 +51,15 @@ void RewindManager::setup()
@@ -345,6 +715,75 @@ index b4f7d587c..50648151a 100644
       it != HOR_SETTINGS.end())
      myHorizon = HORIZON_CYCLES[std::distance(HOR_SETTINGS.begin(), it)];
  
+@@ -198,9 +200,8 @@ string RewindManager::saveAllStates()
+ 
+   try
+   {
+-    const string path = std::format("{}{}.sta",
+-      myOSystem.stateDir().getPath(),
+-      myOSystem.console().properties().get(PropType::Cart_Name));
++    const string path = BSPF::concat(myOSystem.stateDir().getPath(),
++      myOSystem.console().properties().get(PropType::Cart_Name), ".sta");
+ 
+     Serializer out(path, Serializer::FileMode::ReadWriteTrunc);
+     if(!out)
+@@ -224,7 +225,7 @@ string RewindManager::saveAllStates()
+       out.putString(state.message);
+       out.putLong(state.cycles);
+     }
+-    return std::format("Saved {} states", numStates);
++    return BSPF::concat("Saved ", numStates, " states");
+   }
+   catch(...)
+   {
+@@ -237,9 +238,8 @@ string RewindManager::loadAllStates()
+ {
+   try
+   {
+-    const string path = std::format("{}{}.sta",
+-      myOSystem.stateDir().getPath(),
+-      myOSystem.console().properties().get(PropType::Cart_Name));
++    const string path = BSPF::concat(myOSystem.stateDir().getPath(),
++      myOSystem.console().properties().get(PropType::Cart_Name), ".sta");
+ 
+     // Make sure the file can be opened for reading
+     Serializer in(path, Serializer::FileMode::ReadOnly);
+@@ -282,7 +282,7 @@ string RewindManager::loadAllStates()
+     // initialize current state (parameters ignored)
+     loadState(0, 0);
+ 
+-    return std::format("Loaded {} states", numStates);
++    return BSPF::concat("Loaded ", numStates, " states");
+   }
+   catch (...)
+   {
+@@ -333,14 +333,14 @@ string RewindManager::loadState(Int64 startCycles, uInt32 numStates)
+   const Int64 diff = startCycles - state.cycles;
+ 
+   string message = diff
+-    ? std::format("{} {}", diff > 0 ? "Rewind" : "Unwind", getUnitString(diff))
++    ? BSPF::concat(diff > 0 ? "Rewind" : "Unwind", " ", getUnitString(diff))
+     : "No wind";
+ 
+-  message += std::format(" [{}/{}]", myStateList.currentIdx(), myStateList.size());
++  message += BSPF::concat(" [", myStateList.currentIdx(), "/", myStateList.size(), "]");
+ 
+   // add optional message
+   if(numStates == 1 && !state.message.empty())
+-    message += std::format(" ({})", state.message);
++    message += BSPF::concat(" (", state.message, ")");
+ 
+   return message;
+ }
+@@ -373,7 +373,7 @@ string RewindManager::getUnitString(Int64 cycles)
+   }
+ 
+   const uInt64 count = u_cycles / UNIT_CYCLES[i];
+-  return std::format("{} {}{}", count, UNIT_NAMES[i], count != 1 ? "s" : "");
++  return BSPF::concat(count, " ", UNIT_NAMES[i], count != 1 ? "s" : "");
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 diff --git a/src/common/Stack.hxx b/src/common/Stack.hxx
 index 3e61d8686..398fdeb3a 100644
 --- a/src/common/Stack.hxx
@@ -368,6 +807,183 @@ index 3e61d8686..398fdeb3a 100644
      }
  
      friend std::ostream& operator<<(std::ostream& os, const FixedStack<T>& s) {
+diff --git a/src/common/StaggeredLogger.cxx b/src/common/StaggeredLogger.cxx
+index bafc0667e..73598371e 100644
+--- a/src/common/StaggeredLogger.cxx
++++ b/src/common/StaggeredLogger.cxx
+@@ -26,13 +26,14 @@ using namespace std::chrono;
+ 
+ namespace {
+   // Returns the current local time formatted as HH:MM:SS.
+-  // Uses strftime for broad toolchain compatibility; switch to
+-  // std::chrono::zoned_time + std::format once <chrono> TZ support is
+-  // universally available.
++  // Uses localtime for broad toolchain compatibility; switch to chrono time
++  // zone support once it is universally available.
+   string currentTimestamp()
+   {
+     const std::tm now = BSPF::localTime();
+-    return std::format("{:02}:{:02}:{:02}", now.tm_hour, now.tm_min, now.tm_sec);
++    return BSPF::concat(BSPF::formatInt(now.tm_hour, 10, 2, '0'), ':',
++      BSPF::formatInt(now.tm_min, 10, 2, '0'), ':',
++      BSPF::formatInt(now.tm_sec, 10, 2, '0'));
+   }
+ }  // namespace
+ 
+@@ -74,8 +75,8 @@ void StaggeredLogger::logLine()
+     Clock::now() - myLastIntervalStartTimestamp).count();
+ 
+   Logger::log(
+-    std::format("{}: {} ({} times in {} milliseconds)",
+-      currentTimestamp(), myMessage, myCurrentEventCount, elapsed),
++    BSPF::concat(currentTimestamp(), ": ", myMessage, " (", myCurrentEventCount,
++      " times in ", elapsed, " milliseconds)"),
+     myLevel);
+ }
+ 
+diff --git a/src/common/StateManager.cxx b/src/common/StateManager.cxx
+index 74c6a9105..d16d9853a 100644
+--- a/src/common/StateManager.cxx
++++ b/src/common/StateManager.cxx
+@@ -203,16 +203,14 @@ void StateManager::loadState(int slot)
+   if(slot < 0)
+     slot = myCurrentSlot;
+ 
+-  const auto path = std::format("{}{}.st{}",
+-    myOSystem.stateDir().getPath(),
+-    myOSystem.console().properties().get(PropType::Cart_Name),
+-    slot);
++  const auto path = BSPF::concat(myOSystem.stateDir().getPath(),
++    myOSystem.console().properties().get(PropType::Cart_Name), ".st", slot);
+ 
+   Serializer in(path, Serializer::FileMode::ReadOnly);
+   if(!in)
+   {
+     myOSystem.frameBuffer().showTextMessage(
+-      std::format("Can't open/load from state file {}", slot));
++      BSPF::concat("Can't open/load from state file ", slot));
+     return;
+   }
+ 
+@@ -223,18 +221,18 @@ void StateManager::loadState(int slot)
+     const auto header = in.getString();
+     if(header != STATE_HEADER)
+       myOSystem.frameBuffer().showTextMessage(
+-        std::format("Incompatible state {} file", slot));
++        BSPF::concat("Incompatible state ", slot, " file"));
+     else if(myOSystem.console().load(in))
+       myOSystem.frameBuffer().showTextMessage(
+-        std::format("State {} loaded", slot));
++        BSPF::concat("State ", slot, " loaded"));
+     else
+       myOSystem.frameBuffer().showTextMessage(
+-        std::format("Invalid data in state {} file", slot));
++        BSPF::concat("Invalid data in state ", slot, " file"));
+   }
+   catch(...)
+   {
+     myOSystem.frameBuffer().showTextMessage(
+-      std::format("Invalid data in state {} file", slot));
++      BSPF::concat("Invalid data in state ", slot, " file"));
+   }
+ }
+ 
+@@ -247,16 +245,14 @@ void StateManager::saveState(int slot)
+   if(slot < 0)
+     slot = myCurrentSlot;
+ 
+-  const auto path = std::format("{}{}.st{}",
+-    myOSystem.stateDir().getPath(),
+-    myOSystem.console().properties().get(PropType::Cart_Name),
+-    slot);
++  const auto path = BSPF::concat(myOSystem.stateDir().getPath(),
++    myOSystem.console().properties().get(PropType::Cart_Name), ".st", slot);
+ 
+   Serializer out(path, Serializer::FileMode::ReadWriteTrunc);
+   if(!out)
+   {
+     myOSystem.frameBuffer().showTextMessage(
+-      std::format("Can't open/save to state file {}", slot));
++      BSPF::concat("Can't open/save to state file ", slot));
+     return;
+   }
+ 
+@@ -269,7 +265,7 @@ void StateManager::saveState(int slot)
+   catch(...)
+   {
+     myOSystem.frameBuffer().showTextMessage(
+-      std::format("Error saving state {}", slot));
++      BSPF::concat("Error saving state ", slot));
+     return;
+   }
+ 
+@@ -280,18 +276,18 @@ void StateManager::saveState(int slot)
+     {
+       myCurrentSlot = (slot + 1) % 10;
+       myOSystem.frameBuffer().showTextMessage(
+-        std::format("State {} saved, switching to slot {}", slot, myCurrentSlot));
++        BSPF::concat("State ", slot, " saved, switching to slot ", myCurrentSlot));
+     }
+     else
+     {
+       myOSystem.frameBuffer().showTextMessage(
+-        std::format("State {} saved", slot));
++        BSPF::concat("State ", slot, " saved"));
+     }
+   }
+   else
+   {
+     myOSystem.frameBuffer().showTextMessage(
+-      std::format("Error saving state {}", slot));
++      BSPF::concat("Error saving state ", slot));
+   }
+ }
+ 
+@@ -302,8 +298,8 @@ void StateManager::changeState(int direction)
+ 
+   myOSystem.frameBuffer().showTextMessage(
+     direction != 0
+-      ? std::format("Changed to state slot {}", myCurrentSlot)
+-      : std::format("State slot {}", myCurrentSlot));
++      ? BSPF::concat("Changed to state slot ", myCurrentSlot)
++      : BSPF::concat("State slot ", myCurrentSlot));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -312,7 +308,7 @@ void StateManager::toggleAutoSlot()
+   const bool autoSlot = !myOSystem.settings().getBool("autoslot");
+ 
+   myOSystem.frameBuffer().showTextMessage(
+-    std::format("Automatic slot change {}", autoSlot ? "enabled" : "disabled"));
++    BSPF::concat("Automatic slot change ", autoSlot ? "enabled" : "disabled"));
+ 
+   myOSystem.settings().setValue("autoslot", autoSlot);
+ }
+diff --git a/src/common/StellaKeys.hxx b/src/common/StellaKeys.hxx
+index 466a833b7..db0d0d343 100644
+--- a/src/common/StellaKeys.hxx
++++ b/src/common/StellaKeys.hxx
+@@ -456,16 +456,16 @@ namespace StellaModTest
+ {
+   constexpr bool isAlt(StellaMod mod) {
+ #if defined(BSPF_MACOS) || defined(MACOS_KEYS)
+-    return Bitmask::Enum{mod}.any_of(StellaMod::GUI);
++    return Bitmask::Enum<StellaMod>{mod}.any_of(StellaMod::GUI);
+ #else
+-    return Bitmask::Enum{mod}.any_of(StellaMod::ALT);
++    return Bitmask::Enum<StellaMod>{mod}.any_of(StellaMod::ALT);
+ #endif
+   }
+   constexpr bool isControl(StellaMod mod) {
+-    return Bitmask::Enum{mod}.any_of(StellaMod::CTRL);
++    return Bitmask::Enum<StellaMod>{mod}.any_of(StellaMod::CTRL);
+   }
+   constexpr bool isShift(StellaMod mod) {
+-    return Bitmask::Enum{mod}.any_of(StellaMod::SHIFT);
++    return Bitmask::Enum<StellaMod>{mod}.any_of(StellaMod::SHIFT);
+   }
+ }  // namespace StellaModTest
+ 
 diff --git a/src/common/Variant.hxx b/src/common/Variant.hxx
 index e1deed24a..2c034ffdc 100644
 --- a/src/common/Variant.hxx
@@ -443,13 +1059,32 @@ index e1deed24a..2c034ffdc 100644
            }
            else
              return 0.0;
+diff --git a/src/common/VideoModeHandler.cxx b/src/common/VideoModeHandler.cxx
+index 73a23f146..623cc9b16 100644
+--- a/src/common/VideoModeHandler.cxx
++++ b/src/common/VideoModeHandler.cxx
+@@ -54,7 +54,8 @@ const VideoModeHandler::Mode&
+       // Overscan is not applicable in this mode
+       myMode = Mode(myImage.w, myImage.h,
+                     Mode::Stretch::Fill, myFullscreen,
+-                    std::format("{:.4g}%", zoom * 100), zoom, bezelInfo);
++                    BSPF::concat(BSPF::formatGeneral(zoom * 100, 4), '%'),
++                    zoom, bezelInfo);
+     }
+     else
+     {
 diff --git a/src/common/bspf.hxx b/src/common/bspf.hxx
-index 70bf0bad5..29d7652a4 100644
+index 70bf0bad5..1812c3e6c 100644
 --- a/src/common/bspf.hxx
 +++ b/src/common/bspf.hxx
-@@ -47,11 +47,17 @@ using uInt64 = uint64_t;
+@@ -45,13 +45,21 @@ using uInt64 = uint64_t;
+ #include <memory>
+ #include <string>
  #include <string_view>
- #include <format>
+-#include <format>
++#ifndef __LIB_RETRO__
++  #include <format>
++#endif
  #include <charconv>
 +#include <cmath>
 +#include <concepts>
@@ -465,7 +1100,7 @@ index 70bf0bad5..29d7652a4 100644
  #include <utility>
  #include <vector>
  
-@@ -156,6 +162,42 @@ namespace BSPF
+@@ -156,6 +164,42 @@ namespace BSPF
    constexpr double ln10 = std::numbers::ln10;
    constexpr double ln2  = std::numbers::ln2;
  
@@ -508,7 +1143,7 @@ index 70bf0bad5..29d7652a4 100644
    // CPU architecture type
    // This isn't complete yet, but takes care of all the major platforms
    #if defined(__i386__) || defined(_M_IX86)
-@@ -223,7 +265,7 @@ namespace BSPF
+@@ -223,7 +267,7 @@ namespace BSPF
    // NOTE: Only needed until std::vector gets a contains() method
    template<typename Container>
    bool contains(const Container& c, typename Container::const_reference elem) {
@@ -517,7 +1152,7 @@ index 70bf0bad5..29d7652a4 100644
    }
  
    // Convert character to upper/lower case (ASCII only)
-@@ -238,17 +280,174 @@ namespace BSPF
+@@ -238,17 +282,256 @@ namespace BSPF
    constexpr bool isLowerAscii(char c) { return c >= 'a' && c <= 'z'; }
  
    // Convert string to given case
@@ -693,10 +1328,92 @@ index 70bf0bad5..29d7652a4 100644
 +  #endif
 +  }
 +
++  /** Locale-independent conversion of an integer with optional padding. */
++  template<std::integral T>
++    requires (!std::same_as<std::remove_cv_t<T>, bool>)
++  string formatInt(T value, int base = 10, size_t width = 0,
++                   char fill = ' ', bool uppercase = false)
++  {
++    static_assert(sizeof(T) <= sizeof(uInt64));
++
++    std::array<char, 65> buffer{};
++    const auto [ptr, ec] = std::to_chars(
++      buffer.data(), buffer.data() + buffer.size(), value, base);
++    if(ec != std::errc{})
++      return "";
++
++    string result{buffer.data(), ptr};
++    if(uppercase)
++      toUpperCase(result);
++
++    if(result.size() < width)
++    {
++      const size_t padding = width - result.size();
++      if(fill == '0' && !result.empty() && result.front() == '-')
++        result.insert(1, padding, fill);
++      else
++        result.insert(0, padding, fill);
++    }
++    return result;
++  }
++
++  /** Locale-independent fixed-point conversion using the f presentation. */
++  template<std::floating_point T>
++  string formatFixed(T value, int precision, size_t width = 0)
++  {
++    std::ostringstream output;
++    output.imbue(std::locale::classic());
++    output << std::fixed << std::setprecision(precision)
++           << std::setw(static_cast<int>(width)) << value;
++    return output.str();
++  }
++
++  /** Locale-independent floating-point conversion using the g presentation. */
++  template<std::floating_point T>
++  string formatGeneral(T value, int precision)
++  {
++    std::ostringstream output;
++    output.imbue(std::locale::classic());
++    output << std::defaultfloat << std::setprecision(precision) << value;
++    return output.str();
++  }
++
++  namespace detail
++  {
++    inline void appendString(string& out, string_view value) { out += value; }
++    inline void appendString(string& out, const string& value) { out += value; }
++    inline void appendString(string& out, const char* value) { out += value; }
++    inline void appendString(string& out, char value) { out += value; }
++    inline void appendString(string& out, bool value) {
++      out += value ? "true" : "false";
++    }
++
++    template<std::integral T>
++      requires (!std::same_as<std::remove_cv_t<T>, char> &&
++                !std::same_as<std::remove_cv_t<T>, bool>)
++    void appendString(string& out, T value) {
++      out += formatInt(value);
++    }
++
++    template<std::floating_point T>
++    void appendString(string& out, T value) {
++      out += formatFloat(value);
++    }
++  }
++
++  /** Concatenate string and primitive values without locale-dependent streams. */
++  template<typename... T>
++  string concat(T&&... values)
++  {
++    string result;
++    (detail::appendString(result, std::forward<T>(values)), ...);
++    return result;
++  }
++
    // Convert string to integer, using default value on any error
    template<int BASE = 10>
    constexpr int stoi(string_view s, int defaultValue = 0)
-@@ -308,13 +507,13 @@ namespace BSPF
+@@ -308,13 +591,13 @@ namespace BSPF
    {
      if(startpos > s1.size()) return string_view::npos;
      const auto sub = s1.substr(startpos);
@@ -713,7 +1430,7 @@ index 70bf0bad5..29d7652a4 100644
    }
  
    // Test whether the first string contains the second one (case insensitive)
-@@ -404,7 +603,7 @@ namespace BSPF
+@@ -404,7 +687,7 @@ namespace BSPF
    // @param str      The searched string
    // @param pattern  The pattern to search for
    // @return  True if pattern was found.
@@ -722,7 +1439,7 @@ index 70bf0bad5..29d7652a4 100644
    {
      // A pattern without an explicit leading '*' matches anywhere in str,
      // and one without a trailing '*' need not consume str's tail.
-@@ -461,7 +660,7 @@ namespace BSPF
+@@ -461,7 +744,7 @@ namespace BSPF
    }
  
    // Modify 'str', replacing all occurrences of 'from' with 'to'
@@ -731,7 +1448,7 @@ index 70bf0bad5..29d7652a4 100644
    {
      if(from.empty()) return;
      auto start_pos = 0UZ;
-@@ -490,11 +689,11 @@ namespace BSPF
+@@ -490,11 +773,11 @@ namespace BSPF
    // name from a (potentially shared/imported) properties entry is concatenated
    // into a save/snapshot path.  Both '/' and '\' are replaced regardless of
    // platform so the result can't escape its intended directory.
@@ -746,6 +1463,34 @@ index 70bf0bad5..29d7652a4 100644
      return result;
    }
  
+diff --git a/src/common/tv_filters/NTSCFilter.cxx b/src/common/tv_filters/NTSCFilter.cxx
+index 09b2ba5d0..3b11d6cbe 100644
+--- a/src/common/tv_filters/NTSCFilter.cxx
++++ b/src/common/tv_filters/NTSCFilter.cxx
+@@ -99,9 +99,8 @@ void NTSCFilter::selectAdjustable(int direction,
+ 
+   value = scaleTo100(*ourCustomAdjustables[myCurrentAdjustable].value);
+ 
+-  text = std::format("Custom {}",
+-                     ourCustomAdjustables[myCurrentAdjustable].type);
+-  valueText = std::format("{}%", value);
++  text = BSPF::concat("Custom ", ourCustomAdjustables[myCurrentAdjustable].type);
++  valueText = BSPF::concat(value, "%");
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -123,9 +122,8 @@ void NTSCFilter::changeCurrentAdjustable(int direction,
+ 
+   setPreset(myPreset);
+ 
+-  text = std::format("Custom {}",
+-                     ourCustomAdjustables[myCurrentAdjustable].type);
+-  valueText = std::format("{}%", newValue);
++  text = BSPF::concat("Custom ", ourCustomAdjustables[myCurrentAdjustable].type);
++  valueText = BSPF::concat(newValue, "%");
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 diff --git a/src/debugger/BreakpointMap.cxx b/src/debugger/BreakpointMap.cxx
 index 97f68a0ef..e6a50b3c5 100644
 --- a/src/debugger/BreakpointMap.cxx
@@ -1104,7 +1849,7 @@ index e21f80ce9..baa643a3e 100644
          {
            ext = e;
 diff --git a/src/emucore/Cart.cxx b/src/emucore/Cart.cxx
-index 85b072844..d8fb03154 100644
+index 85b072844..e395b020b 100644
 --- a/src/emucore/Cart.cxx
 +++ b/src/emucore/Cart.cxx
 @@ -117,7 +117,7 @@ void Cartridge::pokeRAM(uInt8& dest, uInt16 address, uInt8 value)
@@ -1116,7 +1861,39 @@ index 85b072844..d8fb03154 100644
        [address](uInt16 a) { return a == address || a == address - 256; });
        it != myRamReadAccesses.end())
    {
-@@ -228,10 +228,10 @@ uInt16 Cartridge::bankOrigin(uInt16 bank, uInt16 PC) const
+@@ -155,22 +155,23 @@ string Cartridge::getAccessCounters() const
+     const uInt16 origin  = bankOrigin(bank);
+     const uInt16 bankSz  = this->bankSize(bank);
+     const string bankStr = Common::Base::toString(bank, Common::Base::Fmt::_10_8);
+-    const string header  = std::format("Bank {} / 0..{}", bankStr, lastBank);
++    const string header  = BSPF::concat("Bank ", bankStr, " / 0..", lastBank);
+ 
+     out += header + " reads:\n";
+     for(uInt16 addr = 0; addr < bankSz; ++addr)
+-      out += std::format("{},{}, ",
+-        Common::Base::toString(addr | origin, Common::Base::Fmt::_16_4),
++      out += BSPF::concat(Common::Base::toString(
++        addr | origin, Common::Base::Fmt::_16_4), ",",
+         Common::Base::toString(myRomAccessCounter[offset + addr],
+-                              Common::Base::Fmt::_10_8));
++          Common::Base::Fmt::_10_8), ", ");
+     out += "\n";
+ 
+     out += header + " writes:\n";
+     for(uInt16 addr = 0; addr < bankSz; ++addr)
+-      out += std::format("{},{}, ",
+-        Common::Base::toString(addr | origin, Common::Base::Fmt::_16_4),
+-        Common::Base::toString(myRomAccessCounter[offset + addr + myAccessSize],
+-                              Common::Base::Fmt::_10_8));
++      out += BSPF::concat(Common::Base::toString(
++        addr | origin, Common::Base::Fmt::_16_4), ",",
++        Common::Base::toString(
++          myRomAccessCounter[offset + addr + myAccessSize],
++          Common::Base::Fmt::_10_8), ", ");
+     out += "\n";
+ 
+     offset += bankSz;
+@@ -228,10 +229,10 @@ uInt16 Cartridge::bankOrigin(uInt16 bank, uInt16 PC) const
  void Cartridge::initializeRAM(ByteMSpan arr, uInt8 val) const
  {
    if(randomInitialRAM())
@@ -1130,7 +1907,7 @@ index 85b072844..d8fb03154 100644
  
  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 diff --git a/src/emucore/CartAR.cxx b/src/emucore/CartAR.cxx
-index 92775bd99..b4d4031e0 100644
+index 92775bd99..a96c43dea 100644
 --- a/src/emucore/CartAR.cxx
 +++ b/src/emucore/CartAR.cxx
 @@ -48,9 +48,10 @@ CartridgeAR::CartridgeAR(ByteSpan image, string_view md5,
@@ -1163,6 +1940,19 @@ index 92775bd99..b4d4031e0 100644
  }
  
  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -163,9 +164,9 @@ uInt8 CartridgeAR::peek(uInt16 addr)
+       {
+         myPCMStarted = true;
+         myPCMStartCycle = now;
+-        cerr << std::format("CartridgeAR: PCM stream started at cycle {}, "
+-                            "{} samples @ {} Hz\n",
+-                            myPCMStartCycle, myPCMData.size(), myPCMSampleRate);
++        cerr << BSPF::concat("CartridgeAR: PCM stream started at cycle ",
++          myPCMStartCycle, ", ", myPCMData.size(), " samples @ ",
++          myPCMSampleRate, " Hz\n");
+       }
+ 
+       const uInt64 elapsed = now - myPCMStartCycle;
 @@ -244,7 +245,7 @@ void CartridgeAR::finalizeLoad(uInt32 block)
    myHeader[7] = static_cast<uInt8>(0x55U - partial);
  
@@ -1172,7 +1962,17 @@ index 92775bd99..b4d4031e0 100644
  }
  
  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-@@ -392,7 +393,7 @@ void CartridgeAR::initializeROM()
+@@ -253,8 +254,7 @@ void CartridgeAR::finalizeSoundLoad()
+   // Finalise the load that was streaming in when the PCM ran out
+   finalizeLoad(myCurrentLoadBlock);
+ 
+-  cerr << std::format("CartridgeAR: PCM exhausted at cycle {}, "
+-                      "finalising load image\n", mySystem->cycles());
++  cerr << BSPF::concat("CartridgeAR: PCM exhausted at cycle ", mySystem->cycles(), ", finalising load image\n");
+ 
+   // Free the (potentially large) PCM buffer; myIsSoundLoad stays true so that
+   // the real BIOS remains active and the fake $1850 hotspot stays suppressed.
+@@ -392,7 +392,7 @@ void CartridgeAR::initializeROM()
    std::fill_n(myImage.begin() + RAM_SIZE, BANK_SIZE, 0x02);
  
    // Copy the "dummy" Supercharger BIOS code into the ROM area
@@ -1181,7 +1981,7 @@ index 92775bd99..b4d4031e0 100644
  
    // Finally set 6502 vectors to point to initial load code at 0xF80A of BIOS
    myImage[RAM_SIZE + BANK_SIZE - 4] = 0x0A;
-@@ -415,8 +416,9 @@ void CartridgeAR::loadIntoRAM(uInt8 load)
+@@ -415,14 +415,14 @@ void CartridgeAR::loadIntoRAM(uInt8 load)
      if(myLoadImages[image_off + myImage.size() + 5] == load)
      {
        // Copy the load's header
@@ -1193,7 +1993,22 @@ index 92775bd99..b4d4031e0 100644
  
        // Verify the load's header
        if(checksum(ByteSpan{myHeader}.first(8)) != 0x55)
-@@ -448,7 +450,7 @@ void CartridgeAR::loadIntoRAM(uInt8 load)
+       {
+-        myMsgCallback(std::format(
+-          "Supercharger load #{} done with header checksum error", load));
++        myMsgCallback(BSPF::concat("Supercharger load #", load, " done with header checksum error"));
+         success = false;
+       }
+ 
+@@ -441,14 +441,13 @@ void CartridgeAR::loadIntoRAM(uInt8 load)
+ 
+         if(!invalidPageChecksumSeen && (sum != 0x55))
+         {
+-          myMsgCallback(std::format(
+-            "Supercharger load #{} done with page #{} checksum error", load, j));
++          myMsgCallback(BSPF::concat("Supercharger load #", load, " done with page #", j, " checksum error"));
+           invalidPageChecksumSeen = true;
+         }
  
          // Copy page to Supercharger RAM (don't allow a copy into ROM area)
          if(bank < 3)
@@ -1202,7 +2017,50 @@ index 92775bd99..b4d4031e0 100644
        }
        success &= !invalidPageChecksumSeen;
  
-@@ -756,5 +758,5 @@ void CartridgeAR::conditionSignal(FloatMSpan samples)
+@@ -460,12 +459,12 @@ void CartridgeAR::loadIntoRAM(uInt8 load)
+ 
+       myBankChanged = true;
+       if(success)
+-        myMsgCallback(std::format("Supercharger load #{} done", load));
++        myMsgCallback(BSPF::concat("Supercharger load #", load, " done"));
+       return;
+     }
+   }
+ 
+-  myMsgCallback(std::format("Supercharger load #{} not found in ROM image", load));
++  myMsgCallback(BSPF::concat("Supercharger load #", load, " not found in ROM image"));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -684,7 +683,7 @@ CartridgeAR::loadPCM(const FSNode& file)
+     freeAsWAV = true;
+     if(!buf)
+     {
+-      cerr << std::format("CartridgeAR: failed to open WAV '{}'\n", path);
++      cerr << BSPF::concat("CartridgeAR: failed to open WAV '", path, "'\n");
+       return {};
+     }
+   }
+@@ -694,8 +693,7 @@ CartridgeAR::loadPCM(const FSNode& file)
+     const bool isSync = (magic[0] == 0xFF && (magic[1] & 0xE0) == 0xE0);
+     if(!isID3 && !isSync)
+     {
+-      cerr << std::format("CartridgeAR: unrecognised audio format in '{}'\n",
+-                          file.getName());
++      cerr << BSPF::concat("CartridgeAR: unrecognised audio format in '", file.getName(), "'\n");
+       return {};
+     }
+     drmp3_config mp3Cfg{0, 0};
+@@ -707,7 +705,7 @@ CartridgeAR::loadPCM(const FSNode& file)
+     frameCount = static_cast<size_t>(fc);
+     if(!buf)
+     {
+-      cerr << std::format("CartridgeAR: failed to open MP3 '{}'\n", path);
++      cerr << BSPF::concat("CartridgeAR: failed to open MP3 '", path, "'\n");
+       return {};
+     }
+   }
+@@ -756,5 +754,5 @@ void CartridgeAR::conditionSignal(FloatMSpan samples)
    if(samples.empty()) return;
    const float mean = std::reduce(samples.begin(), samples.end()) /
                       static_cast<float>(samples.size());
@@ -1210,9 +2068,18 @@ index 92775bd99..b4d4031e0 100644
 +  std::for_each(samples.begin(), samples.end(), [mean](float& s) { s -= mean; });
  }
 diff --git a/src/emucore/CartCreator.cxx b/src/emucore/CartCreator.cxx
-index 676f495e0..3a6e7919e 100644
+index 676f495e0..a824291e9 100644
 --- a/src/emucore/CartCreator.cxx
 +++ b/src/emucore/CartCreator.cxx
+@@ -182,7 +182,7 @@ namespace  // anonymous namespace, to keep these functions private
+ 
+     // We need a new md5 and name
+     md5 = MD5::hash(slice);
+-    id = std::format(" [G{}]", i + 1);
++    id = BSPF::concat(" [G", i + 1, "]");
+ 
+     // TODO: allow using ROM properties instead of autodetect only
+     if(size <= 2_KB)
 @@ -313,7 +313,7 @@ namespace  // anonymous namespace, to keep these functions private
  
        if(!candidates.empty())
@@ -1222,8 +2089,125 @@ index 676f495e0..3a6e7919e 100644
            [](const auto& a, const auto& b){ return a.first < b.first; });
          std::vector<FSNode> result;
          int expected = myLoadNum + 1;
+@@ -349,13 +349,15 @@ namespace  // anonymous namespace, to keep these functions private
+       const string prefix = stem.substr(0, seqStart);
+       const string suffix = stem.substr(seqEnd + 1);
+ 
+-      const FSNode nextFile(std::format("{}{}{:0{}}{}{}", dirPath, prefix, curNum + 1, width, suffix, ext));
++      const FSNode nextFile(BSPF::concat(dirPath, prefix,
++        BSPF::formatInt(curNum + 1, 10, width, '0'), suffix, ext));
+       if(nextFile.isFile() && nextFile.isReadable())
+       {
+         std::vector<FSNode> companions;
+         for(int n = curNum + 1; ; ++n)
+         {
+-          FSNode f(std::format("{}{}{:0{}}{}{}", dirPath, prefix, n, width, suffix, ext));
++          FSNode f(BSPF::concat(dirPath, prefix,
++            BSPF::formatInt(n, 10, width, '0'), suffix, ext));
+           if(!f.isFile() || !f.isReadable()) break;
+           companions.push_back(std::move(f));
+         }
+@@ -404,21 +406,21 @@ namespace  // anonymous namespace, to keep these functions private
+ 
+     if(biosData.empty())
+     {
+-      cerr << std::format(
+-        "CartCreator: Supercharger BIOS not found in '{}' or '{}'\n"
+-        " (searched for SUPERCHARGER_BIOS_NTSC.BIN, SUPERCHARGER_BIOS_PAL.BIN)\n",
+-        file.getParent().getPath(), baseDir.getPath());
++      cerr << BSPF::concat("CartCreator: Supercharger BIOS not found in '",
++        file.getParent().getPath(), "' or '", baseDir.getPath(),
++        "'\n (searched for SUPERCHARGER_BIOS_NTSC.BIN, "
++        "SUPERCHARGER_BIOS_PAL.BIN)\n");
+       throw std::runtime_error("Supercharger BIOS not found");
+     }
+ 
+     auto [pcmData, sampleRate] = CartridgeAR::loadPCM(file);
+     if(pcmData.empty())
+     {
+-      cerr << std::format("CartCreator: failed to load PCM from '{}'\n", file.getPath());
++      cerr << BSPF::concat("CartCreator: failed to load PCM from '", file.getPath(), "'\n");
+       return nullptr;
+     }
+-    cerr << std::format("CartCreator: tape 1: '{}' ({} samples @ {} Hz)\n",
+-                        file.getName(), pcmData.size(), sampleRate);
++    cerr << BSPF::concat("CartCreator: tape 1: '", file.getName(), "' (",
++      pcmData.size(), " samples @ ", sampleRate, " Hz)\n");
+ 
+     // Probe for sequentially-numbered companion tapes and concatenate them
+     // with a ~2-second silence gap so the BIOS can sync to each in turn.
+@@ -436,9 +438,8 @@ namespace  // anonymous namespace, to keep these functions private
+       auto [nextPCM, nextRate] = CartridgeAR::loadPCM(companion);
+       if(nextPCM.empty() || nextRate != sampleRate)
+       {
+-        cerr << std::format(
+-          "CartCreator: skipping companion tape '{}' (load failed or "
+-          "sample rate mismatch)\n", companion.getName());
++        cerr << BSPF::concat("CartCreator: skipping companion tape '",
++          companion.getName(), "' (load failed or sample rate mismatch)\n");
+         break;
+       }
+       const size_t silenceSamples = static_cast<size_t>(sampleRate) * 2;
+@@ -446,18 +447,19 @@ namespace  // anonymous namespace, to keep these functions private
+       pcmData.insert(pcmData.end(), silenceSamples, 1.F);
+       tapeStarts.push_back(pcmData.size());  // this tape begins after the silence
+       pcmData.insert(pcmData.end(), nextPCM.begin(), nextPCM.end());
+-      cerr << std::format("CartCreator: tape {}: '{}' ({} samples @ {} Hz)\n",
+-                          tapeNum++, companion.getName(), nextPCM.size(), nextRate);
++      cerr << BSPF::concat("CartCreator: tape ", tapeNum++, ": '",
++        companion.getName(), "' (", nextPCM.size(), " samples @ ", nextRate,
++        " Hz)\n");
+     }
+-    cerr << std::format("CartCreator: total PCM stream: {} samples ({:.1f}s)\n",
+-                        pcmData.size(),
+-                        static_cast<double>(pcmData.size()) / sampleRate);
++    cerr << BSPF::concat("CartCreator: total PCM stream: ", pcmData.size(),
++      " samples (", BSPF::formatFixed(
++        static_cast<double>(pcmData.size()) / sampleRate, 1), "s)\n");
+ 
+     auto cart = std::make_unique<CartridgeAR>(
+       ByteSpan{biosData}, std::move(pcmData), sampleRate, std::move(tapeStarts),
+       md5, settings);
+     // One 8448-byte load per tape, so the size matches the equivalent BIN
+-    cart->setAbout(std::format("AR ({}K) ", cart->getImage().size() / 1_KB),
++    cart->setAbout(BSPF::concat("AR (", cart->getImage().size() / 1_KB, "K) "),
+                    "AR", "");
+     return cart;
+   }
+@@ -554,26 +556,24 @@ unique_ptr<Cartridge> CartCreator::create(const FSNode& file, ByteSpan image,
+     if(validMultiSize)
+       cartridge = createFromMultiCart(image, numMultiRoms, md5, detectedType, id, settings);
+     else
+-      throw std::runtime_error(std::format(
+-          "Invalid cart size for type '{}'", Bankswitch::typeToName(type)));
++      throw std::runtime_error(BSPF::concat("Invalid cart size for type '", Bankswitch::typeToName(type), "'"));
+   }
+ 
+   const string_view typeName = Bankswitch::typeToName(type);
+   const string_view detectedTypeName = Bankswitch::typeToName(detectedType);
+ 
+   const string sizeStr = (size < 1_KB)
+-      ? std::format("{}B", size)
+-      : std::format("{}K", size / 1_KB);
++      ? BSPF::concat(size, "B")
++      : BSPF::concat(size / 1_KB, "K");
+ 
+   const bool showDetectedType = numMultiRoms &&
+              detectedType != Bankswitch::Type::_2K &&
+              detectedType != Bankswitch::Type::_4K;
+ 
+   const string detectedSuffix = showDetectedType
+-      ? std::format(" {}", detectedTypeName) : "";
++      ? BSPF::concat(" ", detectedTypeName) : "";
+ 
+-  const string about = std::format("{}{} ({}{}) ",
+-      typeName, autodetected ? "*" : "", sizeStr, detectedSuffix);
++  const string about = BSPF::concat(typeName, autodetected ? "*" : "", " (", sizeStr, detectedSuffix, ") ");
+ 
+   cartridge->setAbout(about, typeName, id);
+ 
 diff --git a/src/emucore/CartDetector.cxx b/src/emucore/CartDetector.cxx
-index 2ba5aceb0..78bcda6c6 100644
+index 2ba5aceb0..b507065a8 100644
 --- a/src/emucore/CartDetector.cxx
 +++ b/src/emucore/CartDetector.cxx
 @@ -61,7 +61,7 @@ Bankswitch::Type CartDetector::autodetectType(ByteSpan image)
@@ -1235,7 +2219,17 @@ index 2ba5aceb0..78bcda6c6 100644
        return searchForBytes(image, sig, 2);
      });
  
-@@ -226,7 +226,7 @@ bool CartDetector::isProbablyARM(ByteSpan image)
+@@ -192,8 +192,7 @@ Bankswitch::Type CartDetector::autodetectType(ByteSpan image)
+   if(type == Bankswitch::Type::AUTO)
+     type = Bankswitch::Type::_4K;  // Most common bankswitching type
+ 
+-  Logger::debug(std::format("Bankswitching type '{}' detected",
+-                            Bankswitch::typeToDesc(type)));
++  Logger::debug(BSPF::concat("Bankswitching type '", Bankswitch::typeToDesc(type), "' detected"));
+ 
+   return type;
+ }
+@@ -226,7 +225,7 @@ bool CartDetector::isProbablyARM(ByteSpan image)
      { 0x00, 0x80, 0x02, 0xE0 }
    }};
    const auto region = image.first(std::min<size_t>(image.size(), 1_KB));
@@ -1244,7 +2238,7 @@ index 2ba5aceb0..78bcda6c6 100644
      return searchForBytes(region, sig);
    });
  }
-@@ -240,7 +240,7 @@ bool CartDetector::isProbably03E0(ByteSpan image)
+@@ -240,7 +239,7 @@ bool CartDetector::isProbably03E0(ByteSpan image)
      { 0x0D, 0xE0, 0x03, 0x0D },  // ORA $3E0, ORA (Popeye)
      { 0xAD, 0xE0, 0x03, 0xAD }   // LDA $3E0, ORA (Montezuma's Revenge)
    }};
@@ -1253,7 +2247,7 @@ index 2ba5aceb0..78bcda6c6 100644
      return searchForBytes(image, sig);
    });
  }
-@@ -255,7 +255,7 @@ bool CartDetector::isProbably0840(ByteSpan image)
+@@ -255,7 +254,7 @@ bool CartDetector::isProbably0840(ByteSpan image)
      { 0xAD, 0x40, 0x08 },  // LDA $0840
      { 0x2C, 0x00, 0x08 }   // BIT $0800
    }};
@@ -1262,7 +2256,7 @@ index 2ba5aceb0..78bcda6c6 100644
      return searchForBytes(image, sig, 2);
    }))
      return true;
-@@ -264,7 +264,7 @@ bool CartDetector::isProbably0840(ByteSpan image)
+@@ -264,7 +263,7 @@ bool CartDetector::isProbably0840(ByteSpan image)
      { 0x0C, 0x00, 0x08, 0x4C },  // NOP $0800; JMP ...
      { 0x0C, 0xFF, 0x0F, 0x4C }   // NOP $0FFF; JMP ...
    }};
@@ -1271,7 +2265,7 @@ index 2ba5aceb0..78bcda6c6 100644
      return searchForBytes(image, sig, 2);
    });
  }
-@@ -281,7 +281,7 @@ bool CartDetector::isProbably0FA0(ByteSpan image)
+@@ -281,7 +280,7 @@ bool CartDetector::isProbably0FA0(ByteSpan image)
      { 0xAD, 0xC0, 0x0F },  // LDA $FC0  (Front Line, Zaxxon)
      { 0x2C, 0xC0, 0xEF }   // BIT $EFC0 (Motocross)
    }};
@@ -1280,7 +2274,7 @@ index 2ba5aceb0..78bcda6c6 100644
      return searchForBytes(image, sig);
    });
  }
-@@ -418,7 +418,7 @@ bool CartDetector::isProbablyCV(ByteSpan image)
+@@ -418,7 +417,7 @@ bool CartDetector::isProbablyCV(ByteSpan image)
      { 0x9D, 0xFF, 0xF3 },  // STA $F3FF,X  MagiCard
      { 0x99, 0x00, 0xF4 }   // STA $F400,Y  Video Life
    }};
@@ -1289,7 +2283,7 @@ index 2ba5aceb0..78bcda6c6 100644
      return searchForBytes(image, sig);
    });
  }
-@@ -485,7 +485,7 @@ bool CartDetector::isProbablyE0(ByteSpan image)
+@@ -485,7 +484,7 @@ bool CartDetector::isProbablyE0(ByteSpan image)
      { 0xAD, 0xED, 0xFF },  // LDA $FFED
      { 0xAD, 0xF3, 0xBF }   // LDA $BFF3
    }};
@@ -1298,7 +2292,7 @@ index 2ba5aceb0..78bcda6c6 100644
      return searchForBytes(image, sig);
    });
  }
-@@ -508,7 +508,7 @@ bool CartDetector::isProbablyE7(ByteSpan image)
+@@ -508,7 +507,7 @@ bool CartDetector::isProbablyE7(ByteSpan image)
      { 0x8D, 0xE7, 0xFF },  // STA $FFE7
      { 0x8D, 0xE7, 0x1F }   // STA $1FE7
    }};
@@ -1307,7 +2301,7 @@ index 2ba5aceb0..78bcda6c6 100644
      return searchForBytes(image, sig);
    });
  }
-@@ -525,7 +525,7 @@ bool CartDetector::isProbablyE78K(ByteSpan image)
+@@ -525,7 +524,7 @@ bool CartDetector::isProbablyE78K(ByteSpan image)
      { 0xAD, 0xE5, 0xFF },  // LDA $FFE5
      { 0xAD, 0xE6, 0xFF },  // LDA $FFE6
    }};
@@ -1316,7 +2310,7 @@ index 2ba5aceb0..78bcda6c6 100644
      return searchForBytes(image, sig);
    });
  }
-@@ -558,7 +558,7 @@ bool CartDetector::isProbablyEF(ByteSpan image, Bankswitch::Type& type)
+@@ -558,7 +557,7 @@ bool CartDetector::isProbablyEF(ByteSpan image, Bankswitch::Type& type)
      { 0x0C, 0xE0, 0x1F },  // NOP $1FE0
      { 0xAD, 0xE0, 0x1F }   // LDA $1FE0
    }};
@@ -1325,7 +2319,7 @@ index 2ba5aceb0..78bcda6c6 100644
      return searchForBytes(image, sig);
    });
  
-@@ -589,7 +589,7 @@ bool CartDetector::isProbablyEFF(ByteSpan image)
+@@ -589,7 +588,7 @@ bool CartDetector::isProbablyEFF(ByteSpan image)
      { 0x0C, 0xF0, 0x1F },  // NOP $1FF0
      { 0xAD, 0xF4, 0x1F }   // LDA $1FF4
    }};
@@ -1334,7 +2328,7 @@ index 2ba5aceb0..78bcda6c6 100644
      return searchForBytes(image, sig);
    });
  }
-@@ -618,7 +618,7 @@ bool CartDetector::isProbablyFC(ByteSpan image)
+@@ -618,7 +617,7 @@ bool CartDetector::isProbablyFC(ByteSpan image)
      { 0x8d, 0xf8, 0xff, 0x8d, 0xfc, 0xff },  // STA $FFF8, STA $FFFC        Surf's Up (4K)
      { 0x8c, 0xf9, 0xff, 0xad, 0xfc, 0xff }   // STY $FFF9, LDA $FFFC        3-D Havoc
    }};
@@ -1343,7 +2337,7 @@ index 2ba5aceb0..78bcda6c6 100644
      return searchForBytes(image, sig);
    });
  }
-@@ -636,7 +636,7 @@ bool CartDetector::isProbablyFE(ByteSpan image)
+@@ -636,7 +635,7 @@ bool CartDetector::isProbablyFE(ByteSpan image)
      { 0xD0, 0xFB, 0x20, 0x68, 0xFE },  // BNE $FB; JSR $FE68  Space Shuttle (SECAM)
      { 0x20, 0x00, 0xF0, 0x84, 0xD6 }   // JSR $F000; STY $D6  Thwocker
    }};
@@ -1352,7 +2346,7 @@ index 2ba5aceb0..78bcda6c6 100644
      return searchForBytes(image, sig);
    });
  }
-@@ -705,7 +705,7 @@ bool CartDetector::isProbablySB(ByteSpan image)
+@@ -705,7 +704,7 @@ bool CartDetector::isProbablySB(ByteSpan image)
      { 0xBD, 0x00, 0x08 },  // LDA $0800,x
      { 0xAD, 0x00, 0x08 }   // LDA $0800
    }};
@@ -1361,7 +2355,7 @@ index 2ba5aceb0..78bcda6c6 100644
      return searchForBytes(image, sig);
    });
  }
-@@ -734,7 +734,7 @@ bool CartDetector::isProbablyUA(ByteSpan image)
+@@ -734,7 +733,7 @@ bool CartDetector::isProbablyUA(ByteSpan image)
      { 0xAD, 0xC0, 0x02 },  // LDA $2C0 (Mickey)
      { 0x2C, 0xB0, 0x0F }   // BIT $FB0 (Digivision Beamrider)
    }};
@@ -1370,7 +2364,7 @@ index 2ba5aceb0..78bcda6c6 100644
      return searchForBytes(image, sig);
    });
  }
-@@ -759,7 +759,7 @@ bool CartDetector::isProbablyX07(ByteSpan image)
+@@ -759,7 +758,7 @@ bool CartDetector::isProbablyX07(ByteSpan image)
      { 0x0C, 0x1D, 0x08 },  // NOP $081D
      { 0x0C, 0x2D, 0x08 }   // NOP $082D
    }};
@@ -1393,6 +2387,73 @@ index 8315abb2b..d09b6c741 100644
    createRomAccessArrays(RAM_SIZE);
  }
  
+diff --git a/src/emucore/CartELF.cxx b/src/emucore/CartELF.cxx
+index 79851c903..adaef7968 100644
+--- a/src/emucore/CartELF.cxx
++++ b/src/emucore/CartELF.cxx
+@@ -470,13 +470,13 @@ void CartridgeELF::parseAndLinkElf()
+   try {
+     myLinker->link(externalSymbols(SystemType::ntsc));
+   } catch (const ElfLinker::ElfLinkError& e) {
+-    throw std::runtime_error(std::format("failed to initialize ELF: {}", e.what()));
++    throw std::runtime_error(BSPF::concat("failed to initialize ELF: ", e.what()));
+   }
+ 
+   try {
+     myArmEntrypoint = myLinker->findRelocatedSymbol("elf_main").value;
+   } catch (const ElfLinker::ElfSymbolResolutionError& e) {
+-    throw std::runtime_error(std::format("failed to resolve ARM entrypoint: {}", e.what()));
++    throw std::runtime_error(BSPF::concat("failed to resolve ARM entrypoint: ", e.what()));
+   }
+ 
+   if (myLinker->getSegmentSize(ElfLinker::SegmentType::text) > TEXT_SIZE)
+@@ -627,9 +627,9 @@ void CartridgeELF::runArm()
+     }
+ 
+     if (CortexM0::getErrCustom(err) != ERR_STOP_EXECUTION) {
+-      FatalEmulationError::raise(std::format(
+-        "error executing ARM code (PC = 0x{:08x}): {}",
+-        myCortexEmu.getRegister(15),
++      FatalEmulationError::raise(BSPF::concat(
++        "error executing ARM code (PC = 0x",
++        BSPF::formatInt(myCortexEmu.getRegister(15), 16, 8, '0'), "): ",
+         CortexM0::describeError(err)));
+     }
+   }
+@@ -693,9 +693,10 @@ CortexM0::err_t CartridgeELF::BusFallbackDelegate::handleError(
+ ) const {
+   if (myErrorsAreFatal) return CortexM0::errIntrinsic(err, address);
+ 
+-  Logger::error(std::format(
+-    "invalid {} access to 0x{:08x} (PC = 0x{:08x})",
+-    accessType, address, cortex.getRegister(15)));
++  Logger::error(BSPF::concat(
++    "invalid ", accessType, " access to 0x",
++    BSPF::formatInt(address, 16, 8, '0'), " (PC = 0x",
++    BSPF::formatInt(cortex.getRegister(15), 16, 8, '0'), ')'));
+ 
+   return CortexM0::ERR_NONE;
+ }
+diff --git a/src/emucore/CartEnhanced.cxx b/src/emucore/CartEnhanced.cxx
+index c728dc2a0..f9438fdb5 100644
+--- a/src/emucore/CartEnhanced.cxx
++++ b/src/emucore/CartEnhanced.cxx
+@@ -31,11 +31,11 @@ CartridgeEnhanced::CartridgeEnhanced(ByteSpan image, string_view md5,
+   // Is the ROM too large?  If so, we cap it
+   const size_t size = image.size();
+   if(size > bsSize)
+-    Logger::info(std::format("ROM larger than expected ({} > {}), truncating {} bytes\n",
+-      size, bsSize, size - bsSize));
++    Logger::info(BSPF::concat("ROM larger than expected (", size, " > ",
++      bsSize, "), truncating ", size - bsSize, " bytes\n"));
+   else if(size < bsSize)
+-    Logger::info(std::format("ROM smaller than expected ({} < {}), appending {} bytes\n",
+-      size, bsSize, bsSize - size));
++    Logger::info(BSPF::concat("ROM smaller than expected (", size, " < ",
++      bsSize, "), appending ", bsSize - size, " bytes\n"));
+ 
+   // Initialize ROM with all 0's, to fill areas that the ROM may not cover
+   myImage.assign(bsSize, 0);
 diff --git a/src/emucore/CartFA2.cxx b/src/emucore/CartFA2.cxx
 index 5343c6a08..1777ce2eb 100644
 --- a/src/emucore/CartFA2.cxx
@@ -1428,6 +2489,373 @@ index f18513361..fd3108d57 100644
        return (cc.lp6     != E::NoType && myEvent.get(cc.lp6))
            || (cc.rp3     != E::NoType && myEvent.get(cc.rp3))
            || (cc.rp6     != E::NoType && cc.rp6 != E::CompuMateEnter && myEvent.get(cc.rp6))
+diff --git a/src/emucore/CompuMateCassette.cxx b/src/emucore/CompuMateCassette.cxx
+index df4879e31..2f1ee3e41 100644
+--- a/src/emucore/CompuMateCassette.cxx
++++ b/src/emucore/CompuMateCassette.cxx
+@@ -56,7 +56,7 @@ void CompuMateCassette::load(const FSNode& romFile, ConsoleTiming timing)
+   }
+   catch(const std::exception& e)
+   {
+-    cerr << std::format("CompuMate: cassette read error: {}\n", e.what());
++    cerr << BSPF::concat("CompuMate: cassette read error: ", e.what(), "\n");
+   }
+   if(!readOk)
+   {
+@@ -67,7 +67,7 @@ void CompuMateCassette::load(const FSNode& romFile, ConsoleTiming timing)
+ 
+   if(data.size() != CAS_SIZE_NORMAL && data.size() != CAS_SIZE_EXTENDED)
+   {
+-    cerr << std::format("CompuMate: unexpected cassette size {}\n", data.size());
++    cerr << BSPF::concat("CompuMate: unexpected cassette size ", data.size(), "\n");
+     myOSystem.frameBuffer().showTextMessage("Invalid CompuMate cassette",
+       MessagePosition::BottomCenter, true);
+     return;
+@@ -99,7 +99,7 @@ uInt8 CompuMateCassette::cassetteBit() const
+   {
+     myCasLastPct = pct;
+     myOSystem.frameBuffer().showGaugeMessage("Loading cassette",
+-      std::format("{}%", pct), static_cast<float>(pct), 0.F, 100.F);
++      BSPF::concat(pct, "%"), static_cast<float>(pct), 0.F, 100.F);
+   }
+ 
+   uInt8 byte{};
+@@ -205,7 +205,7 @@ void CompuMateCassette::cassetteD6Toggled(uInt64 cycles)
+       myCyclesPerBit   = static_cast<double>(cycles - mySaveT0);
+       mySaveCalibrated = true;
+       mySaveBitTrans[1] = 1;
+-      cerr << std::format("CompuMate FSK calibrated: {} cycles/bit\n", myCyclesPerBit);
++      cerr << BSPF::concat("CompuMate FSK calibrated: ", myCyclesPerBit, " cycles/bit\n");
+     }
+     return;
+   }
+@@ -292,7 +292,7 @@ void CompuMateCassette::finalizeSaveByte()
+     {
+       mySaveLastPct = pct;
+       myOSystem.frameBuffer().showGaugeMessage("Saving cassette",
+-        std::format("{}%", pct), static_cast<float>(pct), 0.F, 100.F);
++        BSPF::concat(pct, "%"), static_cast<float>(pct), 0.F, 100.F);
+     }
+     if(mySaveBytePos >= mySaveExpectedSize)
+       finalizeSave();
+@@ -318,8 +318,7 @@ void CompuMateCassette::finalizeSave()
+ {
+   mySaveActive = false;
+   mySaveT0     = UINT64_MAX;
+-  cerr << std::format("CompuMate FSK decode: {} bytes ok, {} bytes failed\n",
+-                      mySaveOkCount, mySaveFailCount);
++  cerr << BSPF::concat("CompuMate FSK decode: ", mySaveOkCount, " bytes ok, ", mySaveFailCount, " bytes failed\n");
+   // Decode dropped one or more bytes; the saved file falls back to the
+   // previously-loaded values at those positions, so warn the user
+   if(mySaveFailCount > 0)
+@@ -343,7 +342,6 @@ bool CompuMateCassette::save(const FSNode& destFile)
+       MessagePosition::BottomCenter, true);
+     return false;
+   }
+-  cerr << std::format("CompuMate: cassette saved {} bytes to {}\n",
+-                      myCasData.size(), destFile.getShortPath());
++  cerr << BSPF::concat("CompuMate: cassette saved ", myCasData.size(), " bytes to ", destFile.getShortPath(), "\n");
+   return true;
+ }
+diff --git a/src/emucore/Console.cxx b/src/emucore/Console.cxx
+index a69ca4b7c..8ebac03c0 100644
+--- a/src/emucore/Console.cxx
++++ b/src/emucore/Console.cxx
+@@ -101,7 +101,7 @@ namespace {
+   }
+ 
+   string formatSpeed(int speed) {
+-    return std::format("{:3.0f}", unmapSpeed(speed) * 100);
++    return BSPF::formatFixed(unmapSpeed(speed) * 100, 0, 3);
+   }
+ }  // namespace
+ 
+@@ -127,7 +127,7 @@ Console::Console(OSystem& osystem, unique_ptr<Cartridge>& cart,
+     frameBuffer.tiaSurface().enablePhosphor(enable);
+   #ifdef DEBUG_BUILD
+     frameBuffer.showTextMessage(
+-      std::format("Phosphor effect automatically {}", enable ? "enabled" : "disabled"));
++      BSPF::concat("Phosphor effect automatically ", enable ? "enabled" : "disabled"));
+   #endif
+   };
+   myTIA  = std::make_unique<TIA>(*this, [this]() { return timing(); }, myOSystem.settings(), callback);
+@@ -529,7 +529,7 @@ void Console::toggleColorLoss(bool toggle)
+   }
+ 
+   myOSystem.frameBuffer().showTextMessage(
+-    std::format("PAL color-loss {}", colorloss ? "enabled" : "disabled"));
++    BSPF::concat("PAL color-loss ", colorloss ? "enabled" : "disabled"));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -555,7 +555,7 @@ void Console::toggleInter(bool toggle)
+     }
+ 
+     myOSystem.frameBuffer().showTextMessage(
+-      std::format("Interpolation {}", enabled ? "enabled" : "disabled"));
++      BSPF::concat("Interpolation ", enabled ? "enabled" : "disabled"));
+   }
+   else
+     myOSystem.frameBuffer().showTextMessage(
+@@ -575,7 +575,7 @@ void Console::toggleTurbo()
+   initializeVideo();
+ 
+   myOSystem.frameBuffer().showTextMessage(
+-    std::format("Turbo mode {}", !enabled ? "enabled" : "disabled"));
++    BSPF::concat("Turbo mode ", !enabled ? "enabled" : "disabled"));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -598,7 +598,7 @@ void Console::changeSpeed(int direction)
+   }
+ 
+   myOSystem.frameBuffer().showGaugeMessage("Emulation speed",
+-    std::format("{}%", formatSpeed(speed)), speed, MIN_SPEED, MAX_SPEED);
++    BSPF::concat(formatSpeed(speed), "%"), speed, MIN_SPEED, MAX_SPEED);
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -620,7 +620,7 @@ void Console::togglePhosphor(bool toggle)
+   }
+ 
+   myOSystem.frameBuffer().showTextMessage(
+-    std::format("Phosphor effect {}", enable ? "enabled" : "disabled"));
++    BSPF::concat("Phosphor effect ", enable ? "enabled" : "disabled"));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -663,7 +663,7 @@ void Console::cyclePhosphorMode(int direction)
+   }
+ 
+   myOSystem.frameBuffer().showTextMessage(
+-    std::format("Phosphor mode {}", MESSAGES[mode]));
++    BSPF::concat("Phosphor mode ", MESSAGES[mode]));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -679,7 +679,7 @@ void Console::changePhosphor(int direction)
+ 
+   myProperties.set(PropType::Display_PPBlend, std::to_string(blend));
+   myOSystem.frameBuffer().showGaugeMessage("Phosphor blend",
+-    blend ? std::format("{}%", blend) : "Off", blend);
++    blend ? BSPF::concat(blend, "%") : "Off", blend);
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -701,7 +701,7 @@ FBInitStatus Console::initializeVideo(bool full)
+ 
+     const bool devSettings = myOSystem.settings().getBool("dev.settings");
+     fbstatus = myOSystem.frameBuffer().createDisplay(
+-      std::format("{}: \"{}\"", STELLA_FULL_TITLE, myProperties.get(PropType::Cart_Name)),
++      BSPF::concat(STELLA_FULL_TITLE, ": \"", myProperties.get(PropType::Cart_Name), "\""),
+       BufferType::Emulator, size, false);
+     if(fbstatus != FBInitStatus::Success)
+       return fbstatus;
+@@ -769,7 +769,7 @@ void Console::changeVerticalCenter(int direction)
+     myTIA->setVcenter(vcenter);
+ 
+   myOSystem.frameBuffer().showGaugeMessage("V-Center",
+-    std::format("{}{:d}px", vcenter > 0 ? "+" : vcenter ? "" : " ", vcenter),
++    BSPF::concat(vcenter > 0 ? "+" : vcenter ? "" : " ", vcenter, "px"),
+     vcenter, myTIA->minVcenter(), myTIA->maxVcenter());
+ }
+ 
+@@ -798,8 +798,7 @@ void Console::changeVSizeAdjust(int direction)
+   }
+ 
+   myOSystem.frameBuffer().showGaugeMessage("V-Size",
+-    std::format("{}{:d}%", newAdjustVSize > 0 ? "+" : newAdjustVSize ? "" : " ",
+-                newAdjustVSize), newAdjustVSize, -5, 5);
++    BSPF::concat(newAdjustVSize > 0 ? "+" : newAdjustVSize ? "" : " ", newAdjustVSize, "%"), newAdjustVSize, -5, 5);
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -815,7 +814,7 @@ void Console::toggleCorrectAspectRatio(bool toggle)
+   }
+ 
+   myOSystem.frameBuffer().showTextMessage(
+-    std::format("Correct aspect ratio {}", enabled ? "enabled" : "disabled"));
++    BSPF::concat("Correct aspect ratio ", enabled ? "enabled" : "disabled"));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -893,7 +892,7 @@ void Console::setControllers(string_view romMd5)
+     const ByteSpan image = myCart->getImage();
+     if(!image.empty())
+     {
+-      Logger::debug(std::format("{}:", myProperties.get(PropType::Cart_Name)));
++      Logger::debug(BSPF::concat(myProperties.get(PropType::Cart_Name), ":"));
+       leftType = ControllerDetector::detectType(image, leftType,
+           !swappedPorts ? Controller::Jack::Left : Controller::Jack::Right, myOSystem.settings());
+       rightType = ControllerDetector::detectType(image, rightType,
+@@ -941,7 +940,7 @@ void Console::changeLeftController(int direction)
+   setControllers(myProperties.get(PropType::Cart_MD5));
+ 
+   myOSystem.frameBuffer().showTextMessage(
+-    std::format("Left controller {}", Controller::getName(Controller::Type{type})));
++    BSPF::concat("Left controller ", Controller::getName(Controller::Type{type})));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -958,7 +957,7 @@ void Console::changeRightController(int direction)
+   setControllers(myProperties.get(PropType::Cart_MD5));
+ 
+   myOSystem.frameBuffer().showTextMessage(
+-    std::format("Right controller {}", Controller::getName(Controller::Type{type})));
++    BSPF::concat("Right controller ", Controller::getName(Controller::Type{type})));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -1113,7 +1112,7 @@ void Console::toggleSwapPorts(bool toggle)
+   }
+ 
+   myOSystem.frameBuffer().showTextMessage(
+-    std::format("Swap ports {}", swapped ? "enabled" : "disabled"));
++    BSPF::concat("Swap ports ", swapped ? "enabled" : "disabled"));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -1130,7 +1129,7 @@ void Console::toggleSwapPaddles(bool toggle)
+   }
+ 
+   myOSystem.frameBuffer().showTextMessage(
+-    std::format("Swap paddles {}", swapped ? "enabled" : "disabled"));
++    BSPF::concat("Swap paddles ", swapped ? "enabled" : "disabled"));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -1143,7 +1142,7 @@ void Console::changePaddleCenterX(int direction)
+   Paddles::setAnalogXCenter(center);
+ 
+   myOSystem.frameBuffer().showGaugeMessage("Paddles x-center ",
+-    std::format("{}{:d}px", center > 0 ? "+" : center ? "" : " ", center * 5),
++    BSPF::concat(center > 0 ? "+" : center ? "" : " ", center * 5, "px"),
+     center, Paddles::MIN_ANALOG_CENTER, Paddles::MAX_ANALOG_CENTER);
+ }
+ 
+@@ -1157,7 +1156,7 @@ void Console::changePaddleCenterY(int direction)
+   Paddles::setAnalogYCenter(center);
+ 
+   myOSystem.frameBuffer().showGaugeMessage("Paddles y-center ",
+-    std::format("{}{:d}px", center > 0 ? "+" : center ? "" : " ", center * 5),
++    BSPF::concat(center > 0 ? "+" : center ? "" : " ", center * 5, "px"),
+     center, Paddles::MIN_ANALOG_CENTER, Paddles::MAX_ANALOG_CENTER);
+ }
+ 
+@@ -1180,12 +1179,12 @@ void Console::changePaddleAxesRange(int direction)
+                       Paddles::MIN_MOUSE_RANGE, Paddles::MAX_MOUSE_RANGE);
+ 
+   myProperties.set(PropType::Controller_MouseAxis,
+-    range != 100 ? std::format("{} {}", mode, range) : mode);
++    range != 100 ? BSPF::concat(mode, " ", range) : mode);
+ 
+   Paddles::setDigitalPaddleRange(range);
+ 
+   myOSystem.frameBuffer().showGaugeMessage("Mouse axes range",
+-    std::format("{}%", range), range);
++    BSPF::concat(range, "%"), range);
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -1201,7 +1200,7 @@ void Console::toggleAutoFire(bool toggle)
+   }
+ 
+   myOSystem.frameBuffer().showTextMessage(
+-    std::format("Autofire {}", enabled ? "enabled" : "disabled"));
++    BSPF::concat("Autofire ", enabled ? "enabled" : "disabled"));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -1224,7 +1223,7 @@ void Console::changeAutoFireRate(int direction)
+   }
+ 
+   myOSystem.frameBuffer().showGaugeMessage("Autofire rate",
+-    rate ? std::format("{} Hz", rate) : "Off",
++    rate ? BSPF::concat(rate, " Hz") : "Off",
+     rate, 0, isNTSC ? 30 : 25);
+ }
+ 
+@@ -1266,7 +1265,7 @@ void Console::toggleDeveloperSet(bool toggle)
+   }
+ 
+   myOSystem.frameBuffer().showTextMessage(
+-    std::format("{} settings enabled", devSettings ? "Developer" : "Player"));
++    BSPF::concat(devSettings ? "Developer" : "Player", " settings enabled"));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -1277,7 +1276,7 @@ void Console::toggleTIABit(TIABit bit, string_view bitname,
+                           toggle ? BitState::Toggle : BitState::Query);
+ 
+   myOSystem.frameBuffer().showTextMessage(
+-    std::format("{} {}", bitname, result ? "enabled" : "disabled"));
++    BSPF::concat(bitname, " ", result ? "enabled" : "disabled"));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -1286,7 +1285,7 @@ void Console::toggleBits(bool toggle) const
+   const bool enabled = myTIA->toggleBits(toggle);
+ 
+   myOSystem.frameBuffer().showTextMessage(
+-    std::format("TIA bits {}", enabled ? "enabled" : "disabled"));
++    BSPF::concat("TIA bits ", enabled ? "enabled" : "disabled"));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -1297,7 +1296,7 @@ void Console::toggleTIACollision(TIABit bit, string_view bitname,
+                           toggle ? BitState::Toggle : BitState::Query);
+ 
+   myOSystem.frameBuffer().showTextMessage(
+-    std::format("{} collision {}", bitname, result ? "enabled" : "disabled"));
++    BSPF::concat(bitname, " collision ", result ? "enabled" : "disabled"));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -1306,7 +1305,7 @@ void Console::toggleCollisions(bool toggle) const
+   const bool enabled = myTIA->toggleCollisions(toggle);
+ 
+   myOSystem.frameBuffer().showTextMessage(
+-    std::format("TIA collisions {}", enabled ? "enabled" : "disabled"));
++    BSPF::concat("TIA collisions ", enabled ? "enabled" : "disabled"));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -1315,15 +1314,14 @@ void Console::toggleFixedColors(bool toggle) const
+   const bool enabled = toggle ? myTIA->toggleFixedColors() : myTIA->usingFixedColors();
+ 
+   myOSystem.frameBuffer().showTextMessage(
+-    std::format("Fixed debug colors {}", enabled ? "enabled" : "disabled"));
++    BSPF::concat("Fixed debug colors ", enabled ? "enabled" : "disabled"));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ void Console::toggleJitter(bool toggle) const
+ {
+   const bool enabled = myTIA->toggleJitter(toggle ? 2 : 3);
+-  const string message = std::format("TV scanline jitter {}",
+-                                     enabled ? "enabled" : "disabled");
++  const string message = BSPF::concat("TV scanline jitter ", enabled ? "enabled" : "disabled");
+ 
+   myOSystem.settings().setValue(
+     myOSystem.settings().getBool("dev.settings") ? "dev.tv.jitter" : "plr.tv.jitter", enabled);
+@@ -1355,7 +1353,7 @@ void Console::changeJitterSense(int direction) const
+     myTIA->setJitterSensitivity(sensitivity);
+     myOSystem.settings().setValue(prefix + "tv.jitter_sense", sensitivity);
+     myOSystem.frameBuffer().showGaugeMessage("TV jitter sensitivity",
+-      std::format("{}", sensitivity), sensitivity,
++      BSPF::concat(sensitivity), sensitivity,
+       0, JitterEmulation::MAX_SENSITIVITY);
+   }
+   else
+@@ -1390,7 +1388,7 @@ void Console::changeJitterRecovery(int direction) const
+     myTIA->setJitterRecoveryFactor(recovery);
+     myOSystem.settings().setValue(prefix + "tv.jitter_recovery", recovery);
+     myOSystem.frameBuffer().showGaugeMessage("TV jitter roll",
+-      std::format("{}", recovery), recovery,
++      BSPF::concat(recovery), recovery,
+       0, JitterEmulation::MAX_RECOVERY);
+   }
+   else
 diff --git a/src/emucore/Control.cxx b/src/emucore/Control.cxx
 index 35a39dc64..8330ed26c 100644
 --- a/src/emucore/Control.cxx
@@ -1455,10 +2883,37 @@ index 35a39dc64..8330ed26c 100644
    return Type::Unknown;
  }
 -
+diff --git a/src/emucore/Control.hxx b/src/emucore/Control.hxx
+index fb694fb7d..228c6ac98 100644
+--- a/src/emucore/Control.hxx
++++ b/src/emucore/Control.hxx
+@@ -252,8 +252,7 @@ class Controller : public Serializable
+     */
+     virtual string about(bool swappedPorts) const
+     {
+-      return std::format("{} in {} port", name(),
+-          ((myJack == Jack::Left) ^ swappedPorts) ? "left" : "right");
++      return BSPF::concat(name(), " in ", ((myJack == Jack::Left) ^ swappedPorts) ? "left" : "right", " port");
+     }
+ 
+     /**
 diff --git a/src/emucore/ControllerDetector.cxx b/src/emucore/ControllerDetector.cxx
-index 1778bad3c..f1c2f2008 100644
+index 1778bad3c..4568da0a5 100644
 --- a/src/emucore/ControllerDetector.cxx
 +++ b/src/emucore/ControllerDetector.cxx
+@@ -37,9 +37,9 @@ Controller::Type ControllerDetector::detectType(
+       cerr << "Controller auto-detection not consistent: "
+         << Controller::getName(type) << ", " << Controller::getName(detectedType) << '\n';
+     }
+-    Logger::debug(std::format("'{}' detected for {} port",
+-      Controller::getName(detectedType),
+-      port == Controller::Jack::Left ? "left" : "right"));
++    Logger::debug(BSPF::concat("'", Controller::getName(detectedType),
++      "' detected for ", port == Controller::Jack::Left ? "left" : "right",
++      " port"));
+     return detectedType;
+   }
+ 
 @@ -159,13 +159,13 @@ bool ControllerDetector::usesJoystickButton(ByteSpan image, Controller::Jack por
        { 0xb9, 0x0c, 0x00, 0x29, 0x80 }  // lda.w INPT4,y; and #$80 (joystick games only)
      }};
@@ -1644,6 +3099,52 @@ index 1778bad3c..f1c2f2008 100644
      return searchForBytes(image, sig);
    }))
      return true;
+diff --git a/src/emucore/CortexM0.cxx b/src/emucore/CortexM0.cxx
+index d76a2886a..4106a9c36 100644
+--- a/src/emucore/CortexM0.cxx
++++ b/src/emucore/CortexM0.cxx
+@@ -424,7 +424,7 @@ namespace {
+ 
+   string describeErrorCode(CortexM0::err_t err) {
+     if (CortexM0::isErrCustom(err))
+-      return std::format("custom error {}", CortexM0::getErrCustom(err));
++      return BSPF::concat("custom error ", CortexM0::getErrCustom(err));
+ 
+     switch (CortexM0::getErrIntrinsic(err)) {
+       case CortexM0::ERR_UNMAPPED_READ32:
+@@ -473,8 +473,7 @@ namespace {
+         break;
+     }
+ 
+-    return std::format("unknown intrinsic error {}",
+-      static_cast<uInt32>(CortexM0::getErrIntrinsic(err)));
++    return BSPF::concat("unknown intrinsic error ", static_cast<uInt32>(CortexM0::getErrIntrinsic(err)));
+   }
+ }  // namespace
+ 
+@@ -531,7 +530,8 @@ string CortexM0::describeError(err_t err)
+ {
+   if (err == ERR_NONE) return "no error";
+ 
+-  return std::format("{} : 0x{:08x}", describeErrorCode(err), getErrExtra(err));
++  return BSPF::concat(describeErrorCode(err), " : 0x",
++    BSPF::formatInt(getErrExtra(err), 16, 8, '0'));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+diff --git a/src/emucore/EmulationWorker.cxx b/src/emucore/EmulationWorker.cxx
+index 630492156..42e652882 100644
+--- a/src/emucore/EmulationWorker.cxx
++++ b/src/emucore/EmulationWorker.cxx
+@@ -64,7 +64,7 @@ EmulationWorker::~EmulationWorker()
+   }
+   catch(const std::exception& e)
+   {
+-    Logger::error(std::format("ERROR: EmulationWorker: {}", e.what()));
++    Logger::error(BSPF::concat("ERROR: EmulationWorker: ", e.what()));
+   }
+   catch(...)
+   {
 diff --git a/src/emucore/Event.hxx b/src/emucore/Event.hxx
 index d920fa03b..843b8bb88 100644
 --- a/src/emucore/Event.hxx
@@ -1676,10 +3177,20 @@ index d920fa03b..843b8bb88 100644
                carried.push_back(
                  {t.type, 0, heldValueBefore(t.type, myCyclesLastWindow), false});
 diff --git a/src/emucore/EventHandler.cxx b/src/emucore/EventHandler.cxx
-index a6acd917a..ddd7c7d17 100644
+index a6acd917a..7d0953eec 100644
 --- a/src/emucore/EventHandler.cxx
 +++ b/src/emucore/EventHandler.cxx
-@@ -2254,7 +2254,7 @@ StringList EventHandler::getActionList(EventMode mode)
+@@ -193,8 +193,7 @@ void EventHandler::toggleAllow4JoyDirections(bool toggle)
+   }
+ 
+   myOSystem.frameBuffer().showTextMessage(
+-    std::format("Allow all 4 joystick directions {}",
+-      joyAllow4 ? "enabled" : "disabled"));
++    BSPF::concat("Allow all 4 joystick directions ", joyAllow4 ? "enabled" : "disabled"));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -2254,7 +2253,7 @@ StringList EventHandler::getActionList(EventMode mode)
    StringList l;
  
    const auto collectActions = [&l](const auto& list) {
@@ -1688,6 +3199,56 @@ index a6acd917a..ddd7c7d17 100644
        [](const auto& item) { return item.action; });
    };
  
+@@ -2528,7 +2527,7 @@ void EventHandler::changeMouseControllerMode(int direction)
+   myOSystem.frameBuffer().setCursorState(); // if necessary change grab mouse
+ 
+   myOSystem.frameBuffer().showTextMessage(
+-    std::format("Mouse controls {} devices", MSG[i]));
++    BSPF::concat("Mouse controls ", MSG[i], " devices"));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -2540,9 +2539,7 @@ void EventHandler::changeMouseCursor(int direction)
+   myOSystem.frameBuffer().setCursorState();
+ 
+   myOSystem.frameBuffer().showTextMessage(
+-    std::format("Mouse cursor visibility: {}UI, {}Emulation",
+-      (cursor & 2) ? "+" : "-",
+-      (cursor & 1) ? "+" : "-"));
++    BSPF::concat("Mouse cursor visibility: ", (cursor & 2) ? "+" : "-", "UI, ", (cursor & 1) ? "+" : "-", "Emulation"));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+diff --git a/src/emucore/FBMessageHandler.cxx b/src/emucore/FBMessageHandler.cxx
+index 11f48f407..b3bda6c75 100644
+--- a/src/emucore/FBMessageHandler.cxx
++++ b/src/emucore/FBMessageHandler.cxx
+@@ -357,10 +357,10 @@ void FBMessageHandler::drawStats(float framesPerSecond)
+   ColorId color = myOSystem.console().tia().frameBufferScanlinesLastFrame() !=
+     myLastScanlines ? kDbgColorRed : myStatsMsg.color;
+ 
+-  const string line1 = std::format("{} / {:.1f}Hz => {}",
+-    myOSystem.console().tia().frameBufferScanlinesLastFrame(),
+-    myOSystem.console().currentFrameRate(),
+-    info.DisplayFormat);
++  const string line1 = BSPF::concat(
++    myOSystem.console().tia().frameBufferScanlinesLastFrame(), " / ",
++    BSPF::formatFixed(myOSystem.console().currentFrameRate(), 1),
++    "Hz => ", info.DisplayFormat);
+ 
+   myStatsMsg.surface->drawString(f, line1, xPos, yPos,
+     myStatsMsg.w, color, TextAlign::Left, 0, true, kBGColor);
+@@ -371,8 +371,8 @@ void FBMessageHandler::drawStats(float framesPerSecond)
+   const float speed = myOSystem.settings().getBool("turbo")
+     ? 50.F
+     : myOSystem.settings().getFloat("speed");
+-  const string line2 = std::format("{:.1f}fps @ {:.0f}% speed",
+-    framesPerSecond, 100 * speed);
++  const string line2 = BSPF::concat(BSPF::formatFixed(framesPerSecond, 1),
++    "fps @ ", BSPF::formatFixed(100 * speed, 0), "% speed");
+ 
+   myStatsMsg.surface->drawString(f, line2, xPos, yPos,
+     myStatsMsg.w, myStatsMsg.color, TextAlign::Left, 0, true, kBGColor);
 diff --git a/src/emucore/FSNode.cxx b/src/emucore/FSNode.cxx
 index 845864052..6b5e07e2b 100644
 --- a/src/emucore/FSNode.cxx
@@ -1723,11 +3284,70 @@ index b2ef1632e..c5f711aff 100644
          return BSPF::endsWithIgnoreCase(getName(), ext);
        });
      }
+diff --git a/src/emucore/FrameBuffer.cxx b/src/emucore/FrameBuffer.cxx
+index cc8040255..910dfe6fe 100644
+--- a/src/emucore/FrameBuffer.cxx
++++ b/src/emucore/FrameBuffer.cxx
+@@ -584,8 +584,7 @@ void FrameBuffer::toggleFrameStats(bool toggle)
+     myOSystem.settings().getBool("dev.settings") ? "dev.stats" : "plr.stats",
+     myMsgHandler.statsEnabled());
+ 
+-  showTextMessage(std::format("Console info {}",
+-    myMsgHandler.statsEnabled() ? "enabled" : "disabled"));
++  showTextMessage(BSPF::concat("Console info ", myMsgHandler.statsEnabled() ? "enabled" : "disabled"));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -859,16 +858,15 @@ void FrameBuffer::toggleFullscreen(bool toggle)
+         if(state != EventHandlerState::DEBUGGER)
+         {
+           const string msg = isFullscreen
+-            ? std::format("Fullscreen {} ({} Hz, Zoom {}%)",
+-                state_str, myBackend->refreshRate(),
+-                static_cast<int>(round(myActiveVidMode.zoom * 100)))
+-            : std::format("Fullscreen {} (Zoom {}%)",
+-                state_str,
+-                static_cast<int>(round(myActiveVidMode.zoom * 100)));
++            ? BSPF::concat("Fullscreen ", state_str, " (",
++                myBackend->refreshRate(), " Hz, Zoom ",
++                static_cast<int>(round(myActiveVidMode.zoom * 100)), "%)")
++            : BSPF::concat("Fullscreen ", state_str, " (Zoom ",
++                static_cast<int>(round(myActiveVidMode.zoom * 100)), "%)");
+           showTextMessage(msg);
+         }
+         else
+-          showTextMessage(std::format("Fullscreen {}", state_str));
++          showTextMessage(BSPF::concat("Fullscreen ", state_str));
+       }
+       break;
+     }
+@@ -895,9 +893,9 @@ void FrameBuffer::toggleAdaptRefresh(bool toggle)
+       myOSystem.createFrameBuffer();
+     }
+ 
+-    showTextMessage(std::format("Adapt refresh rate {} ({} Hz)",
+-      isAdaptRefresh ? "enabled" : "disabled",
+-      myBackend->refreshRate()));
++    showTextMessage(BSPF::concat("Adapt refresh rate ",
++      isAdaptRefresh ? "enabled" : "disabled", " (", myBackend->refreshRate(),
++      " Hz)"));
+   }
+ }
+ #endif  // ADAPTABLE_REFRESH_SUPPORT
+@@ -919,7 +917,7 @@ void FrameBuffer::changeOverscan(int direction)
+     }
+ 
+     const string val = overscan
+-      ? std::format("{}{}{}", overscan > 0 ? "+" : "", overscan, "%")
++      ? BSPF::concat(overscan > 0 ? "+" : "", overscan, "%")
+       : "Off";
+     myOSystem.frameBuffer().showGaugeMessage("Overscan", val, overscan, 0, 10);
+   }
 diff --git a/src/emucore/GlobalKeyHandler.cxx b/src/emucore/GlobalKeyHandler.cxx
-index d85021f9b..b9146aa45 100644
+index d85021f9b..5be69fbf1 100644
 --- a/src/emucore/GlobalKeyHandler.cxx
 +++ b/src/emucore/GlobalKeyHandler.cxx
-@@ -75,7 +75,7 @@ bool GlobalKeyHandler::handleEvent(Event::Type event, bool pressed, bool repeate
+@@ -75,11 +75,11 @@ bool GlobalKeyHandler::handleEvent(Event::Type event, bool pressed, bool repeate
            {Group::DEBUG, {Setting::START_DEBUG_ADJ, "Debug"}},
          }};
          // NOLINTNEXTLINE(readability-qualified-auto)
@@ -1736,8 +3356,119 @@ index d85021f9b..b9146aa45 100644
              [group](const auto& entry) { return entry.first == group; });
  
          myOSystem.frameBuffer().showTextMessage(
+-            std::format("{} settings", result->second.name));
++            BSPF::concat(result->second.name, " settings"));
+         mySetting = result->second.start;
+         mySettingActive = false;
+       }
+diff --git a/src/emucore/KidVid.cxx b/src/emucore/KidVid.cxx
+index 5deef7cb1..672ba4be2 100644
+--- a/src/emucore/KidVid.cxx
++++ b/src/emucore/KidVid.cxx
+@@ -123,8 +123,7 @@ void KidVid::update()
+       myBlock = 0;
+       openSampleFiles();
+ 
+-      myCallback(std::format("Game #{} - \"{}\"",
+-        gameNumber(), gameName[tapeIndex()]), true);
++      myCallback(BSPF::concat("Game #", gameNumber(), " - \"", gameName[tapeIndex()], "\""), true);
+     }
+   }
+ 
+@@ -317,8 +316,7 @@ void KidVid::setNextSong()
+     const string fileName = (temp < 10) ? "KVSHARED.WAV" : getFileName();
+     myOSystem.sound().playWav(myBasePath + fileName,
+                               ourSongStart[temp], mySongLength);
+-    myCallback(std::format("Read song #{} ({})",
+-                           mySongPointer, fileName), false);
++    myCallback(BSPF::concat("Read song #", mySongPointer, " (", fileName, ")"), false);
+ 
+   #ifdef DEBUG_BUILD
+     cerr << fileName << ": " << (ourSongPositions[mySongPointer] & 0x7f) << '\n';
+diff --git a/src/emucore/M6502.cxx b/src/emucore/M6502.cxx
+index e08896d43..09916efa2 100644
+--- a/src/emucore/M6502.cxx
++++ b/src/emucore/M6502.cxx
+@@ -132,9 +132,10 @@ inline uInt8 M6502::peek(uInt16 address, Device::AccessFlags flags)
+     {
+       myJustHitReadTrapFlag = true;
+ 
+-      myHitTrapInfo.message = std::format("RTrap{}[{}]{}",
+-        flags == DISASM_NONE ? "G" : "", Base::hex2(cond),
+-        myCondTraps[cond].name.empty() ? ": " : "If: {" + myCondTraps[cond].name + "} ");
++      myHitTrapInfo.message = BSPF::concat("RTrap",
++        flags == DISASM_NONE ? "G" : "", "[", Base::hex2(cond), "]",
++        myCondTraps[cond].name.empty()
++          ? ": " : "If: {" + myCondTraps[cond].name + "} ");
+ 
+       myHitTrapInfo.address = address;
+     }
+@@ -168,9 +169,9 @@ inline void M6502::poke(uInt16 address, uInt8 value, Device::AccessFlags flags)
+     {
+       myJustHitWriteTrapFlag = true;
+ 
+-      myHitTrapInfo.message = std::format("WTrap[{}]{}",
+-        Base::hex2(cond),
+-        myCondTraps[cond].name.empty() ? ":" : "If: {" + myCondTraps[cond].name + "}");
++      myHitTrapInfo.message = BSPF::concat("WTrap[", Base::hex2(cond), "]",
++        myCondTraps[cond].name.empty()
++          ? ":" : "If: {" + myCondTraps[cond].name + "}");
+ 
+       myHitTrapInfo.address = address;
+     }
+@@ -293,7 +294,7 @@ inline void M6502::_execute(uInt64 cycles, DispatchResult& result)
+               else
+               {
+                 result.setDebugger(currentCycles,
+-                  std::format("BP: ${}, bank #{}", Base::hex4(PC), static_cast<int>(bank)),
++                  BSPF::concat("BP: $", Base::hex4(PC), ", bank #", static_cast<int>(bank)),
+                   "Breakpoint");
+                 return;
+               }
+@@ -310,12 +311,12 @@ inline void M6502::_execute(uInt64 cycles, DispatchResult& result)
+           myLastBreakCycle = mySystem->cycles();
+           if(myLogBreaks)
+           {
+-            myDebugger->log(std::format("CBP[{}]:", Base::hex2(cond)));
++            myDebugger->log(BSPF::concat("CBP[", Base::hex2(cond), "]:"));
+           }
+           else
+           {
+             result.setDebugger(currentCycles,
+-              std::format("CBP[{}]: {}", Base::hex2(cond), myCondBreakNames[cond]),
++              BSPF::concat("CBP[", Base::hex2(cond), "]: ", myCondBreakNames[cond]),
+               "Conditional breakpoint");
+             return;
+           }
+@@ -332,7 +333,7 @@ inline void M6502::_execute(uInt64 cycles, DispatchResult& result)
+ 
+       const int cond = evalCondSaveStates();
+       if(cond > -1)
+-        myDebugger->addState(std::format("conditional savestate [{}]", Base::hex2(cond)));
++        myDebugger->addState(BSPF::concat("conditional savestate [", Base::hex2(cond), "]"));
+ 
+       mySystem->cart().clearAllRAMAccesses();
+ 
+@@ -373,7 +374,7 @@ inline void M6502::_execute(uInt64 cycles, DispatchResult& result)
+           if(rwpAddr)
+           {
+             result.setDebugger(currentCycles,
+-              std::format("RWP[@ ${}]: ", Base::hex4(rwpAddr)),
++              BSPF::concat("RWP[@ $", Base::hex4(rwpAddr), "]: "),
+               "Read from write port", oldPC);
+             return;
+           }
+@@ -385,7 +386,7 @@ inline void M6502::_execute(uInt64 cycles, DispatchResult& result)
+           if(wrpAddr)
+           {
+             result.setDebugger(currentCycles,
+-              std::format("WRP[@ ${}]: ", Base::hex4(wrpAddr)),
++              BSPF::concat("WRP[@ $", Base::hex4(wrpAddr), "]: "),
+               "Write to read port", oldPC);
+             return;
+           }
 diff --git a/src/emucore/M6532.cxx b/src/emucore/M6532.cxx
-index 30176efcf..540982930 100644
+index 30176efcf..7f6698f0f 100644
 --- a/src/emucore/M6532.cxx
 +++ b/src/emucore/M6532.cxx
 @@ -47,9 +47,9 @@ void M6532::reset()
@@ -1752,11 +3483,119 @@ index 30176efcf..540982930 100644
    else
      myRAM.fill(0);
  
+@@ -584,9 +584,9 @@ string M6532::getAccessCounters() const
+ 
+   // Helper: append one address+counter entry
+   const auto addEntry = [&out](uInt16 addr, Device::AccessCounter counter) {
+-    out += std::format("{},{}, ",
+-      Common::Base::toString(addr, Common::Base::Fmt::_16_4),
+-      Common::Base::toString(counter, Common::Base::Fmt::_10_8));
++    out += BSPF::concat(Common::Base::toString(
++      addr, Common::Base::Fmt::_16_4), ",", Common::Base::toString(
++      counter, Common::Base::Fmt::_10_8), ", ");
+   };
+ 
+   // Helper: append a labeled section
 diff --git a/src/emucore/OSystem.cxx b/src/emucore/OSystem.cxx
-index 4baeee393..2c37b0329 100644
+index 4baeee393..a72d732b0 100644
 --- a/src/emucore/OSystem.cxx
 +++ b/src/emucore/OSystem.cxx
-@@ -581,11 +581,11 @@ string OSystem::createConsole(const FSNode& rom, string_view md5sum, bool newrom
+@@ -92,8 +92,7 @@ OSystem::OSystem()
+   #endif
+ 
+   // Get build info
+-  myBuildInfo = std::format("Build {}, using {} [{}]",
+-    STELLA_BUILD, MediaFactory::backendName(), BSPF::ARCH);
++  myBuildInfo = BSPF::concat("Build ", STELLA_BUILD, ", using ", MediaFactory::backendName(), " [", BSPF::ARCH, "]");
+ 
+   mySettings = MediaFactory::createSettings();
+ 
+@@ -121,29 +120,20 @@ bool OSystem::initialize(const Settings::Options& options)
+ 
+   Logger::debug("Creating the OSystem ...");
+ 
+-  Logger::info(std::format(
+-    "Stella {}\n"
+-    "  Features: {}\n"
+-    "  {}\n\n"
+-    "Base directory:     '{}'\n"
+-    "State directory:    '{}'\n"
+-    "NVRam directory:    '{}'\n"
+-    "Persistence:        '{}'\n"
++  Logger::info(BSPF::concat(
++    "Stella ", STELLA_VERSION,
++    "\n  Features: ", myFeatures,
++    "\n  ", myBuildInfo,
++    "\n\nBase directory:     '", AsciiFold::toAscii(baseDir().getShortPath()),
++    "'\nState directory:    '", AsciiFold::toAscii(stateDir().getShortPath()),
++    "'\nNVRam directory:    '", AsciiFold::toAscii(nvramDir().getShortPath()),
++    "'\nPersistence:        '", AsciiFold::toAscii(describePersistence()),
++    "'\n"
+ #ifdef CHEATCODE_SUPPORT
+-    "Cheat file:         '{}'\n"
++    "Cheat file:         '", AsciiFold::toAscii(cheatFile().getShortPath()), "'\n",
+ #endif
+-    "Palette file:       '{}'\n",
+-    STELLA_VERSION,
+-    myFeatures,
+-    myBuildInfo,
+-    AsciiFold::toAscii(baseDir().getShortPath()),
+-    AsciiFold::toAscii(stateDir().getShortPath()),
+-    AsciiFold::toAscii(nvramDir().getShortPath()),
+-    AsciiFold::toAscii(describePersistence()),
+-#ifdef CHEATCODE_SUPPORT
+-    AsciiFold::toAscii(cheatFile().getShortPath()),
+-#endif
+-    AsciiFold::toAscii(paletteFile().getShortPath())));
++    "Palette file:       '", AsciiFold::toAscii(paletteFile().getShortPath()),
++    "'\n"));
+ 
+   // NOTE: The framebuffer MUST be created before any other object!!!
+   // Get relevant information about the video hardware
+@@ -491,7 +481,7 @@ string OSystem::createConsole(const FSNode& rom, string_view md5sum, bool newrom
+   }
+   catch(const std::runtime_error& e)
+   {
+-    const string err = std::format("ERROR: {}", e.what());
++    const string err = BSPF::concat("ERROR: ", e.what());
+     Logger::error(err);
+     return err;
+   }
+@@ -534,10 +524,9 @@ string OSystem::createConsole(const FSNode& rom, string_view md5sum, bool newrom
+           myConsole->cartridge().detectedType() + ", loading ROM" + id);
+     }
+     const FSNode propsFile = myRomFile.getSiblingNode(".pro");
+-    string info = std::format("Game console created:\n  ROM file: {}\n",
+-      myRomFile.getShortPath());
++    string info = BSPF::concat("Game console created:\n  ROM file: ", myRomFile.getShortPath(), "\n");
+     if(propsFile.exists())
+-      info += std::format("  PRO file: {}\n", propsFile.getShortPath());
++      info += BSPF::concat("  PRO file: ", propsFile.getShortPath(), "\n");
+     info += '\n';
+     info += getROMInfo(*myConsole);
+     Logger::info(info);
+@@ -556,15 +545,15 @@ string OSystem::createConsole(const FSNode& rom, string_view md5sum, bool newrom
+     {
+       if(settings().getBool(devSettings ? "dev.detectedinfo" : "plr.detectedinfo"))
+       {
+-        myFrameBuffer->showTextMessage(std::format("{}/{} - {}{} - {}",
+-          myConsole->leftController().name(),
+-          myConsole->rightController().name(),
++        myFrameBuffer->showTextMessage(BSPF::concat(
++          myConsole->leftController().name(), "/",
++          myConsole->rightController().name(), " - ",
+           myConsole->cartridge().detectedType(),
+-          myConsole->cartridge().isPlusROM() ? " PlusROM " : "",
++          myConsole->cartridge().isPlusROM() ? " PlusROM " : "", " - ",
+           myConsole->getFormatString()));
+       }
+       else if(!myLauncherUsed)
+-        myFrameBuffer->showTextMessage(std::format("Stella {}", STELLA_VERSION));
++        myFrameBuffer->showTextMessage(BSPF::concat("Stella ", STELLA_VERSION));
+     }
+ 
+     // Check for first PlusROM start
+@@ -581,11 +570,11 @@ string OSystem::createConsole(const FSNode& rom, string_view md5sum, bool newrom
          std::array<char, 32> id_chr{};
          std::random_device rd;
          std::array<std::random_device::result_type, std::mt19937::state_size> seedData{};
@@ -1770,8 +3609,61 @@ index 4baeee393..2c37b0329 100644
            [&]{ return HEX_DIGITS[dist(gen)]; });
  
          settings().setValue("plusroms.fixedid",
+@@ -598,8 +587,7 @@ string OSystem::createConsole(const FSNode& rom, string_view md5sum, bool newrom
+       // recognize this installation; it isn't logged in full so it can't
+       // leak through a shared log file. The full ID is always visible to
+       // the user themselves via the PlusROM setup dialog.
+-      Logger::info(std::format("PlusROM Nick: {}, ID: <redacted>",
+-        settings().getString("plusroms.nick")));
++      Logger::info(BSPF::concat("PlusROM Nick: ", settings().getString("plusroms.nick"), ", ID: <redacted>"));
+     }
+   }
+ 
+@@ -673,7 +661,7 @@ string OSystem::getROMInfo(const FSNode& romfile)
+   }
+   catch(const std::runtime_error& e)
+   {
+-    return std::format("ERROR: Couldn't get ROM info ({})", e.what());
++    return BSPF::concat("ERROR: Couldn't get ROM info (", e.what(), ")");
+   }
+ 
+   return getROMInfo(*console);
+@@ -754,8 +742,7 @@ unique_ptr<Console> OSystem::openConsole(const FSNode& romfile, string& md5)
+       {
+         // Cart md5 wasn't found, so we create a new props for it
+         props.set(PropType::Cart_MD5, cartmd5);
+-        props.set(PropType::Cart_Name, std::format("{}{}", savedName,
+-                                                   cart->multiCartID()));
++        props.set(PropType::Cart_Name, BSPF::concat(savedName, cart->multiCartID()));
+         myPropSet->insert(props, false);
+       }
+     }
+@@ -904,16 +891,13 @@ string OSystem::getROMInfo(const Console& console)
+ {
+   const ConsoleInfo& info = console.about();
+ 
+-  return std::format(
+-    "  Cart Name:       {}\n"
+-    "  Cart MD5:        {}\n"
+-    "  Controller 0:    {}\n"
+-    "  Controller 1:    {}\n"
+-    "  Display Format:  {}\n"
+-    "  Bankswitch Type: {}\n",
+-    info.CartName, info.CartMD5,
+-    info.Control0, info.Control1,
+-    info.DisplayFormat, info.BankSwitch);
++  return BSPF::concat(
++    "  Cart Name:       ", info.CartName,
++    "\n  Cart MD5:        ", info.CartMD5,
++    "\n  Controller 0:    ", info.Control0,
++    "\n  Controller 1:    ", info.Control1,
++    "\n  Display Format:  ", info.DisplayFormat,
++    "\n  Bankswitch Type: ", info.BankSwitch, "\n");
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 diff --git a/src/emucore/PlusROM.cxx b/src/emucore/PlusROM.cxx
-index 3dd3f2007..8d257373e 100644
+index 3dd3f2007..433bdf4d6 100644
 --- a/src/emucore/PlusROM.cxx
 +++ b/src/emucore/PlusROM.cxx
 @@ -76,7 +76,7 @@ class PlusROMRequest {
@@ -1783,7 +3675,51 @@ index 3dd3f2007..8d257373e 100644
      }
      PlusROMRequest()
        : myDestination{Destination({}, {})},
-@@ -208,7 +208,7 @@ bool PlusROM::initialize(ByteSpan image)
+@@ -92,8 +92,7 @@ class PlusROMRequest {
+ 
+       httplib::Client client(myDestination.host);
+       const httplib::Headers headers = {
+-        {"PlusROM-Info", std::format("agent=Stella; ver={}; id={}; nick={}",
+-          STELLA_VERSION, myId.id, myId.nick)}
++        {"PlusROM-Info", BSPF::concat("agent=Stella; ver=", STELLA_VERSION, "; id=", myId.id, "; nick=", myId.nick)}
+       };
+ 
+       client.set_connection_timeout(milliseconds(CONNECTION_TIMEOUT_MSEC));
+@@ -109,8 +108,7 @@ class PlusROMRequest {
+       );
+ 
+       if(!response) {
+-        Logger::error(std::format("PlusROM: request to {}/{}: failed",
+-          myDestination.host, myDestination.path));
++        Logger::error(BSPF::concat("PlusROM: request to ", myDestination.host, "/", myDestination.path, ": failed"));
+ 
+         myState = State::failed;
+ 
+@@ -118,9 +116,9 @@ class PlusROMRequest {
+       }
+ 
+       if(response->status != 200) {
+-        Logger::error(std::format(
+-          "PlusROM: request to {}/{}: failed with HTTP status {}",
+-          myDestination.host, myDestination.path, response->status));
++        Logger::error(BSPF::concat("PlusROM: request to ", myDestination.host,
++          "/", myDestination.path, ": failed with HTTP status ",
++          response->status));
+ 
+         myState = State::failed;
+ 
+@@ -128,8 +126,8 @@ class PlusROMRequest {
+       }
+ 
+       if(response->body.empty() || static_cast<unsigned char>(response->body[0]) != (response->body.size() - 1)) {
+-        Logger::error(std::format("PlusROM: request to {}/{}: invalid response",
+-          myDestination.host, myDestination.path));
++        Logger::error(BSPF::concat("PlusROM: request to ", myDestination.host,
++          "/", myDestination.path, ": invalid response"));
+ 
+         myState = State::failed;
+ 
+@@ -208,7 +206,7 @@ bool PlusROM::initialize(ByteSpan image)
      return myIsPlusROM = false;  // Invalid NMI
  
    // Path stored first, 0-terminated
@@ -1792,7 +3728,7 @@ index 3dd3f2007..8d257373e 100644
    const size_t pathLen = static_cast<size_t>(pathNull - (image.begin() + i));
    const string path(reinterpret_cast<const char*>(image.data() + i), pathLen);
    i += pathLen;
-@@ -220,7 +220,7 @@ bool PlusROM::initialize(ByteSpan image)
+@@ -220,7 +218,7 @@ bool PlusROM::initialize(ByteSpan image)
    ++i;  // advance past 0 terminator
  
    // Host stored next, 0-terminated
@@ -1801,7 +3737,7 @@ index 3dd3f2007..8d257373e 100644
    const size_t hostLen = static_cast<size_t>(hostNull - (image.begin() + i));
    const string host(reinterpret_cast<const char*>(image.data() + i), hostLen);
    i += hostLen;
-@@ -397,7 +397,7 @@ bool PlusROM::isValidHost(string_view host)
+@@ -397,7 +395,7 @@ bool PlusROM::isValidHost(string_view host)
  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  bool PlusROM::isValidPath(string_view path)
  {
@@ -1855,6 +3791,33 @@ index 4517afbde..ca2b2e3b0 100644
        });
  
      if(it != DefProps.end() &&
+diff --git a/src/emucore/QuadTari.cxx b/src/emucore/QuadTari.cxx
+index 3438e7dba..3bbf4e13a 100644
+--- a/src/emucore/QuadTari.cxx
++++ b/src/emucore/QuadTari.cxx
+@@ -166,8 +166,7 @@ void QuadTari::update()
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ string QuadTari::name() const
+ {
+-  return std::format("QT({}/{})", myFirstController->name(),
+-                     mySecondController->name());
++  return BSPF::concat("QT(", myFirstController->name(), "/", mySecondController->name(), ")");
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+diff --git a/src/emucore/Random.hxx b/src/emucore/Random.hxx
+index c4e122b5e..6a9bfa7eb 100644
+--- a/src/emucore/Random.hxx
++++ b/src/emucore/Random.hxx
+@@ -47,7 +47,7 @@ class Random : public Serializable
+     */
+     explicit Random(uInt32 seed) {
+       initSeed(seed);
+-      Logger::info(std::format("Random seed: {}\n", myValue));
++      Logger::info(BSPF::concat("Random seed: ", myValue, "\n"));
+     }
+ 
+     /**
 diff --git a/src/emucore/Serializer.cxx b/src/emucore/Serializer.cxx
 index 983a67b78..e212e0a40 100644
 --- a/src/emucore/Serializer.cxx
@@ -1953,6 +3916,130 @@ index d7ff00b17..414b52db6 100644
  }
  
  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+diff --git a/src/emucore/TIASurface.cxx b/src/emucore/TIASurface.cxx
+index 8cf7dfecf..325a693ad 100644
+--- a/src/emucore/TIASurface.cxx
++++ b/src/emucore/TIASurface.cxx
+@@ -144,7 +144,7 @@ void TIASurface::setNTSC(NTSCFilter::Preset preset, bool show)
+   {
+     enableNTSC(true);
+     const string& mode = myNTSCFilter.setPreset(preset);
+-    if(show) myFB.showTextMessage(std::format("TV filtering ({} mode)", mode));
++    if(show) myFB.showTextMessage(BSPF::concat("TV filtering (", mode, " mode)"));
+   }
+   myOSystem.settings().setValue("tv.filter", static_cast<int>(preset));
+ }
+@@ -221,7 +221,7 @@ void TIASurface::changeScanlineIntensity(int direction)
+   enableNTSC(ntscEnabled());
+ 
+   myFB.showGaugeMessage("Scanline intensity",
+-    intensity ? std::format("{}%", intensity) : "Off", intensity);
++    intensity ? BSPF::concat(intensity, "%") : "Off", intensity);
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -271,7 +271,7 @@ void TIASurface::cycleScanlineMask(int direction)
+     createScanlineSurface();
+ 
+   myOSystem.frameBuffer().showTextMessage(
+-    std::format("Scanline data '{}'", Names[i]));
++    BSPF::concat("Scanline data '", Names[i], "'"));
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -448,26 +448,25 @@ string TIASurface::effectsInfo() const
+       buf = "Disabled, normal mode";
+       break;
+     case Filter::Phosphor:
+-      buf = std::format("Disabled, phosphor={}", myPBlend);
++      buf = BSPF::concat("Disabled, phosphor=", myPBlend);
+       break;
+     case Filter::BlarggNormal:
+       buf = myNTSCFilter.getPreset();
+       break;
+     case Filter::BlarggPhosphor:
+-      buf = std::format("{}, phosphor={}", myNTSCFilter.getPreset(), myPBlend);
++      buf = BSPF::concat(myNTSCFilter.getPreset(), ", phosphor=", myPBlend);
+       break;
+     default:
+       break;  // Not supposed to get here
+   }
+   if(mySLineSurface->blendLevel() > 0)
+-    buf += std::format(", scanlines={}/{}",
+-      mySLineSurface->blendLevel(),
++    buf += BSPF::concat(", scanlines=", mySLineSurface->blendLevel(), "/",
+       myOSystem.settings().getString("tv.scanmask"));
+ 
+-  buf += std::format(", inter={}, aspect correction={}, palette={}",
++  buf += BSPF::concat(", inter=",
+     myOSystem.settings().getBool("tia.inter") ? "enabled" : "disabled",
+-    correctAspect() ? "enabled" : "disabled",
+-    myOSystem.settings().getString("palette"));
++    ", aspect correction=", correctAspect() ? "enabled" : "disabled",
++    ", palette=", myOSystem.settings().getString("palette"));
+ 
+   return buf;
+ }
+diff --git a/src/emucore/tia/TIA.cxx b/src/emucore/tia/TIA.cxx
+index aa22df656..36113bcda 100644
+--- a/src/emucore/tia/TIA.cxx
++++ b/src/emucore/tia/TIA.cxx
+@@ -80,7 +80,7 @@ namespace {
+   };
+ 
+   template<Bitmask::Type T>
+-  constexpr bool bmBool(T v) noexcept { return Bitmask::Enum{v}.any(); }
++  constexpr bool bmBool(T v) noexcept { return Bitmask::Enum<T>{v}.any(); }
+ }  // namespace
+ 
+ // Flags the last possible RESx write during extended HBLANK — CPU cycle 75.
+@@ -1258,10 +1258,10 @@ bool TIA::toggleBit(TIABit b, BitState mode)
+ bool TIA::toggleBits(bool toggle)
+ {
+   toggleBit(TIABit::All, toggle
+-    ? Bitmask::Enum{mySpriteEnabledBits}.any() ? BitState::Off : BitState::On
++    ? Bitmask::Enum<TIABit>{mySpriteEnabledBits}.any() ? BitState::Off : BitState::On
+     : BitState::Query);
+ 
+-  return Bitmask::Enum{mySpriteEnabledBits}.any();
++  return Bitmask::Enum<TIABit>{mySpriteEnabledBits}.any();
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -1301,7 +1301,7 @@ bool TIA::toggleCollision(TIABit b, BitState mode)
+ bool TIA::toggleCollisions(bool toggle)
+ {
+   toggleCollision(TIABit::All, toggle
+-    ? Bitmask::Enum{myCollisionsEnabledBits}.any() ? BitState::Off : BitState::On
++    ? Bitmask::Enum<TIABit>{myCollisionsEnabledBits}.any() ? BitState::Off : BitState::On
+     : BitState::Query);
+ 
+   return Bitmask::BitmaskEnum{myCollisionsEnabledBits}.any();
+@@ -2568,18 +2568,16 @@ string TIA::getAccessCounters() const
+ 
+   out += "TIA reads:\n";
+   for(uInt16 addr = 0x00; addr < TIA_READ_SIZE; ++addr)
+-    out += std::format("{},{}, ",
+-      Common::Base::toString(addr, Common::Base::Fmt::_16_4),
+-      Common::Base::toString(myAccessCounter[TIA_SIZE + addr],
+-                             Common::Base::Fmt::_10_8));
++    out += BSPF::concat(Common::Base::toString(
++      addr, Common::Base::Fmt::_16_4), ",", Common::Base::toString(
++      myAccessCounter[TIA_SIZE + addr], Common::Base::Fmt::_10_8), ", ");
+   out += "\n";
+ 
+   out += "TIA writes:\n";
+   for(uInt16 addr = 0x00; addr < TIA_SIZE; ++addr)
+-    out += std::format("{},{}, ",
+-      Common::Base::toString(addr, Common::Base::Fmt::_16_4),
+-      Common::Base::toString(myAccessCounter[addr],
+-                             Common::Base::Fmt::_10_8));
++    out += BSPF::concat(Common::Base::toString(
++      addr, Common::Base::Fmt::_16_4), ",", Common::Base::toString(
++      myAccessCounter[addr], Common::Base::Fmt::_10_8), ", ");
+   out += "\n";
+ 
+   return out;
 diff --git a/src/gui/EditableWidget.cxx b/src/gui/EditableWidget.cxx
 index d638ae415..cb84cacc0 100644
 --- a/src/gui/EditableWidget.cxx
@@ -2021,10 +4108,56 @@ index 0f304b9e0..e84018ba1 100644
    _historyHome = _currentHistoryIdx;
  
 diff --git a/src/gui/GameInfoDialog.cxx b/src/gui/GameInfoDialog.cxx
-index 423e44ab7..12c836dd8 100644
+index 423e44ab7..daff22ef8 100644
 --- a/src/gui/GameInfoDialog.cxx
 +++ b/src/gui/GameInfoDialog.cxx
-@@ -1160,10 +1160,10 @@ void GameInfoDialog::updateMultiCart()
+@@ -722,7 +722,7 @@ void GameInfoDialog::loadConfig()
+     myGameFile = FSNode(instance().launcher().selectedRom());
+   }
+ 
+-  string title = std::format("Game properties - {}", myGameProperties.get(PropType::Cart_Name));
++  string title = BSPF::concat("Game properties - ", myGameProperties.get(PropType::Cart_Name));
+   if(_font.getStringWidth(title) > getWidth() - fontWidth() * 6)
+     title = title.substr(0, getWidth() / fontWidth() - 7) + ELLIPSIS;
+   setTitle(title);
+@@ -755,7 +755,7 @@ void GameInfoDialog::loadEmulationProperties(const Properties& props)
+       // remove '*':
+       if(pos != string::npos)
+         bs = bs.substr(0, pos) + bs.substr(pos + 1);
+-      bsDetected = std::format("{} detected", bs);
++      bsDetected = BSPF::concat(bs, " detected");
+     }
+     else
+     {
+@@ -764,8 +764,7 @@ void GameInfoDialog::loadEmulationProperties(const Properties& props)
+       // Try to load the image for auto detection
+       if(myGameFile.exists() && !myGameFile.isDirectory())
+         if(ByteArray image = instance().openROM(myGameFile, md5); !image.empty())
+-          bsDetected = std::format("{} detected",
+-              Bankswitch::typeToDesc(CartDetector::autodetectType(image)));
++          bsDetected = BSPF::concat(Bankswitch::typeToDesc(CartDetector::autodetectType(image)), " detected");
+     }
+   }
+   myTypeDetected->setLabel(bsDetected);
+@@ -942,13 +941,14 @@ void GameInfoDialog::loadHighScoresProperties(const Properties& props)
+ 
+   myHighScoreNotes->setText(info.notes);
+ 
+-  myVarAddress->setText(std::format("{:X}", info.varsAddr));
+-  mySpecialAddress->setText(std::format("{:X}", info.specialAddr));
++  myVarAddress->setText(BSPF::formatInt(info.varsAddr, 16, 0, ' ', true));
++  mySpecialAddress->setText(BSPF::formatInt(info.specialAddr, 16, 0, ' ', true));
+ 
+   for (uInt32 a = 0; a < HSM::MAX_SCORE_ADDR; ++a)
+   {
+     if(a < HighScoresManager::numAddrBytes(info.numDigits, info.trailingZeroes))
+-      myScoreAddress[a]->setText(std::format("{:X}", info.scoreAddr[a]));
++      myScoreAddress[a]->setText(
++        BSPF::formatInt(info.scoreAddr[a], 16, 0, ' ', true));
+     else
+       myScoreAddress[a]->setText("");
+   }
+@@ -1160,12 +1160,12 @@ void GameInfoDialog::updateMultiCart()
    const string& selected = myBSType->getSelectedTag().toString();
    const string& detected = myTypeDetected->getLabel();
  
@@ -2035,8 +4168,44 @@ index 423e44ab7..12c836dd8 100644
 -  const bool isInMulti = !isMulti && std::ranges::any_of(MultiCart,
 +  const bool isInMulti = !isMulti && std::any_of(MultiCart.begin(), MultiCart.end(),
        [&](string_view entry) {
-           return detected.contains(std::format("{} [", entry));
+-          return detected.contains(std::format("{} [", entry));
++          return detected.contains(BSPF::concat(entry, " ["));
        });
+ 
+   // en/disable Emulation tab widgets
+@@ -1238,9 +1238,9 @@ void GameInfoDialog::updateControllerStates()
+         label = "QuadTari detected"; // remove plugged-in controller names
+     }
+     else if(!image.empty())
+-      label = std::format("{} detected", ControllerDetector::detectName(image, type,
++      label = BSPF::concat(ControllerDetector::detectName(image, type,
+                                              !swapPorts ? Controller::Jack::Left : Controller::Jack::Right,
+-                                             instance().settings()));
++                                             instance().settings()), " detected");
+   }
+   myLeftPortDetected->setLabel(label);
+ 
+@@ -1257,9 +1257,9 @@ void GameInfoDialog::updateControllerStates()
+         label = "QuadTari detected"; // remove plugged-in controller names
+     }
+     else if(!image.empty())
+-      label = std::format("{} detected", ControllerDetector::detectName(image, type,
++      label = BSPF::concat(ControllerDetector::detectName(image, type,
+                                              !swapPorts ? Controller::Jack::Right : Controller::Jack::Left,
+-                                             instance().settings()));
++                                             instance().settings()), " detected");
+   }
+   myRightPortDetected->setLabel(label);
+ 
+@@ -1459,7 +1459,7 @@ void GameInfoDialog::setAddressVal(const EditTextWidget* addressWidget, EditText
+     val = HighScoresManager::convert(val, maxVal, isBCD, zeroBased);
+ 
+     // format output and display in value widget
+-    valWidget->setText(std::format("{}", static_cast<uInt16>(val)));
++    valWidget->setText(BSPF::concat(static_cast<uInt16>(val)));
+   }
+   else
+     valWidget->setText("");
 diff --git a/src/gui/LauncherFileListWidget.cxx b/src/gui/LauncherFileListWidget.cxx
 index 19e11e7b8..8e72fc6fa 100644
 --- a/src/gui/LauncherFileListWidget.cxx
@@ -2063,6 +4232,19 @@ index c8f40ed05..803429932 100644
      (const FSNode& node1, const FSNode& node2)
      {
        const int compare = BSPF::compareIgnoreCase(
+diff --git a/src/os/libretro/FBBackendLIBRETRO.hxx b/src/os/libretro/FBBackendLIBRETRO.hxx
+index c4c48cf30..bb6310a4f 100644
+--- a/src/os/libretro/FBBackendLIBRETRO.hxx
++++ b/src/os/libretro/FBBackendLIBRETRO.hxx
+@@ -98,7 +98,7 @@ class FBBackendLIBRETRO : public FBBackend
+                           float /*minValue*/, float /*maxValue*/) override {
+       const string combined = valueText.empty()
+         ? string{message}
+-        : std::format("{}: {}", message, valueText);
++        : BSPF::concat(message, ": ", valueText);
+       if(combined != myLastMessage)
+       {
+         myLastMessage = combined;
 diff --git a/src/os/windows/SerialPortWINDOWS.cxx b/src/os/windows/SerialPortWINDOWS.cxx
 index c28d261f1..47889d5fb 100644
 --- a/src/os/windows/SerialPortWINDOWS.cxx
