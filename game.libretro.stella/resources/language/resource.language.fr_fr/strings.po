@@ -150,6 +150,46 @@ msgctxt "#30030"
 msgid "Input"
 msgstr ""
 
+msgctxt "#30031"
+msgid "ntsc"
+msgstr ""
+
+msgctxt "#30032"
+msgid "pal"
+msgstr ""
+
+msgctxt "#30033"
+msgid "secam"
+msgstr ""
+
+msgctxt "#30034"
+msgid "ntsc50"
+msgstr ""
+
+msgctxt "#30035"
+msgid "pal60"
+msgstr ""
+
+msgctxt "#30036"
+msgid "secam60"
+msgstr ""
+
+msgctxt "#30037"
+msgid "composite"
+msgstr ""
+
+msgctxt "#30038"
+msgid "s-video"
+msgstr ""
+
+msgctxt "#30039"
+msgid "rgb"
+msgstr ""
+
+msgctxt "#30040"
+msgid "badly adjusted"
+msgstr ""
+
 #~ msgctxt "#30000"
 #~ msgid "Settings"
 #~ msgstr "Paramètres"
