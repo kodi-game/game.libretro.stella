@@ -1,7 +1,7 @@
-From 583eab1dc45f17c8e8a715879ca7f99f2061cece Mon Sep 17 00:00:00 2001
+From 1ecad5badac3b7fb857299751aba72ec4b0e5296 Mon Sep 17 00:00:00 2001
 From: Garrett Brown <garrett@Garretts-MacBook-Pro.local>
 Date: Fri, 21 Aug 2026 22:14:41 -0700
-Subject: [PATCH] Fix C++23 flag for older AppleClang
+Subject: [PATCH 1/2] Fix C++23 flag for older AppleClang
 
 ---
  src/os/libretro/Makefile | 15 ++++++++++++++-
@@ -36,5 +36,5 @@ index 37c8bfff9..c93d8d5c0 100644
  else
     LIBS :=
 -- 
-2.50.1 (Apple Git-155)
+2.43.0
 
