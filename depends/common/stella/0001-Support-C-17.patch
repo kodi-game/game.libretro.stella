@@ -1,7 +1,7 @@
-From 3bfa77bac4fe05ce79531dc6b7d274cc50742c3b Mon Sep 17 00:00:00 2001
+From b861b68e4a98352bb6d2ebcc531d8787700496f1 Mon Sep 17 00:00:00 2001
 From: Garrett Brown <garrett@Garretts-MacBook-Pro.local>
 Date: Fri, 21 Aug 2026 22:14:41 -0700
-Subject: [PATCH] Support older libretro C++ compilers
+Subject: [PATCH] Support C++17
 
 ---
  src/cheat/CheatManager.cxx                    |  10 +-
@@ -29,11 +29,11 @@ Subject: [PATCH] Support older libretro C++ compilers
  src/common/Rect.hxx                           |  74 +-
  src/common/RewindManager.cxx                  |  30 +-
  src/common/Stack.hxx                          |   9 +-
- src/common/StaggeredLogger.cxx                |  17 +-
+ src/common/StaggeredLogger.cxx                |  18 +-
  src/common/StateManager.cxx                   |  38 +-
  src/common/StellaKeys.hxx                     |   8 +-
  src/common/Variant.hxx                        |  65 +-
- src/common/VideoModeHandler.cxx               |   7 +-
+ src/common/VideoModeHandler.cxx               |   8 +-
  src/common/bspf.hxx                           | 648 ++++++++++++++++--
  .../repository/CompositeKVRJsonAdapter.cxx    |   2 +-
  .../repository/KeyValueRepositoryFile.hxx     |   2 +-
@@ -144,7 +144,7 @@ Subject: [PATCH] Support older libretro C++ compilers
  src/os/libretro/jni/Android.mk                |   4 +-
  src/os/libretro/libretro.cxx                  |  85 ++-
  src/os/windows/SerialPortWINDOWS.cxx          |   2 +-
- 140 files changed, 1933 insertions(+), 1269 deletions(-)
+ 140 files changed, 1933 insertions(+), 1271 deletions(-)
 
 diff --git a/src/cheat/CheatManager.cxx b/src/cheat/CheatManager.cxx
 index f6a470eb7..cfb947cb2 100644
@@ -1750,10 +1750,17 @@ index 3e61d8686..398fdeb3a 100644
  
      friend std::ostream& operator<<(std::ostream& os, const FixedStack<T>& s) {
 diff --git a/src/common/StaggeredLogger.cxx b/src/common/StaggeredLogger.cxx
-index bafc0667e..62674587d 100644
+index bafc0667e..fae5e1e29 100644
 --- a/src/common/StaggeredLogger.cxx
 +++ b/src/common/StaggeredLogger.cxx
-@@ -26,13 +26,14 @@ using namespace std::chrono;
+@@ -19,20 +19,20 @@
+ #include "Logger.hxx"
+ 
+ #include <chrono>
+-#include <format>
+ #include <limits>
+ 
+ using namespace std::chrono;
  
  namespace {
    // Returns the current local time formatted as HH:MM:SS.
@@ -1772,7 +1779,7 @@ index bafc0667e..62674587d 100644
    }
  }  // namespace
  
-@@ -74,8 +75,8 @@ void StaggeredLogger::logLine()
+@@ -74,8 +74,8 @@ void StaggeredLogger::logLine()
      Clock::now() - myLastIntervalStartTimestamp).count();
  
    Logger::log(
@@ -1783,7 +1790,7 @@ index bafc0667e..62674587d 100644
      myLevel);
  }
  
-@@ -111,13 +112,13 @@ void StaggeredLogger::startInterval()
+@@ -111,13 +111,13 @@ void StaggeredLogger::startInterval()
  
    // Decay the interval factor proportionally to how long we have been quiet.
    // Each full cooldown period that has elapsed reduces the factor by one step.
@@ -2053,10 +2060,18 @@ index e1deed24a..95e08ecce 100644
            else
              return 0.0;
 diff --git a/src/common/VideoModeHandler.cxx b/src/common/VideoModeHandler.cxx
-index 73a23f146..b03e72c63 100644
+index 73a23f146..5f1f2a560 100644
 --- a/src/common/VideoModeHandler.cxx
 +++ b/src/common/VideoModeHandler.cxx
-@@ -54,7 +54,8 @@ const VideoModeHandler::Mode&
+@@ -16,7 +16,6 @@
+ //============================================================================
+ 
+ #include <cmath>
+-#include <format>
+ 
+ #include "Settings.hxx"
+ #include "Bezel.hxx"
+@@ -54,7 +53,8 @@ const VideoModeHandler::Mode&
        // Overscan is not applicable in this mode
        myMode = Mode(myImage.w, myImage.h,
                      Mode::Stretch::Fill, myFullscreen,
@@ -2066,7 +2081,7 @@ index 73a23f146..b03e72c63 100644
      }
      else
      {
-@@ -147,7 +148,7 @@ VideoModeHandler::Mode::Mode(uInt32 iw, uInt32 ih, uInt32 sw, uInt32 sh,
+@@ -147,7 +147,7 @@ VideoModeHandler::Mode::Mode(uInt32 iw, uInt32 ih, uInt32 sw, uInt32 sh,
          break;
  
        default:
@@ -2075,7 +2090,7 @@ index 73a23f146..b03e72c63 100644
      }
    }
    else
-@@ -168,7 +169,7 @@ VideoModeHandler::Mode::Mode(uInt32 iw, uInt32 ih, uInt32 sw, uInt32 sh,
+@@ -168,7 +168,7 @@ VideoModeHandler::Mode::Mode(uInt32 iw, uInt32 ih, uInt32 sw, uInt32 sh,
          break;  // Do not change image or screen rects whatsoever
  
        default:
