@@ -1,4 +1,4 @@
-From b861b68e4a98352bb6d2ebcc531d8787700496f1 Mon Sep 17 00:00:00 2001
+From bc38d542fe71a1b5a8031bdbb44c0deda1d2e7ac Mon Sep 17 00:00:00 2001
 From: Garrett Brown <garrett@Garretts-MacBook-Pro.local>
 Date: Fri, 21 Aug 2026 22:14:41 -0700
 Subject: [PATCH] Support C++17
@@ -34,7 +34,7 @@ Subject: [PATCH] Support C++17
  src/common/StellaKeys.hxx                     |   8 +-
  src/common/Variant.hxx                        |  65 +-
  src/common/VideoModeHandler.cxx               |   8 +-
- src/common/bspf.hxx                           | 648 ++++++++++++++++--
+ src/common/bspf.hxx                           | 667 ++++++++++++++++--
  .../repository/CompositeKVRJsonAdapter.cxx    |   2 +-
  .../repository/KeyValueRepositoryFile.hxx     |   2 +-
  src/common/tv_filters/AtariNTSC.cxx           |   2 +-
@@ -57,7 +57,7 @@ Subject: [PATCH] Support C++17
  src/emucore/Bankswitch.hxx                    |  37 +-
  src/emucore/Cart.cxx                          |  23 +-
  src/emucore/Cart2K.cxx                        |   4 +-
- src/emucore/CartAR.cxx                        |  58 +-
+ src/emucore/CartAR.cxx                        |  67 +-
  src/emucore/CartBUS.cxx                       |   2 +-
  src/emucore/CartCDF.cxx                       |  13 +-
  src/emucore/CartCV.cxx                        |   2 +-
@@ -72,7 +72,7 @@ Subject: [PATCH] Support C++17
  src/emucore/CartMVC.cxx                       |   2 +-
  src/emucore/CompuMate.cxx                     |   2 +-
  src/emucore/CompuMateCassette.cxx             |  16 +-
- src/emucore/Console.cxx                       |  80 ++-
+ src/emucore/Console.cxx                       |  80 +--
  src/emucore/Control.cxx                       |  11 +-
  src/emucore/Control.hxx                       |  25 +-
  src/emucore/ControllerDetector.cxx            |  56 +-
@@ -80,7 +80,7 @@ Subject: [PATCH] Support C++17
  src/emucore/Driving.cxx                       |   2 +-
  src/emucore/EmulationWorker.cxx               |   2 +-
  src/emucore/Event.hxx                         |   6 +-
- src/emucore/EventHandler.cxx                  |  83 ++-
+ src/emucore/EventHandler.cxx                  |  83 +--
  src/emucore/FBMessageHandler.cxx              |  12 +-
  src/emucore/FBSurface.cxx                     |   4 +-
  src/emucore/FBSurface.hxx                     |   2 +-
@@ -144,7 +144,7 @@ Subject: [PATCH] Support C++17
  src/os/libretro/jni/Android.mk                |   4 +-
  src/os/libretro/libretro.cxx                  |  85 ++-
  src/os/windows/SerialPortWINDOWS.cxx          |   2 +-
- 140 files changed, 1933 insertions(+), 1271 deletions(-)
+ 140 files changed, 1954 insertions(+), 1278 deletions(-)
 
 diff --git a/src/cheat/CheatManager.cxx b/src/cheat/CheatManager.cxx
 index f6a470eb7..cfb947cb2 100644
@@ -2100,7 +2100,7 @@ index 73a23f146..5f1f2a560 100644
    }
  
 diff --git a/src/common/bspf.hxx b/src/common/bspf.hxx
-index 70bf0bad5..65cd15a65 100644
+index 70bf0bad5..8f90f895d 100644
 --- a/src/common/bspf.hxx
 +++ b/src/common/bspf.hxx
 @@ -25,6 +25,7 @@
@@ -2426,8 +2426,8 @@ index 70bf0bad5..65cd15a65 100644
 +        shift <<= 1)
 +      size |= size >> shift;
 +    return size + 1;
-   }
- 
++  }
++
 +  template<typename Enum>
 +  [[nodiscard]] constexpr std::underlying_type_t<Enum>
 +  toUnderlying(Enum value) noexcept
@@ -2490,8 +2490,8 @@ index 70bf0bad5..65cd15a65 100644
 +      ++result;
 +    }
 +    return result;
-+  }
-+
+   }
+ 
 +  template<typename T>
 +  [[nodiscard]] constexpr int bitWidth(T value) noexcept
 +  {
@@ -2526,7 +2526,7 @@ index 70bf0bad5..65cd15a65 100644
    // Get next multiple of the given value
    // Note that this only works when multiple is a power of two
    constexpr size_t nextMultipleOf(size_t size, size_t multiple) {
-@@ -210,6 +481,20 @@ namespace BSPF
+@@ -210,6 +481,23 @@ namespace BSPF
    {
      return std::clamp<T>(val, lower, upper);
    }
@@ -2535,7 +2535,10 @@ index 70bf0bad5..65cd15a65 100644
 +  [[nodiscard]] constexpr bool contains(const Container& container,
 +                                        const Value& value)
 +  {
-+    return std::find(container.begin(), container.end(), value) != container.end();
++    for(const auto& element: container)
++      if(element == value)
++        return true;
++    return false;
 +  }
 +
 +  template<typename Container, typename Predicate>
@@ -2547,7 +2550,7 @@ index 70bf0bad5..65cd15a65 100644
    template<typename T> constexpr void clamp(T& val, T lower, T upper, T setVal)
    {
      if(val < lower || val > upper)  val = setVal;
-@@ -219,13 +504,6 @@ namespace BSPF
+@@ -219,13 +507,6 @@ namespace BSPF
      return (val < lower) ? upper : (val > upper) ? lower : val;
    }
  
@@ -2561,7 +2564,7 @@ index 70bf0bad5..65cd15a65 100644
    // Convert character to upper/lower case (ASCII only)
    constexpr char toUpperAscii(char c) {
      return (c >= 'a' && c <= 'z') ? (c - 'a' + 'A') : c;
-@@ -238,17 +516,257 @@ namespace BSPF
+@@ -238,17 +519,257 @@ namespace BSPF
    constexpr bool isLowerAscii(char c) { return c >= 'a' && c <= 'z'; }
  
    // Convert string to given case
@@ -2823,7 +2826,7 @@ index 70bf0bad5..65cd15a65 100644
    // Convert string to integer, using default value on any error
    template<int BASE = 10>
    constexpr int stoi(string_view s, int defaultValue = 0)
-@@ -270,7 +788,7 @@ namespace BSPF
+@@ -270,7 +791,7 @@ namespace BSPF
    {
      // Only compare up to the length of the shorter string
      const auto maxsize = std::min(s1.size(), s2.size());
@@ -2832,24 +2835,36 @@ index 70bf0bad5..65cd15a65 100644
      {
        const char c1 = toUpperAscii(s1[i]);
        const char c2 = toUpperAscii(s2[i]);
-@@ -308,13 +826,13 @@ namespace BSPF
+@@ -307,14 +828,20 @@ namespace BSPF
+                                   size_t startpos = 0)
    {
      if(startpos > s1.size()) return string_view::npos;
-     const auto sub = s1.substr(startpos);
+-    const auto sub = s1.substr(startpos);
 -    const auto found = std::ranges::search(sub, s2,
-+    const auto found = std::search(sub.begin(), sub.end(), s2.begin(), s2.end(),
-             [&](char ch1, char ch2) {
-               return toUpperAscii(ch1) == toUpperAscii(ch2);
-             }
-     );
+-            [&](char ch1, char ch2) {
+-              return toUpperAscii(ch1) == toUpperAscii(ch2);
+-            }
+-    );
 -    return (found.empty() && !s2.empty()) ? string_view::npos
 -                                          : startpos + (found.begin() - sub.begin());
-+    return (found == sub.end() && !s2.empty()) ? string_view::npos
-+                                               : startpos + (found - sub.begin());
++    if(s2.empty()) return startpos;
++    if(s2.size() > s1.size() - startpos) return string_view::npos;
++
++    const size_t last = s1.size() - s2.size();
++    for(size_t i = startpos; i <= last; ++i)
++    {
++      size_t j = 0;
++      while(j < s2.size() &&
++            toUpperAscii(s1[i + j]) == toUpperAscii(s2[j]))
++        ++j;
++      if(j == s2.size())
++        return i;
++    }
++    return string_view::npos;
    }
  
    // Test whether the first string contains the second one (case insensitive)
-@@ -336,8 +854,8 @@ namespace BSPF
+@@ -336,8 +863,8 @@ namespace BSPF
        return false;
  
      // Remaining characters must appear in order
@@ -2860,7 +2875,7 @@ index 70bf0bad5..65cd15a65 100644
      {
        const char target = toUpperAscii(s2[j]);
        while(pos < s1.size() && toUpperAscii(s1[pos]) != target)
-@@ -358,15 +876,15 @@ namespace BSPF
+@@ -358,15 +885,15 @@ namespace BSPF
      if(s1.empty() || s2.empty()) return false;
  
      // Skip leading '_' for both strings if both start with it
@@ -2879,7 +2894,7 @@ index 70bf0bad5..65cd15a65 100644
      {
        const char c2 = s2[j];
  
-@@ -404,7 +922,7 @@ namespace BSPF
+@@ -404,7 +931,7 @@ namespace BSPF
    // @param str      The searched string
    // @param pattern  The pattern to search for
    // @return  True if pattern was found.
@@ -2888,7 +2903,7 @@ index 70bf0bad5..65cd15a65 100644
    {
      // A pattern without an explicit leading '*' matches anywhere in str,
      // and one without a trailing '*' need not consume str's tail.
-@@ -422,10 +940,10 @@ namespace BSPF
+@@ -422,10 +949,10 @@ namespace BSPF
        pattern = effectivePat;
      }
  
@@ -2902,7 +2917,7 @@ index 70bf0bad5..65cd15a65 100644
  
      while(si < str.length())
      {
-@@ -461,10 +979,10 @@ namespace BSPF
+@@ -461,10 +988,10 @@ namespace BSPF
    }
  
    // Modify 'str', replacing all occurrences of 'from' with 'to'
@@ -2915,7 +2930,7 @@ index 70bf0bad5..65cd15a65 100644
      while((start_pos = str.find(from, start_pos)) != string_view::npos)
      {
        str.replace(start_pos, from.length(), to);
-@@ -490,11 +1008,11 @@ namespace BSPF
+@@ -490,11 +1017,11 @@ namespace BSPF
    // name from a (potentially shared/imported) properties entry is concatenated
    // into a save/snapshot path.  Both '/' and '\' are replaced regardless of
    // platform so the result can't escape its intended directory.
@@ -2930,7 +2945,7 @@ index 70bf0bad5..65cd15a65 100644
      return result;
    }
  
-@@ -515,7 +1033,7 @@ namespace BSPF
+@@ -515,7 +1042,7 @@ namespace BSPF
    constexpr bool isWhiteSpace(const char c)
    {
      constexpr string_view spaces{" ,.;:+-*&/\\'"};
@@ -2939,7 +2954,7 @@ index 70bf0bad5..65cd15a65 100644
    }
  
    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-@@ -532,10 +1050,10 @@ namespace BSPF
+@@ -532,10 +1059,10 @@ namespace BSPF
      if(image.size() < sigsize)
        return false;
  
@@ -3529,10 +3544,26 @@ index 4e3739a77..8b1c92d32 100644
      myBankShift = System::PAGE_SHIFT;
    }
 diff --git a/src/emucore/CartAR.cxx b/src/emucore/CartAR.cxx
-index 92775bd99..5b853b4e3 100644
+index 92775bd99..a8121ec4e 100644
 --- a/src/emucore/CartAR.cxx
 +++ b/src/emucore/CartAR.cxx
-@@ -48,9 +48,10 @@ CartridgeAR::CartridgeAR(ByteSpan image, string_view md5,
+@@ -31,8 +31,13 @@
+ 
+ namespace {
+   // Compute the sum of the array of bytes
+-  constexpr uInt8 checksum(ByteSpan s) {
+-    return static_cast<uInt8>(std::accumulate(s.begin(), s.end(), 0));
++  constexpr uInt8 checksum(ByteSpan s)
++  {
++    int sum = 0;
++    for(const uInt8 value: s)
++      sum += value;
++
++    return static_cast<uInt8>(sum);
+   }
+ }  // namespace
+ 
+@@ -48,9 +53,10 @@ CartridgeAR::CartridgeAR(ByteSpan image, string_view md5,
    myNumberOfLoadImages = static_cast<uInt8>(myLoadImages.size() / LOAD_SIZE);
  
    // Copy the given image and add header if not present
@@ -3545,7 +3576,7 @@ index 92775bd99..5b853b4e3 100644
  
    // We use System::PageAccess.romAccessBase, but don't allow its use
    // through a pointer, since the AR scheme doesn't support bankswitching
-@@ -80,14 +81,14 @@ CartridgeAR::CartridgeAR(ByteSpan biosImage, vector<float> pcmData,
+@@ -80,14 +86,14 @@ CartridgeAR::CartridgeAR(ByteSpan biosImage, vector<float> pcmData,
    // header starts with ourDefaultHeader and is patched as its tape completes.
    myLoadImages.assign(myNumberOfLoadImages * LOAD_SIZE, 0);
    for(uInt32 b = 0; b < myNumberOfLoadImages; ++b)
@@ -3562,7 +3593,7 @@ index 92775bd99..5b853b4e3 100644
  }
  
  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-@@ -163,9 +164,9 @@ uInt8 CartridgeAR::peek(uInt16 addr)
+@@ -163,9 +169,9 @@ uInt8 CartridgeAR::peek(uInt16 addr)
        {
          myPCMStarted = true;
          myPCMStartCycle = now;
@@ -3575,7 +3606,7 @@ index 92775bd99..5b853b4e3 100644
        }
  
        const uInt64 elapsed = now - myPCMStartCycle;
-@@ -225,12 +226,12 @@ void CartridgeAR::finalizeLoad(uInt32 block)
+@@ -225,12 +231,12 @@ void CartridgeAR::finalizeLoad(uInt32 block)
    myHeader[3] = static_cast<uInt8>(NUM_PAGES);
  
    // Page-map: page j in the block lives at bank (j/8), page (j%8) in bank
@@ -3590,7 +3621,7 @@ index 92775bd99..5b853b4e3 100644
    {
      const ByteSpan src = ByteSpan{myLoadImages}.subspan(base + j * 256, 256);
      myHeader[64 + j] = static_cast<uInt8>(
-@@ -244,7 +245,7 @@ void CartridgeAR::finalizeLoad(uInt32 block)
+@@ -244,7 +250,7 @@ void CartridgeAR::finalizeLoad(uInt32 block)
    myHeader[7] = static_cast<uInt8>(0x55U - partial);
  
    // Commit header into the block's header area
@@ -3599,7 +3630,7 @@ index 92775bd99..5b853b4e3 100644
  }
  
  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-@@ -253,8 +254,7 @@ void CartridgeAR::finalizeSoundLoad()
+@@ -253,8 +259,7 @@ void CartridgeAR::finalizeSoundLoad()
    // Finalise the load that was streaming in when the PCM ran out
    finalizeLoad(myCurrentLoadBlock);
  
@@ -3609,7 +3640,7 @@ index 92775bd99..5b853b4e3 100644
  
    // Free the (potentially large) PCM buffer; myIsSoundLoad stays true so that
    // the real BIOS remains active and the fake $1850 hotspot stays suppressed.
-@@ -392,7 +392,7 @@ void CartridgeAR::initializeROM()
+@@ -392,7 +397,7 @@ void CartridgeAR::initializeROM()
    std::fill_n(myImage.begin() + RAM_SIZE, BANK_SIZE, 0x02);
  
    // Copy the "dummy" Supercharger BIOS code into the ROM area
@@ -3618,7 +3649,7 @@ index 92775bd99..5b853b4e3 100644
  
    // Finally set 6502 vectors to point to initial load code at 0xF80A of BIOS
    myImage[RAM_SIZE + BANK_SIZE - 4] = 0x0A;
-@@ -415,14 +415,14 @@ void CartridgeAR::loadIntoRAM(uInt8 load)
+@@ -415,14 +420,14 @@ void CartridgeAR::loadIntoRAM(uInt8 load)
      if(myLoadImages[image_off + myImage.size() + 5] == load)
      {
        // Copy the load's header
@@ -3637,7 +3668,7 @@ index 92775bd99..5b853b4e3 100644
          success = false;
        }
  
-@@ -432,7 +432,7 @@ void CartridgeAR::loadIntoRAM(uInt8 load)
+@@ -432,7 +437,7 @@ void CartridgeAR::loadIntoRAM(uInt8 load)
        // past myHeader (page/checksum tables) or myLoadImages
        bool invalidPageChecksumSeen = false;
        const size_t numPages = std::min<size_t>(myHeader[3], RAM_SIZE / 256);
@@ -3646,7 +3677,7 @@ index 92775bd99..5b853b4e3 100644
        {
          const size_t bank = myHeader[16 + j] & 0b00011;
          const size_t page = (myHeader[16 + j] & 0b11100) >> 2;
-@@ -441,14 +441,13 @@ void CartridgeAR::loadIntoRAM(uInt8 load)
+@@ -441,14 +446,13 @@ void CartridgeAR::loadIntoRAM(uInt8 load)
  
          if(!invalidPageChecksumSeen && (sum != 0x55))
          {
@@ -3663,7 +3694,7 @@ index 92775bd99..5b853b4e3 100644
        }
        success &= !invalidPageChecksumSeen;
  
-@@ -460,12 +459,12 @@ void CartridgeAR::loadIntoRAM(uInt8 load)
+@@ -460,12 +464,12 @@ void CartridgeAR::loadIntoRAM(uInt8 load)
  
        myBankChanged = true;
        if(success)
@@ -3678,7 +3709,7 @@ index 92775bd99..5b853b4e3 100644
  }
  
  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-@@ -669,7 +668,7 @@ CartridgeAR::loadPCM(const FSNode& file)
+@@ -669,7 +673,7 @@ CartridgeAR::loadPCM(const FSNode& file)
    if(file.read(magic, 4) < 4) return {};
  
    float* buf = nullptr;
@@ -3687,7 +3718,7 @@ index 92775bd99..5b853b4e3 100644
    unsigned int channels = 0, sampleRate = 0;
    bool freeAsWAV = false;
  
-@@ -684,7 +683,7 @@ CartridgeAR::loadPCM(const FSNode& file)
+@@ -684,7 +688,7 @@ CartridgeAR::loadPCM(const FSNode& file)
      freeAsWAV = true;
      if(!buf)
      {
@@ -3696,7 +3727,7 @@ index 92775bd99..5b853b4e3 100644
        return {};
      }
    }
-@@ -694,8 +693,7 @@ CartridgeAR::loadPCM(const FSNode& file)
+@@ -694,8 +698,7 @@ CartridgeAR::loadPCM(const FSNode& file)
      const bool isSync = (magic[0] == 0xFF && (magic[1] & 0xE0) == 0xE0);
      if(!isID3 && !isSync)
      {
@@ -3706,7 +3737,7 @@ index 92775bd99..5b853b4e3 100644
        return {};
      }
      drmp3_config mp3Cfg{0, 0};
-@@ -707,7 +705,7 @@ CartridgeAR::loadPCM(const FSNode& file)
+@@ -707,7 +710,7 @@ CartridgeAR::loadPCM(const FSNode& file)
      frameCount = static_cast<size_t>(fc);
      if(!buf)
      {
@@ -3715,7 +3746,7 @@ index 92775bd99..5b853b4e3 100644
        return {};
      }
    }
-@@ -722,7 +720,7 @@ CartridgeAR::loadPCM(const FSNode& file)
+@@ -722,7 +725,7 @@ CartridgeAR::loadPCM(const FSNode& file)
    if(channels > 1)
    {
      const float scale = 1.F / static_cast<float>(channels);
@@ -3724,7 +3755,7 @@ index 92775bd99..5b853b4e3 100644
      {
        float sum = 0.F;
        for(uInt32 ch = 0; ch < channels; ++ch)
-@@ -756,5 +754,5 @@ void CartridgeAR::conditionSignal(FloatMSpan samples)
+@@ -756,5 +759,5 @@ void CartridgeAR::conditionSignal(FloatMSpan samples)
    if(samples.empty()) return;
    const float mean = std::reduce(samples.begin(), samples.end()) /
                       static_cast<float>(samples.size());
