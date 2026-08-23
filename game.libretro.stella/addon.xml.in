@@ -6,6 +6,7 @@
 	<requires>
 		<import addon="game.libretro" version="1.0.0"/>
 		<import addon="game.controller.atari.2600" version="1.0.0"/>
+		<import addon="game.controller.atari.xges.xg1" version="1.0.0"/>
 	</requires>
 	<extension point="kodi.gameclient"
 			library_@PLATFORM@="@LIBRARY_FILENAME@">
