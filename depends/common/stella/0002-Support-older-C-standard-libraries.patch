@@ -1,10 +1,10 @@
-From 9533ec5fcc569500daa753163ea2897ee6e9e86b Mon Sep 17 00:00:00 2001
+From 0c512575d76da265e7dc4606e3a06bace449ff03 Mon Sep 17 00:00:00 2001
 From: Garrett Brown <themagnificentmrb@gmail.com>
 Date: Sat, 22 Aug 2026 18:39:53 -0700
 Subject: [PATCH 2/2] Support older C++ standard libraries
 
 ---
- src/cheat/CheatManager.cxx                    |   8 +-
+ src/cheat/CheatManager.cxx                    |  10 +-
  src/common/BitmaskEnum.hxx                    |  29 +-
  src/common/FBBackendSDL.cxx                   |   2 +-
  src/common/FBSurfaceSDL.cxx                   |   2 +-
@@ -13,7 +13,7 @@ Subject: [PATCH 2/2] Support older C++ standard libraries
  src/common/JoyMap.cxx                         |  40 ++-
  src/common/KeyMap.cxx                         |  34 +-
  src/common/MouseControl.cxx                   |  10 +-
- src/common/PJoystickHandler.cxx               |  39 +--
+ src/common/PJoystickHandler.cxx               |  39 +-
  src/common/PKeyboardHandler.cxx               |   2 +-
  src/common/PaletteHandler.cxx                 |  12 +-
  src/common/PhysicalJoystick.cxx               |  18 +-
@@ -24,12 +24,15 @@ Subject: [PATCH 2/2] Support older C++ standard libraries
  src/common/StellaKeys.hxx                     |   8 +-
  src/common/Variant.hxx                        |  30 +-
  src/common/VideoModeHandler.cxx               |   7 +-
- src/common/bspf.hxx                           | 327 +++++++++++++++++-
+ src/common/bspf.hxx                           | 340 ++++++++++++++++--
+ .../repository/CompositeKVRJsonAdapter.cxx    |   2 +-
+ .../repository/KeyValueRepositoryFile.hxx     |   2 +-
  src/common/tv_filters/NTSCFilter.cxx          |  10 +-
  src/debugger/BreakpointMap.cxx                |   2 +-
  src/debugger/CartDebug.cxx                    |   4 +-
+ src/debugger/CartDisassemblyWriter.cxx        |   2 +-
  src/debugger/Debugger.cxx                     |   2 +-
- src/debugger/DebuggerParser.cxx               |  14 +-
+ src/debugger/DebuggerParser.cxx               |  22 +-
  src/debugger/DiStella.cxx                     |   5 +-
  src/debugger/TimerMap.cxx                     |   3 +-
  src/debugger/gui/CartCDFWidget.cxx            |   2 +-
@@ -77,9 +80,10 @@ Subject: [PATCH 2/2] Support older C++ standard libraries
  src/emucore/Random.hxx                        |   2 +-
  src/emucore/Serializer.cxx                    |  12 +-
  src/emucore/Serializer.hxx                    |   4 +-
- src/emucore/Settings.cxx                      |   4 +-
+ src/emucore/Settings.cxx                      |   6 +-
  src/emucore/System.cxx                        |   2 +-
  src/emucore/TIASurface.cxx                    |  19 +-
+ src/emucore/Thumbulator.cxx                   |   5 +-
  src/emucore/elf/ElfLinker.cxx                 |  10 +-
  src/emucore/tia/AudioChannel.cxx              |   2 +-
  src/emucore/tia/TIA.cxx                       |  22 +-
@@ -92,10 +96,10 @@ Subject: [PATCH 2/2] Support older C++ standard libraries
  src/gui/RomImageWidget.cxx                    |   2 +-
  src/os/libretro/FBBackendLIBRETRO.hxx         |   2 +-
  src/os/windows/SerialPortWINDOWS.cxx          |   2 +-
- 88 files changed, 923 insertions(+), 599 deletions(-)
+ 92 files changed, 935 insertions(+), 623 deletions(-)
 
 diff --git a/src/cheat/CheatManager.cxx b/src/cheat/CheatManager.cxx
-index f6a470eb7..f47445e02 100644
+index f6a470eb7..cfb947cb2 100644
 --- a/src/cheat/CheatManager.cxx
 +++ b/src/cheat/CheatManager.cxx
 @@ -78,7 +78,7 @@ void CheatManager::remove(int idx)
@@ -125,6 +129,15 @@ index f6a470eb7..f47445e02 100644
        [&](const auto& c) { return c->code() == code; });
  
    if(it != myCheatList.end())
+@@ -205,7 +205,7 @@ void CheatManager::saveCheatDatabase()
+   for(const auto& [md5, cheat]: myCheatMap)
+     out << std::quoted(md5) << ' ' << std::quoted(cheat) << '\n';
+ 
+-  try         { myOSystem.cheatFile().write(out.view()); }
++  try         { myOSystem.cheatFile().write(out.str()); }
+   catch(...)  { return; }
+ }
+ 
 @@ -269,5 +269,5 @@ bool CheatManager::isValidCode(string_view code)
    const size_t length = code.length();
    if(length != 4 && length != 6 && length != 7 && length != 8)
@@ -1125,10 +1138,10 @@ index 73a23f146..b03e72c63 100644
    }
  
 diff --git a/src/common/bspf.hxx b/src/common/bspf.hxx
-index 70bf0bad5..f3a499e8c 100644
+index 70bf0bad5..07df81bac 100644
 --- a/src/common/bspf.hxx
 +++ b/src/common/bspf.hxx
-@@ -45,13 +45,22 @@ using uInt64 = uint64_t;
+@@ -45,32 +45,28 @@ using uInt64 = uint64_t;
  #include <memory>
  #include <string>
  #include <string_view>
@@ -1152,7 +1165,26 @@ index 70bf0bad5..f3a499e8c 100644
  #include <utility>
  #include <vector>
  
-@@ -156,6 +165,57 @@ namespace BSPF
+ using std::cin;
+ using std::cout;
+ using std::cerr;
+-// Android NDK 26 libc++ lacks ostringstream::view() (C++20 P0408R7)
+-#if defined(__ANDROID__) && !defined(__cpp_lib_sstream_from_string_view)
+-class ostringstream : public std::ostringstream {
+-public:
+-  using std::ostringstream::ostringstream;
+-  std::string view() const { return str(); }
+-};
+-class stringstream : public std::stringstream {
+-public:
+-  using std::stringstream::stringstream;
+-  std::string view() const { return str(); }
+-};
+-#endif
+ 
+ // Frequently used data types
+ using std::string;
+@@ -156,6 +152,57 @@ namespace BSPF
    constexpr double ln10 = std::numbers::ln10;
    constexpr double ln2  = std::numbers::ln2;
  
@@ -1210,7 +1242,7 @@ index 70bf0bad5..f3a499e8c 100644
    // CPU architecture type
    // This isn't complete yet, but takes care of all the major platforms
    #if defined(__i386__) || defined(_M_IX86)
-@@ -223,7 +283,7 @@ namespace BSPF
+@@ -223,7 +270,7 @@ namespace BSPF
    // NOTE: Only needed until std::vector gets a contains() method
    template<typename Container>
    bool contains(const Container& c, typename Container::const_reference elem) {
@@ -1219,7 +1251,7 @@ index 70bf0bad5..f3a499e8c 100644
    }
  
    // Convert character to upper/lower case (ASCII only)
-@@ -238,17 +298,256 @@ namespace BSPF
+@@ -238,17 +285,256 @@ namespace BSPF
    constexpr bool isLowerAscii(char c) { return c >= 'a' && c <= 'z'; }
  
    // Convert string to given case
@@ -1480,7 +1512,7 @@ index 70bf0bad5..f3a499e8c 100644
    // Convert string to integer, using default value on any error
    template<int BASE = 10>
    constexpr int stoi(string_view s, int defaultValue = 0)
-@@ -308,13 +607,13 @@ namespace BSPF
+@@ -308,13 +594,13 @@ namespace BSPF
    {
      if(startpos > s1.size()) return string_view::npos;
      const auto sub = s1.substr(startpos);
@@ -1497,7 +1529,7 @@ index 70bf0bad5..f3a499e8c 100644
    }
  
    // Test whether the first string contains the second one (case insensitive)
-@@ -404,7 +703,7 @@ namespace BSPF
+@@ -404,7 +690,7 @@ namespace BSPF
    // @param str      The searched string
    // @param pattern  The pattern to search for
    // @return  True if pattern was found.
@@ -1506,7 +1538,7 @@ index 70bf0bad5..f3a499e8c 100644
    {
      // A pattern without an explicit leading '*' matches anywhere in str,
      // and one without a trailing '*' need not consume str's tail.
-@@ -461,7 +760,7 @@ namespace BSPF
+@@ -461,7 +747,7 @@ namespace BSPF
    }
  
    // Modify 'str', replacing all occurrences of 'from' with 'to'
@@ -1515,7 +1547,7 @@ index 70bf0bad5..f3a499e8c 100644
    {
      if(from.empty()) return;
      auto start_pos = 0UZ;
-@@ -490,11 +789,11 @@ namespace BSPF
+@@ -490,11 +776,11 @@ namespace BSPF
    // name from a (potentially shared/imported) properties entry is concatenated
    // into a save/snapshot path.  Both '/' and '\' are replaced regardless of
    // platform so the result can't escape its intended directory.
@@ -1530,6 +1562,32 @@ index 70bf0bad5..f3a499e8c 100644
      return result;
    }
  
+diff --git a/src/common/repository/CompositeKVRJsonAdapter.cxx b/src/common/repository/CompositeKVRJsonAdapter.cxx
+index 85259c931..e6ada1e7f 100644
+--- a/src/common/repository/CompositeKVRJsonAdapter.cxx
++++ b/src/common/repository/CompositeKVRJsonAdapter.cxx
+@@ -41,7 +41,7 @@ namespace {
+ 
+         if (!KeyValueRepositoryJsonFile::save(out, values)) return false;
+ 
+-        return myKvr.save(myKey, out.view());
++        return myKvr.save(myKey, out.str());
+       }
+ 
+       private:
+diff --git a/src/common/repository/KeyValueRepositoryFile.hxx b/src/common/repository/KeyValueRepositoryFile.hxx
+index 5cefd818a..18811ba08 100644
+--- a/src/common/repository/KeyValueRepositoryFile.hxx
++++ b/src/common/repository/KeyValueRepositoryFile.hxx
+@@ -83,7 +83,7 @@ bool KeyValueRepositoryFile<T>::save(const KVRMap& values)
+ 
+   try {
+     T::save(out, values);
+-    myNode.write(out.view());
++    myNode.write(out.str());
+ 
+     return true;
+   }
 diff --git a/src/common/tv_filters/NTSCFilter.cxx b/src/common/tv_filters/NTSCFilter.cxx
 index 09b2ba5d0..3b11d6cbe 100644
 --- a/src/common/tv_filters/NTSCFilter.cxx
@@ -1592,6 +1650,19 @@ index f4e1e4552..23b21c429 100644
          return d.type == tag.type && d.start == tag.start && d.end == tag.end;
       }); it != list.end())
    {
+diff --git a/src/debugger/CartDisassemblyWriter.cxx b/src/debugger/CartDisassemblyWriter.cxx
+index 7ca390902..c4ee32f1e 100644
+--- a/src/debugger/CartDisassemblyWriter.cxx
++++ b/src/debugger/CartDisassemblyWriter.cxx
+@@ -475,7 +475,7 @@ string CartDisassemblyWriter::save(string path)
+   const FSNode node(path);
+   try
+   {
+-    node.write(out.view());
++    node.write(out.str());
+     if(multiBank && !cart.supportsSaveDisassembly())
+       return DebuggerParser::red(
+         std::format("saved {} (multi-bank type not fully supported)",
 diff --git a/src/debugger/Debugger.cxx b/src/debugger/Debugger.cxx
 index 1f3690801..83127fc75 100644
 --- a/src/debugger/Debugger.cxx
@@ -1606,7 +1677,7 @@ index 1f3690801..83127fc75 100644
  }
  
 diff --git a/src/debugger/DebuggerParser.cxx b/src/debugger/DebuggerParser.cxx
-index 3125cc463..f7ff0e5dc 100644
+index 3125cc463..229349d94 100644
 --- a/src/debugger/DebuggerParser.cxx
 +++ b/src/debugger/DebuggerParser.cxx
 @@ -85,7 +85,7 @@ string DebuggerParser::run(string_view command)
@@ -1618,6 +1689,24 @@ index 3125cc463..f7ff0e5dc 100644
      [&](const Command& cmd) { return BSPF::equalsIgnoreCase(verb, cmd.cmdString); });
  
    if(it == commands.end())
+@@ -680,7 +680,7 @@ string DebuggerParser::getTimerCmds()
+         std::format_to(std::ostreambuf_iterator(buf),
+                        "{}", static_cast<uInt16>(bank));
+     }
+-    return string{buf.view()};
++    return buf.str();
+   };
+ 
+   for(uInt32 idx = 0; idx < numTimers; ++idx)
+@@ -894,7 +894,7 @@ void DebuggerParser::saveDump(const FSNode& node, const std::ostringstream& out,
+ {
+   try
+   {
+-    node.write(out.view());
++    node.write(out.str());
+     result << " to file " << node.getShortPath();
+   }
+   catch(...)
 @@ -1041,7 +1041,7 @@ void DebuggerParser::executeBreakIf()
    const string condition = buildExprStr();
  
@@ -1627,6 +1716,17 @@ index 3125cc463..f7ff0e5dc 100644
    if(it != condNames.end())
    {
      args[0] = static_cast<int>(it - condNames.begin());
+@@ -1440,8 +1440,8 @@ void DebuggerParser::executeDump()
+ 
+   if(argCount == 4)
+   {
+-    string dumpOut{out.view()};
+-    string dumpResult{commandResult.view()};
++    string dumpOut{out.str()};
++    string dumpResult{commandResult.str()};
+ 
+     DebuggerDialog* dlg = debugger.myDialog;
+     BrowserDialog::show(dlg, "Save Dump as", path,
 @@ -1567,7 +1567,7 @@ void DebuggerParser::executeHelp()
    else  // get help for specific command
    {
@@ -3993,7 +4093,7 @@ index a9058c782..078c5351d 100644
      }
  
 diff --git a/src/emucore/Settings.cxx b/src/emucore/Settings.cxx
-index bfc258033..0aa57f1bf 100644
+index bfc258033..b52998967 100644
 --- a/src/emucore/Settings.cxx
 +++ b/src/emucore/Settings.cxx
 @@ -397,7 +397,7 @@ void Settings::validate()
@@ -4014,6 +4114,15 @@ index bfc258033..0aa57f1bf 100644
    if(s != "bgopry") setValue("tia.dbgcolors", "roygpb");
  
    if(PhosphorHandler::toPhosphorMode(getString(PhosphorHandler::SETTING_MODE)) == PhosphorHandler::ByRom)
+@@ -810,7 +810,7 @@ void Settings::usage()
+ 
+     << "  -elf.dump              <1|0>      Dump ELF linkage information and write elf_executable_image.bin\n\n";
+ 
+-  cout << buf.view() << std::flush;
++  cout << buf.str() << std::flush;
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 diff --git a/src/emucore/System.cxx b/src/emucore/System.cxx
 index d7ff00b17..414b52db6 100644
 --- a/src/emucore/System.cxx
@@ -4091,6 +4200,22 @@ index 8cf7dfecf..325a693ad 100644
  
    return buf;
  }
+diff --git a/src/emucore/Thumbulator.cxx b/src/emucore/Thumbulator.cxx
+index 44f66e113..72c8c565f 100644
+--- a/src/emucore/Thumbulator.cxx
++++ b/src/emucore/Thumbulator.cxx
+@@ -198,8 +198,9 @@ string Thumbulator::doRun(uInt32& cycles, bool irqDrivenAudio)
+ #endif
+ #if defined(THUMB_DISS) || defined(THUMB_DBUG)
+   dump_counters();
+-  cout << statusMsg.view() << '\n';
+-  return statusMsg.str();
++  const string result = statusMsg.str();
++  cout << result << '\n';
++  return result;
+ #else
+   return "";
+ #endif
 diff --git a/src/emucore/elf/ElfLinker.cxx b/src/emucore/elf/ElfLinker.cxx
 index 44a8d2d18..1aae60c0f 100644
 --- a/src/emucore/elf/ElfLinker.cxx
