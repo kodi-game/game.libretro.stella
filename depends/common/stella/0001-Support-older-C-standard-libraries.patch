@@ -1,0 +1,2080 @@
+From b422bcc9eaccb2c2faba61d0c2f8d9e445c31759 Mon Sep 17 00:00:00 2001
+From: Garrett Brown <themagnificentmrb@gmail.com>
+Date: Sat, 22 Aug 2026 18:39:53 -0700
+Subject: [PATCH] Support older C++ standard libraries
+
+---
+ src/cheat/CheatManager.cxx             |   8 +-
+ src/common/BitmaskEnum.hxx             |  27 ++-
+ src/common/FBBackendSDL.cxx            |   2 +-
+ src/common/JoyMap.cxx                  |  30 ++--
+ src/common/KeyMap.cxx                  |  26 ++-
+ src/common/PJoystickHandler.cxx        |   4 +-
+ src/common/RewindManager.cxx           |   6 +-
+ src/common/Stack.hxx                   |   9 +-
+ src/common/Variant.hxx                 |  30 +++-
+ src/common/bspf.hxx                    | 225 +++++++++++++++++++++++--
+ src/debugger/BreakpointMap.cxx         |   2 +-
+ src/debugger/CartDebug.cxx             |   4 +-
+ src/debugger/Debugger.cxx              |   2 +-
+ src/debugger/DebuggerParser.cxx        |  14 +-
+ src/debugger/DiStella.cxx              |   5 +-
+ src/debugger/TimerMap.cxx              |   3 +-
+ src/debugger/gui/CartCDFWidget.cxx     |   2 +-
+ src/debugger/gui/CartDPCPlusWidget.cxx |  18 +-
+ src/debugger/gui/CartDPCWidget.cxx     |  15 +-
+ src/debugger/gui/CartRamWidget.cxx     |   7 +-
+ src/debugger/gui/DataGridWidget.cxx    |   8 +-
+ src/debugger/gui/PromptWidget.cxx      |   2 +-
+ src/debugger/gui/ToggleBitWidget.cxx   |   5 +-
+ src/debugger/yacc/YaccParser.cxx       |   2 +-
+ src/emucore/Bankswitch.hxx             |  33 ++--
+ src/emucore/Cart.cxx                   |   6 +-
+ src/emucore/CartAR.cxx                 |  22 +--
+ src/emucore/CartCreator.cxx            |   2 +-
+ src/emucore/CartDetector.cxx           |  34 ++--
+ src/emucore/CartDevCard.cxx            |   3 +-
+ src/emucore/CartFA2.cxx                |   4 +-
+ src/emucore/CompuMate.cxx              |   2 +-
+ src/emucore/Control.cxx                |   5 +-
+ src/emucore/ControllerDetector.cxx     |  50 +++---
+ src/emucore/Event.hxx                  |   6 +-
+ src/emucore/EventHandler.cxx           |   2 +-
+ src/emucore/FSNode.cxx                 |   4 +-
+ src/emucore/FSNode.hxx                 |   2 +-
+ src/emucore/GlobalKeyHandler.cxx       |   2 +-
+ src/emucore/M6532.cxx                  |   4 +-
+ src/emucore/OSystem.cxx                |   4 +-
+ src/emucore/PlusROM.cxx                |   8 +-
+ src/emucore/Props.cxx                  |  11 +-
+ src/emucore/PropsSet.cxx               |  12 +-
+ src/emucore/Serializer.cxx             |  12 +-
+ src/emucore/Serializer.hxx             |   4 +-
+ src/emucore/Settings.cxx               |   4 +-
+ src/emucore/System.cxx                 |   2 +-
+ src/gui/EditableWidget.cxx             |   2 +-
+ src/gui/FavoritesManager.cxx           |   9 +-
+ src/gui/FileListWidget.cxx             |   2 +-
+ src/gui/GameInfoDialog.cxx             |   4 +-
+ src/gui/LauncherFileListWidget.cxx     |   2 +-
+ src/gui/RomImageWidget.cxx             |   2 +-
+ src/os/windows/SerialPortWINDOWS.cxx   |   2 +-
+ 55 files changed, 493 insertions(+), 224 deletions(-)
+
+diff --git a/src/cheat/CheatManager.cxx b/src/cheat/CheatManager.cxx
+index f6a470eb7..f47445e02 100644
+--- a/src/cheat/CheatManager.cxx
++++ b/src/cheat/CheatManager.cxx
+@@ -78,7 +78,7 @@ void CheatManager::remove(int idx)
+ void CheatManager::addPerFrame(string_view name, string_view code, bool enable)
+ {
+   // The actual cheat will always be in the main list; we look there first
+-  const auto it = std::ranges::find_if(myCheatList,
++  const auto it = std::find_if(myCheatList.begin(), myCheatList.end(),
+       [&](const auto& c) { return c->name() == name || c->code() == code; });
+   if(it == myCheatList.end())
+     return;
+@@ -86,7 +86,7 @@ void CheatManager::addPerFrame(string_view name, string_view code, bool enable)
+   const shared_ptr<Cheat>& cheat = *it;
+ 
+   // Make sure there are no duplicates
+-  const auto perFrameIt = std::ranges::find_if(myPerFrameList,
++  const auto perFrameIt = std::find_if(myPerFrameList.begin(), myPerFrameList.end(),
+       [&](const auto& c) { return c->code() == cheat->code(); });
+   const bool found = perFrameIt != myPerFrameList.end();
+ 
+@@ -171,7 +171,7 @@ void CheatManager::parse(string_view cheats)
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ void CheatManager::enable(string_view code, bool enable)
+ {
+-  const auto it = std::ranges::find_if(myCheatList,
++  const auto it = std::find_if(myCheatList.begin(), myCheatList.end(),
+       [&](const auto& c) { return c->code() == code; });
+ 
+   if(it != myCheatList.end())
+@@ -269,5 +269,5 @@ bool CheatManager::isValidCode(string_view code)
+   const size_t length = code.length();
+   if(length != 4 && length != 6 && length != 7 && length != 8)
+     return false;
+-  return std::ranges::all_of(code, [](unsigned char c) { return std::isxdigit(c); });
++  return std::all_of(code.begin(), code.end(), [](unsigned char c) { return std::isxdigit(c); });
+ }
+diff --git a/src/common/BitmaskEnum.hxx b/src/common/BitmaskEnum.hxx
+index a269e9a4e..c9ac1e514 100644
+--- a/src/common/BitmaskEnum.hxx
++++ b/src/common/BitmaskEnum.hxx
+@@ -56,9 +56,9 @@
+ 
+ #include <bit>
+ #include <concepts>
++#include <cstring>
+ #include <limits>
+ #include <type_traits>
+-#include <utility>
+ 
+ namespace Bitmask {
+ 
+@@ -86,17 +86,32 @@ concept Type =
+ template<Type Enum>
+ [[nodiscard]] constexpr std::underlying_type_t<Enum>
+ to_underlying(Enum e) noexcept {
+-    return std::to_underlying(e);
++    return static_cast<std::underlying_type_t<Enum>>(e);
+ }
+ 
+ template<Type Enum>
+ [[nodiscard]] constexpr Enum
+ from_underlying(std::underlying_type_t<Enum> v) noexcept {
+-    // static_cast<Enum> triggers clang-analyzer-optin.core.EnumCastOutOfRange
+-    // for combined bitmask values that don't match a named enumerator.
+-    // std::bit_cast is well-defined for same-size trivially-copyable types
+-    // and produces identical codegen without the diagnostic.
++    // Combined masks need not correspond to a named enumerator.  Preserve the
++    // representation instead of using an enum cast, which triggers Clang's
++    // EnumCastOutOfRange analyzer check for those valid bitmask values.
++#if defined(__cpp_lib_bit_cast) && __cpp_lib_bit_cast >= 201806L
+     return std::bit_cast<Enum>(v);
++#elif defined(__has_builtin)
++  #if __has_builtin(__builtin_bit_cast)
++    return __builtin_bit_cast(Enum, v);
++  #else
++    static_assert(sizeof(Enum) == sizeof(v));
++    Enum result{};
++    std::memcpy(&result, &v, sizeof(result));
++    return result;
++  #endif
++#else
++    static_assert(sizeof(Enum) == sizeof(v));
++    Enum result{};
++    std::memcpy(&result, &v, sizeof(result));
++    return result;
++#endif
+ }
+ 
+ // ---------------------------------------------------------------------------
+diff --git a/src/common/FBBackendSDL.cxx b/src/common/FBBackendSDL.cxx
+index 8e3155a68..bb4530d04 100644
+--- a/src/common/FBBackendSDL.cxx
++++ b/src/common/FBBackendSDL.cxx
+@@ -690,7 +690,7 @@ const FBSurface& FBBackendSDL::compositedSurface()
+ 
+     auto* row = pixels;
+     for(uInt32 y = 0; y < h; ++y, row += pitch)
+-      std::ranges::transform(std::span{row, w}, row, applyGamma);
++      std::transform(row, row + w, row, applyGamma);
+   }
+   myCompositedSurface = std::make_unique<FBSurfaceSDL>
+     (*this, sdlSurface, ScalingInterpolation::none);
+diff --git a/src/common/JoyMap.cxx b/src/common/JoyMap.cxx
+index 10207894e..62f728ca0 100644
+--- a/src/common/JoyMap.cxx
++++ b/src/common/JoyMap.cxx
+@@ -24,8 +24,10 @@ using json = nlohmann::json;
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ void JoyMap::add(Event::Type event, const JoyMapping& mapping)
+ {
+-  const auto it = std::ranges::lower_bound(myMap, mapping,
+-                                           std::less{}, &MapEntry::first);
++  const auto it = std::lower_bound(myMap.begin(), myMap.end(), mapping,
++    [](const MapEntry& entry, const JoyMapping& value) {
++      return entry.first < value;
++    });
+   if(it != myMap.end() && it->first == mapping)
+     it->second = event;
+   else
+@@ -49,8 +51,10 @@ void JoyMap::add(Event::Type event, EventMode mode, int button,
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ void JoyMap::erase(const JoyMapping& mapping)
+ {
+-  const auto it = std::ranges::lower_bound(myMap, mapping,
+-                                           std::less{}, &MapEntry::first);
++  const auto it = std::lower_bound(myMap.begin(), myMap.end(), mapping,
++    [](const MapEntry& entry, const JoyMapping& value) {
++      return entry.first < value;
++    });
+   if(it != myMap.end() && it->first == mapping)
+     myMap.erase(it);
+ }
+@@ -70,16 +74,20 @@ void JoyMap::erase(EventMode mode, int button, int hat, JoyHatDir hdir)
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ Event::Type JoyMap::get(const JoyMapping& mapping) const
+ {
+-  const auto it = std::ranges::lower_bound(myMap, mapping,
+-                                           std::less{}, &MapEntry::first);
++  const auto it = std::lower_bound(myMap.begin(), myMap.end(), mapping,
++    [](const MapEntry& entry, const JoyMapping& value) {
++      return entry.first < value;
++    });
+   if(it != myMap.end() && it->first == mapping)
+     return it->second;
+ 
+   // try without button as modifier
+   JoyMapping m = mapping;
+   m.button = JOY_CTRL_NONE;
+-  const auto it2 = std::ranges::lower_bound(myMap, m,
+-                                            std::less{}, &MapEntry::first);
++  const auto it2 = std::lower_bound(myMap.begin(), myMap.end(), m,
++    [](const MapEntry& entry, const JoyMapping& value) {
++      return entry.first < value;
++    });
+   if(it2 != myMap.end() && it2->first == m)
+     return it2->second;
+ 
+@@ -103,8 +111,10 @@ Event::Type JoyMap::get(EventMode mode, int button,
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ bool JoyMap::check(const JoyMapping& mapping) const
+ {
+-  const auto it = std::ranges::lower_bound(myMap, mapping,
+-                                           std::less{}, &MapEntry::first);
++  const auto it = std::lower_bound(myMap.begin(), myMap.end(), mapping,
++    [](const MapEntry& entry, const JoyMapping& value) {
++      return entry.first < value;
++    });
+   return it != myMap.end() && it->first == mapping;
+ }
+ 
+diff --git a/src/common/KeyMap.cxx b/src/common/KeyMap.cxx
+index 66bfc0c88..cab7c7f30 100644
+--- a/src/common/KeyMap.cxx
++++ b/src/common/KeyMap.cxx
+@@ -70,7 +70,10 @@ namespace {
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ void KeyMap::add(Event::Type event, const Mapping& mapping)
+ {
+-  const auto it = std::ranges::lower_bound(myMap, mapping, std::less{}, &MapEntry::first);
++  const auto it = std::lower_bound(myMap.begin(), myMap.end(), mapping,
++    [](const MapEntry& entry, const Mapping& value) {
++      return entry.first < value;
++    });
+   if(it != myMap.end() && it->first == mapping)
+     it->second = event;
+   else
+@@ -86,7 +89,10 @@ void KeyMap::add(Event::Type event, EventMode mode, StellaKey key, StellaMod mod
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ void KeyMap::erase(const Mapping& mapping)
+ {
+-  const auto it = std::ranges::lower_bound(myMap, mapping, std::less{}, &MapEntry::first);
++  const auto it = std::lower_bound(myMap.begin(), myMap.end(), mapping,
++    [](const MapEntry& entry, const Mapping& value) {
++      return entry.first < value;
++    });
+   if(it != myMap.end() && it->first == mapping)
+     myMap.erase(it);
+ }
+@@ -102,14 +108,20 @@ Event::Type KeyMap::get(const Mapping& mapping) const
+ {
+   if(myModEnabled)
+   {
+-    const auto it = std::ranges::lower_bound(myMap, mapping, std::less{}, &MapEntry::first);
++    const auto it = std::lower_bound(myMap.begin(), myMap.end(), mapping,
++      [](const MapEntry& entry, const Mapping& value) {
++        return entry.first < value;
++      });
+     if(it != myMap.end() && it->first == mapping)
+       return it->second;
+   }
+ 
+   // mapping not found, try without modifiers
+   const Mapping noMod{mapping.mode, mapping.key, StellaMod::NONE};
+-  const auto it = std::ranges::lower_bound(myMap, noMod, std::less{}, &MapEntry::first);
++  const auto it = std::lower_bound(myMap.begin(), myMap.end(), noMod,
++    [](const MapEntry& entry, const Mapping& value) {
++      return entry.first < value;
++    });
+   if(it != myMap.end() && it->first == noMod)
+     return it->second;
+ 
+@@ -125,7 +137,10 @@ Event::Type KeyMap::get(EventMode mode, StellaKey key, StellaMod mod) const
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ bool KeyMap::check(const Mapping& mapping) const
+ {
+-  const auto it = std::ranges::lower_bound(myMap, mapping, std::less{}, &MapEntry::first);
++  const auto it = std::lower_bound(myMap.begin(), myMap.end(), mapping,
++    [](const MapEntry& entry, const Mapping& value) {
++      return entry.first < value;
++    });
+   return it != myMap.end() && it->first == mapping;
+ }
+ 
+@@ -320,4 +335,3 @@ void KeyMap::eraseEvent(Event::Type event, EventMode mode)
+     return item.second == event && item.first.mode == mode;
+   });
+ }
+-
+diff --git a/src/common/PJoystickHandler.cxx b/src/common/PJoystickHandler.cxx
+index a2191a39c..0dcff31bc 100644
+--- a/src/common/PJoystickHandler.cxx
++++ b/src/common/PJoystickHandler.cxx
+@@ -307,7 +307,7 @@ bool PhysicalJoystickHandler::hasStelladaptors() const
+ {
+   // Note: this has side effect of changing joystick name; removes part of
+   //       name that starts with " (emulates " to end of string
+-  return std::ranges::any_of(mySticks, [](const auto& stick) {
++  return std::any_of(mySticks.begin(), mySticks.end(), [](const auto& stick) {
+     const auto& [_id, _joyptr] = stick;
+ 
+     // remove previously added emulated ports
+@@ -1067,7 +1067,7 @@ PhysicalJoystickHandler::MinStickInfoList PhysicalJoystickHandler::minStickList(
+   MinStickInfoList list;
+   list.reserve(myDatabase.size());
+ 
+-  std::ranges::transform(myDatabase, std::back_inserter(list),
++  std::transform(myDatabase.begin(), myDatabase.end(), std::back_inserter(list),
+     [](const auto& entry) {
+       const auto& [_name, _info] = entry;
+       return MinStickInfo(_name,
+diff --git a/src/common/RewindManager.cxx b/src/common/RewindManager.cxx
+index b4f7d587c..50648151a 100644
+--- a/src/common/RewindManager.cxx
++++ b/src/common/RewindManager.cxx
+@@ -51,13 +51,15 @@ void RewindManager::setup()
+ 
+   myInterval = INTERVAL_CYCLES[0];
+   // NOLINTNEXTLINE(readability-qualified-auto)
+-  if(const auto it = std::ranges::find(INT_SETTINGS, myOSystem.settings().getString(prefix + "tm.interval"));
++  if(const auto it = std::find(INT_SETTINGS.begin(), INT_SETTINGS.end(),
++                               myOSystem.settings().getString(prefix + "tm.interval"));
+      it != INT_SETTINGS.end())
+     myInterval = INTERVAL_CYCLES[std::distance(INT_SETTINGS.begin(), it)];
+ 
+   myHorizon = HORIZON_CYCLES[NUM_HORIZONS-1];
+   // NOLINTNEXTLINE(readability-qualified-auto)
+-  if(const auto it = std::ranges::find(HOR_SETTINGS, myOSystem.settings().getString(prefix + "tm.horizon"));
++  if(const auto it = std::find(HOR_SETTINGS.begin(), HOR_SETTINGS.end(),
++                               myOSystem.settings().getString(prefix + "tm.horizon"));
+      it != HOR_SETTINGS.end())
+     myHorizon = HORIZON_CYCLES[std::distance(HOR_SETTINGS.begin(), it)];
+ 
+diff --git a/src/common/Stack.hxx b/src/common/Stack.hxx
+index 3e61d8686..398fdeb3a 100644
+--- a/src/common/Stack.hxx
++++ b/src/common/Stack.hxx
+@@ -76,14 +76,13 @@ class FixedStack
+     // the class.
+     template <typename Func>
+     constexpr void applyAll(Func&& func) {
+-      // Create a subrange of active stack elements, and apply func to each
+-      auto r = std::ranges::subrange(_stack.begin(), _stack.begin() + _size);
+-      std::ranges::for_each(r, std::forward<Func>(func));
++      std::for_each(_stack.begin(), _stack.begin() + _size,
++                    std::forward<Func>(func));
+     }
+     template <typename Func>
+     constexpr void applyAll(Func&& func) const {
+-      auto r = std::ranges::subrange(_stack.begin(), _stack.begin() + _size);
+-      std::ranges::for_each(r, std::forward<Func>(func));
++      std::for_each(_stack.begin(), _stack.begin() + _size,
++                    std::forward<Func>(func));
+     }
+ 
+     friend std::ostream& operator<<(std::ostream& os, const FixedStack<T>& s) {
+diff --git a/src/common/Variant.hxx b/src/common/Variant.hxx
+index e1deed24a..2c034ffdc 100644
+--- a/src/common/Variant.hxx
++++ b/src/common/Variant.hxx
+@@ -116,6 +116,16 @@ class Variant
+       return Common::Point(toString());
+     }
+ 
++  private:
++    template<typename T>
++    static std::partial_ordering compare(const T& lhs, const T& rhs) {
++      if(lhs < rhs) return std::partial_ordering::less;
++      if(lhs > rhs) return std::partial_ordering::greater;
++      if(lhs == rhs) return std::partial_ordering::equivalent;
++      return std::partial_ordering::unordered;
++    }
++
++  public:
+     // Comparison
+     std::partial_ordering operator<=>(const Variant& other) const {
+       // Both numeric: compare as double
+@@ -124,10 +134,16 @@ class Variant
+ 
+       // Same type: compare directly
+       if(myValue.index() == other.myValue.index())
+-        return myValue <=> other.myValue;
++        return std::visit([&](const auto& value) -> std::partial_ordering {
++          using T = std::decay_t<decltype(value)>;
++          if constexpr(std::is_same_v<T, std::monostate>)
++            return std::partial_ordering::equivalent;
++          else
++            return compare(value, std::get<T>(other.myValue));
++        }, myValue);
+ 
+       // Mixed types: compare as string
+-      return toString() <=> other.toString();
++      return compare(toString(), other.toString());
+     }
+     bool operator==(const Variant& other) const {
+       // Mirror the three-way comparison logic exactly
+@@ -174,11 +190,13 @@ class Variant
+           if constexpr(std::is_same_v<T, std::monostate>) return "";
+           else if constexpr(std::is_same_v<T, string>)    return v;
+           else if constexpr(std::is_same_v<T, bool>)      return v ? "1" : "0";
+-          else if constexpr(std::is_arithmetic_v<T>) {
++          else if constexpr(std::integral<T>) {
+             char buf[32];
+             auto [ptr, ec] = std::to_chars(buf, buf + sizeof(buf), v);
+             return string(buf, ptr - buf);
+           }
++          else if constexpr(std::floating_point<T>)
++            return BSPF::formatFloat(v);
+           else
+             return v.toString(); // safe
+         }, myValue);
+@@ -207,8 +225,7 @@ class Variant
+           else if constexpr(std::is_convertible_v<T, string_view>) {
+             float result{};
+             auto sv = string_view(v);
+-            const auto [ptr, ec] = std::from_chars(sv.data(), sv.data() + sv.size(), result);
+-            return (ec == std::errc{}) ? result : 0.F;
++            return BSPF::parseFloat(sv, result) ? result : 0.F;
+           }
+           else
+             return 0.F;
+@@ -222,8 +239,7 @@ class Variant
+           else if constexpr(std::is_convertible_v<T, string_view>) {
+             double result{};
+             auto sv = string_view(v);
+-            auto [ptr, ec] = std::from_chars(sv.data(), sv.data() + sv.size(), result);
+-            return (ec == std::errc{}) ? result : 0.0;
++            return BSPF::parseFloat(sv, result) ? result : 0.0;
+           }
+           else
+             return 0.0;
+diff --git a/src/common/bspf.hxx b/src/common/bspf.hxx
+index 70bf0bad5..29d7652a4 100644
+--- a/src/common/bspf.hxx
++++ b/src/common/bspf.hxx
+@@ -47,11 +47,17 @@ using uInt64 = uint64_t;
+ #include <string_view>
+ #include <format>
+ #include <charconv>
++#include <cmath>
++#include <concepts>
++#include <iomanip>
++#include <limits>
++#include <locale>
+ #include <sstream>
+ #include <ctime>
+ #include <numbers>
+ #include <ranges>
+ #include <span>
++#include <type_traits>
+ #include <utility>
+ #include <vector>
+ 
+@@ -156,6 +162,42 @@ namespace BSPF
+   constexpr double ln10 = std::numbers::ln10;
+   constexpr double ln2  = std::numbers::ln2;
+ 
++  // std::byteswap is C++23, but older standard libraries don't provide it.
++  template<typename T>
++  [[nodiscard]] constexpr T byteswap(T value) noexcept
++  {
++    static_assert(std::is_integral_v<T> && std::is_unsigned_v<T>);
++    static_assert(sizeof(T) == 1 || sizeof(T) == 2 ||
++                  sizeof(T) == 4 || sizeof(T) == 8);
++
++  #if defined(__cpp_lib_byteswap) && __cpp_lib_byteswap >= 202110L && \
++      !defined(BSPF_FORCE_FALLBACK_BYTESWAP)
++    return std::byteswap(value);
++  #elif (defined(__clang__) || defined(__GNUC__)) && \
++        !defined(BSPF_FORCE_PORTABLE_BYTESWAP)
++    if constexpr(sizeof(T) == 1)
++      return value;
++    else if constexpr(sizeof(T) == 2)
++      return static_cast<T>(__builtin_bswap16(value));
++    else if constexpr(sizeof(T) == 4)
++      return static_cast<T>(__builtin_bswap32(value));
++    else
++      return static_cast<T>(__builtin_bswap64(value));
++  #else
++    if constexpr(sizeof(T) == 1)
++      return value;
++
++    T result{};
++    for(size_t i = 0; i < sizeof(T); ++i)
++    {
++      result = static_cast<T>((result << std::numeric_limits<unsigned char>::digits)
++        | (value & std::numeric_limits<unsigned char>::max()));
++      value >>= std::numeric_limits<unsigned char>::digits;
++    }
++    return result;
++  #endif
++  }
++
+   // CPU architecture type
+   // This isn't complete yet, but takes care of all the major platforms
+   #if defined(__i386__) || defined(_M_IX86)
+@@ -223,7 +265,7 @@ namespace BSPF
+   // NOTE: Only needed until std::vector gets a contains() method
+   template<typename Container>
+   bool contains(const Container& c, typename Container::const_reference elem) {
+-    return std::ranges::find(c, elem) != c.end();
++    return std::find(c.begin(), c.end(), elem) != c.end();
+   }
+ 
+   // Convert character to upper/lower case (ASCII only)
+@@ -238,17 +280,174 @@ namespace BSPF
+   constexpr bool isLowerAscii(char c) { return c >= 'a' && c <= 'z'; }
+ 
+   // Convert string to given case
+-  constexpr string& toUpperCase(string& s)
++  inline string& toUpperCase(string& s)
+   {
+-    std::ranges::transform(s, s.begin(), [](char c){ return toUpperAscii(c); });
++    std::transform(s.begin(), s.end(), s.begin(),
++      [](char c){ return toUpperAscii(c); });
+     return s;
+   }
+-  constexpr string& toLowerCase(string& s)
++  inline string& toLowerCase(string& s)
+   {
+-    std::ranges::transform(s, s.begin(), [](char c){ return toLowerAscii(c); });
++    std::transform(s.begin(), s.end(), s.begin(),
++      [](char c){ return toLowerAscii(c); });
+     return s;
+   }
+ 
++  // libc++ has no feature-test macro specifically for the floating-point
++  // charconv overloads.  float/double from_chars was completed in libc++ 20,
++  // while older Apple to_chars also has deployment availability constraints;
++  // older versions (including Xcode 14's libc++) use the fallback below.
++  template<std::floating_point T>
++  bool parseFloat(string_view text, T& value)
++  {
++  #if (!defined(_LIBCPP_VERSION) || _LIBCPP_VERSION >= 200000) && \
++      !defined(BSPF_FORCE_FALLBACK_FLOAT_CHARS)
++    const auto result = std::from_chars(
++      text.data(), text.data() + text.size(), value);
++    return result.ec == std::errc{};
++  #else
++    if(text.empty() || text.front() == '+')
++      return false;
++
++    const auto startsWithNoCase = [](string_view text, string_view prefix) {
++      if(text.size() < prefix.size())
++        return false;
++      return std::equal(prefix.begin(), prefix.end(), text.begin(),
++        text.begin() + prefix.size(),
++        [](char a, char b) { return toUpperAscii(a) == toUpperAscii(b); });
++    };
++
++    size_t pos = 0;
++    bool negative = false;
++    if(text[pos] == '-')
++    {
++      negative = true;
++      if(++pos == text.size())
++        return false;
++    }
++
++    const auto remaining = text.substr(pos);
++    if(startsWithNoCase(remaining, "inf"))
++    {
++      value = negative ? -std::numeric_limits<T>::infinity()
++                       :  std::numeric_limits<T>::infinity();
++      return true;
++    }
++
++    if(startsWithNoCase(remaining, "nan"))
++    {
++      value = std::numeric_limits<T>::quiet_NaN();
++      if(negative)
++        value = std::copysign(value, T{-1});
++      return true;
++    }
++
++    const auto isDigit = [](char c) { return c >= '0' && c <= '9'; };
++    const size_t numberStart = pos;
++    while(pos < text.size() && isDigit(text[pos]))
++      ++pos;
++    bool hasDigits = pos != numberStart;
++
++    if(pos < text.size() && text[pos] == '.')
++    {
++      ++pos;
++      const size_t fractionStart = pos;
++      while(pos < text.size() && isDigit(text[pos]))
++        ++pos;
++      hasDigits |= pos != fractionStart;
++    }
++    if(!hasDigits)
++      return false;
++
++    const size_t exponentStart = pos;
++    if(pos < text.size() && (text[pos] == 'e' || text[pos] == 'E'))
++    {
++      ++pos;
++      if(pos < text.size() && (text[pos] == '+' || text[pos] == '-'))
++        ++pos;
++      const size_t exponentDigits = pos;
++      while(pos < text.size() && isDigit(text[pos]))
++        ++pos;
++      if(pos == exponentDigits)
++        pos = exponentStart;
++    }
++
++    std::istringstream input{string{text.substr(0, pos)}};
++    input.imbue(std::locale::classic());
++    T parsed{};
++    input >> std::noskipws >> parsed;
++    if(input.fail() || input.peek() != std::char_traits<char>::eof())
++      return false;
++    if(parsed == T{} && std::any_of(
++         text.begin() + numberStart, text.begin() + exponentStart,
++         [](char c) { return c >= '1' && c <= '9'; }))
++      return false;
++    value = parsed;
++    return true;
++  #endif
++  }
++
++  template<std::floating_point T>
++  string formatFloat(T value)
++  {
++  #if (!defined(_LIBCPP_VERSION) || _LIBCPP_VERSION >= 200000) && \
++      !defined(BSPF_FORCE_FALLBACK_FLOAT_CHARS)
++    char buffer[64];
++    const auto [ptr, ec] = std::to_chars(buffer, buffer + sizeof(buffer), value);
++    return ec == std::errc{} ? string(buffer, ptr) : "";
++  #else
++    if(std::isnan(value))
++      return std::signbit(value) ? "-nan" : "nan";
++    if(std::isinf(value))
++      return std::signbit(value) ? "-inf" : "inf";
++
++    const auto render = [value](std::ios_base::fmtflags format, int precision) {
++      std::ostringstream output;
++      output.imbue(std::locale::classic());
++      output.setf(format, std::ios_base::floatfield);
++      output << std::setprecision(precision) << value;
++      return output.str();
++    };
++    const auto roundTrips = [value](const string& candidate) {
++      T roundTrip{};
++      return parseFloat<T>(candidate, roundTrip) && roundTrip == value &&
++        (value != T{} || std::signbit(roundTrip) == std::signbit(value));
++    };
++
++    // Find the fewest significant digits that round-trip, then choose the
++    // shortest equivalent fixed or scientific representation.
++    for(int precision = 1; precision <= std::numeric_limits<T>::max_digits10;
++        ++precision)
++    {
++      string best = render(std::ios_base::fmtflags{}, precision);
++      if(!roundTrips(best))
++        continue;
++
++      const auto consider = [&](string candidate, bool preferTie = false) {
++        if(roundTrips(candidate) &&
++           (candidate.size() < best.size() ||
++            (preferTie && candidate.size() == best.size())))
++          best = std::move(candidate);
++      };
++      consider(render(std::ios_base::scientific, precision - 1));
++      consider(render(std::ios_base::fixed, 0), true);
++
++      if(value != T{})
++      {
++        const int exponent = static_cast<int>(
++          std::floor(std::log10(std::fabs(value))));
++        const int decimalPlaces = precision - exponent - 1;
++        for(int adjustment = -1; adjustment <= 1; ++adjustment)
++          if(decimalPlaces + adjustment >= 0)
++            consider(render(std::ios_base::fixed,
++                            decimalPlaces + adjustment), true);
++      }
++      return best;
++    }
++    return "";
++  #endif
++  }
++
+   // Convert string to integer, using default value on any error
+   template<int BASE = 10>
+   constexpr int stoi(string_view s, int defaultValue = 0)
+@@ -308,13 +507,13 @@ namespace BSPF
+   {
+     if(startpos > s1.size()) return string_view::npos;
+     const auto sub = s1.substr(startpos);
+-    const auto found = std::ranges::search(sub, s2,
++    const auto found = std::search(sub.begin(), sub.end(), s2.begin(), s2.end(),
+             [&](char ch1, char ch2) {
+               return toUpperAscii(ch1) == toUpperAscii(ch2);
+             }
+     );
+-    return (found.empty() && !s2.empty()) ? string_view::npos
+-                                          : startpos + (found.begin() - sub.begin());
++    return (found == sub.end() && !s2.empty()) ? string_view::npos
++                                               : startpos + (found - sub.begin());
+   }
+ 
+   // Test whether the first string contains the second one (case insensitive)
+@@ -404,7 +603,7 @@ namespace BSPF
+   // @param str      The searched string
+   // @param pattern  The pattern to search for
+   // @return  True if pattern was found.
+-  constexpr bool matchWithWildcards(string_view str, string_view pattern)
++  inline bool matchWithWildcards(string_view str, string_view pattern)
+   {
+     // A pattern without an explicit leading '*' matches anywhere in str,
+     // and one without a trailing '*' need not consume str's tail.
+@@ -461,7 +660,7 @@ namespace BSPF
+   }
+ 
+   // Modify 'str', replacing all occurrences of 'from' with 'to'
+-  constexpr void replaceAll(string& str, string_view from, string_view to)
++  inline void replaceAll(string& str, string_view from, string_view to)
+   {
+     if(from.empty()) return;
+     auto start_pos = 0UZ;
+@@ -490,11 +689,11 @@ namespace BSPF
+   // name from a (potentially shared/imported) properties entry is concatenated
+   // into a save/snapshot path.  Both '/' and '\' are replaced regardless of
+   // platform so the result can't escape its intended directory.
+-  constexpr string sanitizeFilename(string_view name)
++  inline string sanitizeFilename(string_view name)
+   {
+     string result{name};
+-    std::ranges::replace(result, '/', '_');
+-    std::ranges::replace(result, '\\', '_');
++    std::replace(result.begin(), result.end(), '/', '_');
++    std::replace(result.begin(), result.end(), '\\', '_');
+     return result;
+   }
+ 
+diff --git a/src/debugger/BreakpointMap.cxx b/src/debugger/BreakpointMap.cxx
+index 97f68a0ef..e6a50b3c5 100644
+--- a/src/debugger/BreakpointMap.cxx
++++ b/src/debugger/BreakpointMap.cxx
+@@ -79,6 +79,6 @@ BreakpointMap::BreakpointList BreakpointMap::getBreakpoints() const
+   list.reserve(myMap.size());
+   for(const auto& [bp, _]: myMap)
+     list.push_back(bp);
+-  std::ranges::sort(list);
++  std::sort(list.begin(), list.end());
+   return list;
+ }
+diff --git a/src/debugger/CartDebug.cxx b/src/debugger/CartDebug.cxx
+index f4e1e4552..23b21c429 100644
+--- a/src/debugger/CartDebug.cxx
++++ b/src/debugger/CartDebug.cxx
+@@ -333,7 +333,7 @@ bool CartDebug::disassemble(int bank, uInt16 PC, Disassembly& disassembly,
+     // work that Distella has to do
+     if(bankChanged || !pcfound)
+     {
+-      if(std::ranges::find(addresses, PC) == addresses.cend())
++      if(std::find(addresses.begin(), addresses.end(), PC) == addresses.cend())
+       {
+         addresses.push_back(PC);
+         if(!DiStella::settings.resolveCode)
+@@ -465,7 +465,7 @@ bool CartDebug::addDirective(Device::AccessType type,
+   tag.end = end;
+ 
+   // If the same directive and range is added, consider it a removal instead
+-  if(const auto it = std::ranges::find_if(list, [&tag](const auto& d) {
++  if(const auto it = std::find_if(list.begin(), list.end(), [&tag](const auto& d) {
+         return d.type == tag.type && d.start == tag.start && d.end == tag.end;
+      }); it != list.end())
+   {
+diff --git a/src/debugger/Debugger.cxx b/src/debugger/Debugger.cxx
+index 1f3690801..83127fc75 100644
+--- a/src/debugger/Debugger.cxx
++++ b/src/debugger/Debugger.cxx
+@@ -828,7 +828,7 @@ bool Debugger::addFunction(string_view name, string_view definition,
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ bool Debugger::isBuiltinFunction(string_view name)
+ {
+-  return std::ranges::any_of(ourBuiltinFunctions,
++  return std::any_of(ourBuiltinFunctions.begin(), ourBuiltinFunctions.end(),
+       [&name](const auto& func) { return name == func.name; });
+ }
+ 
+diff --git a/src/debugger/DebuggerParser.cxx b/src/debugger/DebuggerParser.cxx
+index 3125cc463..f7ff0e5dc 100644
+--- a/src/debugger/DebuggerParser.cxx
++++ b/src/debugger/DebuggerParser.cxx
+@@ -85,7 +85,7 @@ string DebuggerParser::run(string_view command)
+   getArgs(command, verb);
+ 
+   // NOLINTNEXTLINE(readability-qualified-auto)
+-  const auto it = std::ranges::find_if(commands,
++  const auto it = std::find_if(commands.begin(), commands.end(),
+     [&](const Command& cmd) { return BSPF::equalsIgnoreCase(verb, cmd.cmdString); });
+ 
+   if(it == commands.end())
+@@ -1041,7 +1041,7 @@ void DebuggerParser::executeBreakIf()
+   const string condition = buildExprStr();
+ 
+   const auto& condNames = debugger.m6502().getCondBreakNames();
+-  const auto it = std::ranges::find(condNames, condition);
++  const auto it = std::find(condNames.begin(), condNames.end(), condition);
+   if(it != condNames.end())
+   {
+     args[0] = static_cast<int>(it - condNames.begin());
+@@ -1567,7 +1567,7 @@ void DebuggerParser::executeHelp()
+   else  // get help for specific command
+   {
+     // NOLINTNEXTLINE(readability-qualified-auto)
+-    const auto it = std::ranges::find_if(commands,
++    const auto it = std::find_if(commands.begin(), commands.end(),
+       [&](const Command& cmd) { return BSPF::equalsIgnoreCase(argStrings[0], cmd.cmdString); });
+     if(it != commands.end())
+     {
+@@ -1829,9 +1829,9 @@ void DebuggerParser::executeListTraps()
+     return;
+   }
+ 
+-  const bool trapFound   = std::ranges::any_of(traps,
++  const bool trapFound   = std::any_of(traps.begin(), traps.end(),
+     [](const auto& t) { return t.name.empty(); });
+-  const bool trapifFound = std::ranges::any_of(traps,
++  const bool trapifFound = std::any_of(traps.begin(), traps.end(),
+     [](const auto& t) { return !t.name.empty(); });
+ 
+   if(trapFound)   listTraps(false);
+@@ -2290,7 +2290,7 @@ void DebuggerParser::executeSaveStateIf()
+   const string condition = buildExprStr();
+ 
+   const auto& condNames = debugger.m6502().getCondSaveStateNames();
+-  const auto it = std::ranges::find(condNames, condition);
++  const auto it = std::find(condNames.begin(), condNames.end(), condition);
+   if(it != condNames.end())
+   {
+     args[0] = static_cast<int>(it - condNames.begin());
+@@ -2662,7 +2662,7 @@ void DebuggerParser::executeTraps(bool read, bool write, string_view command,
+ 
+   // Check for duplicate — duplicates remove each other
+   const auto& traps = debugger.m6502().getCondTraps();
+-  const auto it = std::ranges::find_if(traps,
++  const auto it = std::find_if(traps.begin(), traps.end(),
+     [&](const M6502::CondTrap& trap)
+     {
+       return trap.begin == begin && trap.end == end &&
+diff --git a/src/debugger/DiStella.cxx b/src/debugger/DiStella.cxx
+index fa42c0365..25fe06e6f 100644
+--- a/src/debugger/DiStella.cxx
++++ b/src/debugger/DiStella.cxx
+@@ -705,7 +705,10 @@ void DiStella::disasmPass1(CartDebug::AddressList& debuggerAddresses)
+     if (Debugger::debugger().getAccessFlags(addr) & Device::CODE)
+       runtimeHints.emplace_back(Debugger::debugger().getAccessCounter(addr), addr);
+   }
+-  std::ranges::sort(runtimeHints, std::ranges::greater{}, &RuntimeHint::first);
++  std::sort(runtimeHints.begin(), runtimeHints.end(),
++    [](const RuntimeHint& lhs, const RuntimeHint& rhs) {
++      return lhs.first > rhs.first;
++    });
+   auto runtimeIt = runtimeHints.begin();
+ 
+   std::unordered_set<uInt16> visited;
+diff --git a/src/debugger/TimerMap.cxx b/src/debugger/TimerMap.cxx
+index 91aed2b84..e7d33f293 100644
+--- a/src/debugger/TimerMap.cxx
++++ b/src/debugger/TimerMap.cxx
+@@ -31,7 +31,8 @@ uInt32 TimerMap::add(uInt16 fromAddr, uInt16 toAddr,
+ uInt32 TimerMap::add(uInt16 addr, uInt8 bank, bool mirrors, bool anyBank)
+ {
+   const TimerPoint tp(addr, bank);
+-  const auto it = std::ranges::find_if(myList, &Timer::isPartial);
++  const auto it = std::find_if(myList.begin(), myList.end(),
++    [](const Timer& timer) { return timer.isPartial; });
+ 
+   if(it == myList.end())
+   {
+diff --git a/src/debugger/gui/CartCDFWidget.cxx b/src/debugger/gui/CartCDFWidget.cxx
+index e721b8fa5..c5241725b 100644
+--- a/src/debugger/gui/CartCDFWidget.cxx
++++ b/src/debugger/gui/CartCDFWidget.cxx
+@@ -252,7 +252,7 @@ void CartridgeCDFWidget::saveOldState()
+     myOldState.datastreamincrements.push_back(myCart.getDatastreamIncrement(i));
+   }
+ 
+-  std::ranges::copy(myCart.myMusicCounters,
++  std::copy(myCart.myMusicCounters.begin(), myCart.myMusicCounters.end(),
+     std::back_inserter(myOldState.mcounters));
+ 
+   for(uInt32 i = 0; i < 3; ++i)
+diff --git a/src/debugger/gui/CartDPCPlusWidget.cxx b/src/debugger/gui/CartDPCPlusWidget.cxx
+index e8077ce33..c0eb3727a 100644
+--- a/src/debugger/gui/CartDPCPlusWidget.cxx
++++ b/src/debugger/gui/CartDPCPlusWidget.cxx
+@@ -187,23 +187,23 @@ void CartridgeDPCPlusWidget::saveOldState()
+   myOldState.mwaves.clear();
+   myOldState.internalram.clear();
+ 
+-  std::ranges::copy(myCart.myTops,
++  std::copy(myCart.myTops.begin(), myCart.myTops.end(),
+                     std::back_inserter(myOldState.tops));
+-  std::ranges::copy(myCart.myBottoms,
++  std::copy(myCart.myBottoms.begin(), myCart.myBottoms.end(),
+                     std::back_inserter(myOldState.bottoms));
+-  std::ranges::copy(myCart.myCounters,
++  std::copy(myCart.myCounters.begin(), myCart.myCounters.end(),
+                     std::back_inserter(myOldState.counters));
+-  std::ranges::copy(myCart.myFractionalCounters,
++  std::copy(myCart.myFractionalCounters.begin(), myCart.myFractionalCounters.end(),
+                     std::back_inserter(myOldState.fraccounters));
+-  std::ranges::copy(myCart.myFractionalIncrements,
++  std::copy(myCart.myFractionalIncrements.begin(), myCart.myFractionalIncrements.end(),
+                     std::back_inserter(myOldState.fracinc));
+-  std::ranges::copy(myCart.myParameter,
++  std::copy(myCart.myParameter.begin(), myCart.myParameter.end(),
+                     std::back_inserter(myOldState.param));
+-  std::ranges::copy(myCart.myMusicCounters,
++  std::copy(myCart.myMusicCounters.begin(), myCart.myMusicCounters.end(),
+                     std::back_inserter(myOldState.mcounters));
+-  std::ranges::copy(myCart.myMusicFrequencies,
++  std::copy(myCart.myMusicFrequencies.begin(), myCart.myMusicFrequencies.end(),
+                     std::back_inserter(myOldState.mfreqs));
+-  std::ranges::copy(myCart.myMusicWaveforms,
++  std::copy(myCart.myMusicWaveforms.begin(), myCart.myMusicWaveforms.end(),
+                     std::back_inserter(myOldState.mwaves));
+ 
+   myOldState.random = myCart.myRandomNumber;
+diff --git a/src/debugger/gui/CartDPCWidget.cxx b/src/debugger/gui/CartDPCWidget.cxx
+index bbb7208f5..1c2afd853 100644
+--- a/src/debugger/gui/CartDPCWidget.cxx
++++ b/src/debugger/gui/CartDPCWidget.cxx
+@@ -137,11 +137,16 @@ void CartridgeDPCWidget::saveOldState()
+   myOldState.flags.clear();
+   myOldState.music.clear();
+ 
+-  std::ranges::copy(myCart.myTops,      std::back_inserter(myOldState.tops));
+-  std::ranges::copy(myCart.myBottoms,   std::back_inserter(myOldState.bottoms));
+-  std::ranges::copy(myCart.myCounters,  std::back_inserter(myOldState.counters));
+-  std::ranges::copy(myCart.myFlags,     std::back_inserter(myOldState.flags));
+-  std::ranges::copy(myCart.myMusicMode, std::back_inserter(myOldState.music));
++  std::copy(myCart.myTops.begin(), myCart.myTops.end(),
++            std::back_inserter(myOldState.tops));
++  std::copy(myCart.myBottoms.begin(), myCart.myBottoms.end(),
++            std::back_inserter(myOldState.bottoms));
++  std::copy(myCart.myCounters.begin(), myCart.myCounters.end(),
++            std::back_inserter(myOldState.counters));
++  std::copy(myCart.myFlags.begin(), myCart.myFlags.end(),
++            std::back_inserter(myOldState.flags));
++  std::copy(myCart.myMusicMode.begin(), myCart.myMusicMode.end(),
++            std::back_inserter(myOldState.music));
+ 
+   myOldState.random = myCart.myRandomNumber;
+ 
+diff --git a/src/debugger/gui/CartRamWidget.cxx b/src/debugger/gui/CartRamWidget.cxx
+index a58a62476..8874ce47e 100644
+--- a/src/debugger/gui/CartRamWidget.cxx
++++ b/src/debugger/gui/CartRamWidget.cxx
+@@ -147,9 +147,10 @@ void CartRamWidget::InternalRamWidget::fillList(uInt32 start, uInt32 size,
+   for(uInt32 i = 0; i < size; ++i)
+     alist.push_back(i + start);
+ 
+-  std::ranges::copy(currRam, std::back_inserter(vlist));
+-  std::ranges::transform(currRam, oldRam, std::back_inserter(changed),
+-                         std::not_equal_to{});
++  std::copy(currRam.begin(), currRam.end(), std::back_inserter(vlist));
++  const auto currEnd = currRam.begin() + std::min(currRam.size(), oldRam.size());
++  std::transform(currRam.begin(), currEnd, oldRam.begin(),
++                 std::back_inserter(changed), std::not_equal_to{});
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+diff --git a/src/debugger/gui/DataGridWidget.cxx b/src/debugger/gui/DataGridWidget.cxx
+index fcaa32afb..fbda805e6 100644
+--- a/src/debugger/gui/DataGridWidget.cxx
++++ b/src/debugger/gui/DataGridWidget.cxx
+@@ -106,15 +106,17 @@ void DataGridWidget::setList(const IntArray& alist, const IntArray& vlist,
+                              const BoolArray& changed)
+ {
+   const bool dirty = _editMode
+-    || !std::ranges::equal(_valueList, vlist)
+-    || !std::ranges::equal(_changedList, changed);
++    || !std::equal(_valueList.begin(), _valueList.end(),
++                   vlist.begin(), vlist.end())
++    || !std::equal(_changedList.begin(), _changedList.end(),
++                   changed.begin(), changed.end());
+ 
+   _addrList    = alist;
+   _valueList   = vlist;
+   _changedList = changed;
+ 
+   _valueStringList.clear();
+-  std::ranges::transform(_valueList, std::back_inserter(_valueStringList),
++  std::transform(_valueList.begin(), _valueList.end(), std::back_inserter(_valueStringList),
+     [this](int v) { return Common::Base::toString(v, _base); });
+ 
+   enableEditMode(false);
+diff --git a/src/debugger/gui/PromptWidget.cxx b/src/debugger/gui/PromptWidget.cxx
+index 8f2f306b2..2ae0404e8 100644
+--- a/src/debugger/gui/PromptWidget.cxx
++++ b/src/debugger/gui/PromptWidget.cxx
+@@ -1153,7 +1153,7 @@ bool PromptWidget::autoComplete(int direction)
+   }
+   if(lst.empty())
+     return false;
+-  std::ranges::sort(lst);
++  std::sort(lst.begin(), lst.end());
+ 
+   if(direction < 0)
+   {
+diff --git a/src/debugger/gui/ToggleBitWidget.cxx b/src/debugger/gui/ToggleBitWidget.cxx
+index 06e18b245..a53d59c0a 100644
+--- a/src/debugger/gui/ToggleBitWidget.cxx
++++ b/src/debugger/gui/ToggleBitWidget.cxx
+@@ -71,8 +71,9 @@ void ToggleBitWidget::setState(const BoolArray& state, const BoolArray& changed)
+   // Widget has to be updated in two cases:
+   // 1. some bit has changed
+   // 2. the changed state compared to the previous changed state has changed
+-  if(!std::ranges::equal(_changedList, changed)
+-     || !std::ranges::none_of(changed, [](bool b){ return b; }))
++  if(!std::equal(_changedList.begin(), _changedList.end(),
++                 changed.begin(), changed.end())
++     || !std::none_of(changed.begin(), changed.end(), [](bool b){ return b; }))
+   {
+     setDirty();
+   }
+diff --git a/src/debugger/yacc/YaccParser.cxx b/src/debugger/yacc/YaccParser.cxx
+index 0208a889e..ef790157e 100644
+--- a/src/debugger/yacc/YaccParser.cxx
++++ b/src/debugger/yacc/YaccParser.cxx
+@@ -79,7 +79,7 @@ private:
+       33, 37, 38, 40, 41, 42, 43, 45, 47, 60, 62, 64, 91, 93, 94, 124, 126
+     };
+     const int v = static_cast<unsigned char>(c);
+-    if(std::ranges::find(kValid, v) != kValid.end())
++    if(std::find(kValid.begin(), kValid.end(), v) != kValid.end())
+       // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange,modernize-return-braced-init-list)
+       return parser::symbol_type(v);
+     return parser::make_ERR();
+diff --git a/src/emucore/Bankswitch.hxx b/src/emucore/Bankswitch.hxx
+index e21f80ce9..baa643a3e 100644
+--- a/src/emucore/Bankswitch.hxx
++++ b/src/emucore/Bankswitch.hxx
+@@ -228,12 +228,11 @@ class Bankswitch
+ 
+     // Convert string to BSType enum via binary search on sorted constexpr table
+     static Bankswitch::Type nameToType(string_view name) {
+-      const auto it = std::ranges::lower_bound( // NOLINT(readability-qualified-auto)
+-        ourNameToTypes, name,
+-        [](string_view a, string_view b) {
+-          return BSPF::compareIgnoreCase(a, b) < 0;
+-        },
+-        &TypeEntry::first);  // projection: extract the key from each element
++      const auto it = std::lower_bound( // NOLINT(readability-qualified-auto)
++        ourNameToTypes.begin(), ourNameToTypes.end(), name,
++        [](const TypeEntry& entry, string_view value) {
++          return BSPF::compareIgnoreCase(entry.first, value) < 0;
++        });
+       if(it != ourNameToTypes.end() && BSPF::compareIgnoreCase(it->first, name) == 0)
+         return it->second;
+ 
+@@ -247,12 +246,11 @@ class Bankswitch
+       const auto idx = path.find_last_of('.');
+       if(idx != string_view::npos)
+       {
+-        const auto it = std::ranges::lower_bound( // NOLINT(readability-qualified-auto)
+-          ourExtensions, path.substr(idx + 1),
+-          [](string_view a, string_view b) {
+-            return BSPF::compareIgnoreCase(a, b) < 0;
+-          },
+-          &TypeEntry::first);
++        const auto it = std::lower_bound( // NOLINT(readability-qualified-auto)
++          ourExtensions.begin(), ourExtensions.end(), path.substr(idx + 1),
++          [](const TypeEntry& entry, string_view value) {
++            return BSPF::compareIgnoreCase(entry.first, value) < 0;
++          });
+         if(it != ourExtensions.end() &&
+            BSPF::compareIgnoreCase(it->first, path.substr(idx + 1)) == 0)
+           return it->second;
+@@ -272,12 +270,11 @@ class Bankswitch
+       if(idx != string_view::npos)
+       {
+         const auto e = name.substr(idx + 1);
+-        const auto it = std::ranges::lower_bound( // NOLINT(readability-qualified-auto)
+-          ourExtensions, e,
+-          [](string_view a, string_view b) {
+-            return BSPF::compareIgnoreCase(a, b) < 0;
+-          },
+-          &TypeEntry::first);
++        const auto it = std::lower_bound( // NOLINT(readability-qualified-auto)
++          ourExtensions.begin(), ourExtensions.end(), e,
++          [](const TypeEntry& entry, string_view value) {
++            return BSPF::compareIgnoreCase(entry.first, value) < 0;
++          });
+         if(it != ourExtensions.end() && BSPF::compareIgnoreCase(it->first, e) == 0)
+         {
+           ext = e;
+diff --git a/src/emucore/Cart.cxx b/src/emucore/Cart.cxx
+index 85b072844..d8fb03154 100644
+--- a/src/emucore/Cart.cxx
++++ b/src/emucore/Cart.cxx
+@@ -117,7 +117,7 @@ void Cartridge::pokeRAM(uInt8& dest, uInt16 address, uInt8 value)
+ {
+ #ifdef DEBUGGER_SUPPORT
+   // Compare with target address and with one page before (in case of page crossed while indexing)
+-  if(const auto it = std::ranges::find_if(myRamReadAccesses,
++  if(const auto it = std::find_if(myRamReadAccesses.begin(), myRamReadAccesses.end(),
+       [address](uInt16 a) { return a == address || a == address - 256; });
+       it != myRamReadAccesses.end())
+   {
+@@ -228,10 +228,10 @@ uInt16 Cartridge::bankOrigin(uInt16 bank, uInt16 PC) const
+ void Cartridge::initializeRAM(ByteMSpan arr, uInt8 val) const
+ {
+   if(randomInitialRAM())
+-    std::ranges::generate(arr,
++    std::generate(arr.begin(), arr.end(),
+       [this]{ return mySystem->randGenerator().next(); });
+   else
+-    std::ranges::fill(arr, val);
++    std::fill(arr.begin(), arr.end(), val);
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+diff --git a/src/emucore/CartAR.cxx b/src/emucore/CartAR.cxx
+index 92775bd99..b4d4031e0 100644
+--- a/src/emucore/CartAR.cxx
++++ b/src/emucore/CartAR.cxx
+@@ -48,9 +48,10 @@ CartridgeAR::CartridgeAR(ByteSpan image, string_view md5,
+   myNumberOfLoadImages = static_cast<uInt8>(myLoadImages.size() / LOAD_SIZE);
+ 
+   // Copy the given image and add header if not present
+-  std::ranges::copy(image, myLoadImages.begin());
++  std::copy(image.begin(), image.end(), myLoadImages.begin());
+   if(image.size() < LOAD_SIZE)
+-    std::ranges::copy(ourDefaultHeader, myLoadImages.begin() + myImage.size());
++    std::copy(ourDefaultHeader.begin(), ourDefaultHeader.end(),
++              myLoadImages.begin() + myImage.size());
+ 
+   // We use System::PageAccess.romAccessBase, but don't allow its use
+   // through a pointer, since the AR scheme doesn't support bankswitching
+@@ -80,14 +81,14 @@ CartridgeAR::CartridgeAR(ByteSpan biosImage, vector<float> pcmData,
+   // header starts with ourDefaultHeader and is patched as its tape completes.
+   myLoadImages.assign(myNumberOfLoadImages * LOAD_SIZE, 0);
+   for(uInt32 b = 0; b < myNumberOfLoadImages; ++b)
+-    std::ranges::copy(ourDefaultHeader,
++    std::copy(ourDefaultHeader.begin(), ourDefaultHeader.end(),
+                       myLoadImages.begin() + b * LOAD_SIZE + myImage.size());
+ 
+   // Access arrays need to cover the full 8K image (6K RAM + 2K ROM)
+   createRomAccessArrays(myImage.size());
+ 
+   // Install the real BIOS into the ROM area
+-  std::ranges::copy(biosImage, myImage.begin() + RAM_SIZE);
++  std::copy(biosImage.begin(), biosImage.end(), myImage.begin() + RAM_SIZE);
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -244,7 +245,7 @@ void CartridgeAR::finalizeLoad(uInt32 block)
+   myHeader[7] = static_cast<uInt8>(0x55U - partial);
+ 
+   // Commit header into the block's header area
+-  std::ranges::copy(myHeader, myLoadImages.begin() + base + myImage.size());
++  std::copy(myHeader.begin(), myHeader.end(), myLoadImages.begin() + base + myImage.size());
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -392,7 +393,7 @@ void CartridgeAR::initializeROM()
+   std::fill_n(myImage.begin() + RAM_SIZE, BANK_SIZE, 0x02);
+ 
+   // Copy the "dummy" Supercharger BIOS code into the ROM area
+-  std::ranges::copy(ourDummyROMCode, myImage.begin() + RAM_SIZE);
++  std::copy(ourDummyROMCode.begin(), ourDummyROMCode.end(), myImage.begin() + RAM_SIZE);
+ 
+   // Finally set 6502 vectors to point to initial load code at 0xF80A of BIOS
+   myImage[RAM_SIZE + BANK_SIZE - 4] = 0x0A;
+@@ -415,8 +416,9 @@ void CartridgeAR::loadIntoRAM(uInt8 load)
+     if(myLoadImages[image_off + myImage.size() + 5] == load)
+     {
+       // Copy the load's header
+-      std::ranges::copy(ByteSpan{myLoadImages}.subspan(image_off + myImage.size(),
+-                        myHeader.size()), myHeader.begin());
++      const auto header = ByteSpan{myLoadImages}.subspan(
++        image_off + myImage.size(), myHeader.size());
++      std::copy(header.begin(), header.end(), myHeader.begin());
+ 
+       // Verify the load's header
+       if(checksum(ByteSpan{myHeader}.first(8)) != 0x55)
+@@ -448,7 +450,7 @@ void CartridgeAR::loadIntoRAM(uInt8 load)
+ 
+         // Copy page to Supercharger RAM (don't allow a copy into ROM area)
+         if(bank < 3)
+-          std::ranges::copy(src, myImage.begin() + (bank * BANK_SIZE) + (page * 256));
++          std::copy(src.begin(), src.end(), myImage.begin() + (bank * BANK_SIZE) + (page * 256));
+       }
+       success &= !invalidPageChecksumSeen;
+ 
+@@ -756,5 +758,5 @@ void CartridgeAR::conditionSignal(FloatMSpan samples)
+   if(samples.empty()) return;
+   const float mean = std::reduce(samples.begin(), samples.end()) /
+                      static_cast<float>(samples.size());
+-  std::ranges::for_each(samples, [mean](float& s) { s -= mean; });
++  std::for_each(samples.begin(), samples.end(), [mean](float& s) { s -= mean; });
+ }
+diff --git a/src/emucore/CartCreator.cxx b/src/emucore/CartCreator.cxx
+index 676f495e0..3a6e7919e 100644
+--- a/src/emucore/CartCreator.cxx
++++ b/src/emucore/CartCreator.cxx
+@@ -313,7 +313,7 @@ namespace  // anonymous namespace, to keep these functions private
+ 
+       if(!candidates.empty())
+       {
+-        std::ranges::sort(candidates,
++        std::sort(candidates.begin(), candidates.end(),
+           [](const auto& a, const auto& b){ return a.first < b.first; });
+         std::vector<FSNode> result;
+         int expected = myLoadNum + 1;
+diff --git a/src/emucore/CartDetector.cxx b/src/emucore/CartDetector.cxx
+index 2ba5aceb0..78bcda6c6 100644
+--- a/src/emucore/CartDetector.cxx
++++ b/src/emucore/CartDetector.cxx
+@@ -61,7 +61,7 @@ Bankswitch::Type CartDetector::autodetectType(ByteSpan image)
+       { 0x8D, 0xF9, 0x1F },  // STA $1FF9
+       { 0x8D, 0xF9, 0xFF }   // STA $FFF9
+     }};
+-    const bool f8 = std::ranges::any_of(f8sig, [&](const auto& sig) {
++    const bool f8 = std::any_of(f8sig.begin(), f8sig.end(), [&](const auto& sig) {
+       return searchForBytes(image, sig, 2);
+     });
+ 
+@@ -226,7 +226,7 @@ bool CartDetector::isProbablyARM(ByteSpan image)
+     { 0x00, 0x80, 0x02, 0xE0 }
+   }};
+   const auto region = image.first(std::min<size_t>(image.size(), 1_KB));
+-  return std::ranges::any_of(signature, [&](const auto& sig) {
++  return std::any_of(signature.begin(), signature.end(), [&](const auto& sig) {
+     return searchForBytes(region, sig);
+   });
+ }
+@@ -240,7 +240,7 @@ bool CartDetector::isProbably03E0(ByteSpan image)
+     { 0x0D, 0xE0, 0x03, 0x0D },  // ORA $3E0, ORA (Popeye)
+     { 0xAD, 0xE0, 0x03, 0xAD }   // LDA $3E0, ORA (Montezuma's Revenge)
+   }};
+-  return std::ranges::any_of(signature, [&](const auto& sig) {
++  return std::any_of(signature.begin(), signature.end(), [&](const auto& sig) {
+     return searchForBytes(image, sig);
+   });
+ }
+@@ -255,7 +255,7 @@ bool CartDetector::isProbably0840(ByteSpan image)
+     { 0xAD, 0x40, 0x08 },  // LDA $0840
+     { 0x2C, 0x00, 0x08 }   // BIT $0800
+   }};
+-  if(std::ranges::any_of(signature1, [&](const auto& sig) {
++  if(std::any_of(signature1.begin(), signature1.end(), [&](const auto& sig) {
+     return searchForBytes(image, sig, 2);
+   }))
+     return true;
+@@ -264,7 +264,7 @@ bool CartDetector::isProbably0840(ByteSpan image)
+     { 0x0C, 0x00, 0x08, 0x4C },  // NOP $0800; JMP ...
+     { 0x0C, 0xFF, 0x0F, 0x4C }   // NOP $0FFF; JMP ...
+   }};
+-  return std::ranges::any_of(signature2, [&](const auto& sig) {
++  return std::any_of(signature2.begin(), signature2.end(), [&](const auto& sig) {
+     return searchForBytes(image, sig, 2);
+   });
+ }
+@@ -281,7 +281,7 @@ bool CartDetector::isProbably0FA0(ByteSpan image)
+     { 0xAD, 0xC0, 0x0F },  // LDA $FC0  (Front Line, Zaxxon)
+     { 0x2C, 0xC0, 0xEF }   // BIT $EFC0 (Motocross)
+   }};
+-  return std::ranges::any_of(signature, [&](const auto& sig) {
++  return std::any_of(signature.begin(), signature.end(), [&](const auto& sig) {
+     return searchForBytes(image, sig);
+   });
+ }
+@@ -418,7 +418,7 @@ bool CartDetector::isProbablyCV(ByteSpan image)
+     { 0x9D, 0xFF, 0xF3 },  // STA $F3FF,X  MagiCard
+     { 0x99, 0x00, 0xF4 }   // STA $F400,Y  Video Life
+   }};
+-  return std::ranges::any_of(signature, [&](const auto& sig) {
++  return std::any_of(signature.begin(), signature.end(), [&](const auto& sig) {
+     return searchForBytes(image, sig);
+   });
+ }
+@@ -485,7 +485,7 @@ bool CartDetector::isProbablyE0(ByteSpan image)
+     { 0xAD, 0xED, 0xFF },  // LDA $FFED
+     { 0xAD, 0xF3, 0xBF }   // LDA $BFF3
+   }};
+-  return std::ranges::any_of(signature, [&](const auto& sig) {
++  return std::any_of(signature.begin(), signature.end(), [&](const auto& sig) {
+     return searchForBytes(image, sig);
+   });
+ }
+@@ -508,7 +508,7 @@ bool CartDetector::isProbablyE7(ByteSpan image)
+     { 0x8D, 0xE7, 0xFF },  // STA $FFE7
+     { 0x8D, 0xE7, 0x1F }   // STA $1FE7
+   }};
+-  return std::ranges::any_of(signature, [&](const auto& sig) {
++  return std::any_of(signature.begin(), signature.end(), [&](const auto& sig) {
+     return searchForBytes(image, sig);
+   });
+ }
+@@ -525,7 +525,7 @@ bool CartDetector::isProbablyE78K(ByteSpan image)
+     { 0xAD, 0xE5, 0xFF },  // LDA $FFE5
+     { 0xAD, 0xE6, 0xFF },  // LDA $FFE6
+   }};
+-  return std::ranges::any_of(signature, [&](const auto& sig) {
++  return std::any_of(signature.begin(), signature.end(), [&](const auto& sig) {
+     return searchForBytes(image, sig);
+   });
+ }
+@@ -558,7 +558,7 @@ bool CartDetector::isProbablyEF(ByteSpan image, Bankswitch::Type& type)
+     { 0x0C, 0xE0, 0x1F },  // NOP $1FE0
+     { 0xAD, 0xE0, 0x1F }   // LDA $1FE0
+   }};
+-  const bool isEF = std::ranges::any_of(signature, [&](const auto& sig) {
++  const bool isEF = std::any_of(signature.begin(), signature.end(), [&](const auto& sig) {
+     return searchForBytes(image, sig);
+   });
+ 
+@@ -589,7 +589,7 @@ bool CartDetector::isProbablyEFF(ByteSpan image)
+     { 0x0C, 0xF0, 0x1F },  // NOP $1FF0
+     { 0xAD, 0xF4, 0x1F }   // LDA $1FF4
+   }};
+-  return std::ranges::all_of(signature, [&](const auto& sig) {
++  return std::all_of(signature.begin(), signature.end(), [&](const auto& sig) {
+     return searchForBytes(image, sig);
+   });
+ }
+@@ -618,7 +618,7 @@ bool CartDetector::isProbablyFC(ByteSpan image)
+     { 0x8d, 0xf8, 0xff, 0x8d, 0xfc, 0xff },  // STA $FFF8, STA $FFFC        Surf's Up (4K)
+     { 0x8c, 0xf9, 0xff, 0xad, 0xfc, 0xff }   // STY $FFF9, LDA $FFFC        3-D Havoc
+   }};
+-  return std::ranges::any_of(signature, [&](const auto& sig) {
++  return std::any_of(signature.begin(), signature.end(), [&](const auto& sig) {
+     return searchForBytes(image, sig);
+   });
+ }
+@@ -636,7 +636,7 @@ bool CartDetector::isProbablyFE(ByteSpan image)
+     { 0xD0, 0xFB, 0x20, 0x68, 0xFE },  // BNE $FB; JSR $FE68  Space Shuttle (SECAM)
+     { 0x20, 0x00, 0xF0, 0x84, 0xD6 }   // JSR $F000; STY $D6  Thwocker
+   }};
+-  return std::ranges::any_of(signature, [&](const auto& sig) {
++  return std::any_of(signature.begin(), signature.end(), [&](const auto& sig) {
+     return searchForBytes(image, sig);
+   });
+ }
+@@ -705,7 +705,7 @@ bool CartDetector::isProbablySB(ByteSpan image)
+     { 0xBD, 0x00, 0x08 },  // LDA $0800,x
+     { 0xAD, 0x00, 0x08 }   // LDA $0800
+   }};
+-  return std::ranges::any_of(signature, [&](const auto& sig) {
++  return std::any_of(signature.begin(), signature.end(), [&](const auto& sig) {
+     return searchForBytes(image, sig);
+   });
+ }
+@@ -734,7 +734,7 @@ bool CartDetector::isProbablyUA(ByteSpan image)
+     { 0xAD, 0xC0, 0x02 },  // LDA $2C0 (Mickey)
+     { 0x2C, 0xB0, 0x0F }   // BIT $FB0 (Digivision Beamrider)
+   }};
+-  return std::ranges::any_of(signature, [&](const auto& sig) {
++  return std::any_of(signature.begin(), signature.end(), [&](const auto& sig) {
+     return searchForBytes(image, sig);
+   });
+ }
+@@ -759,7 +759,7 @@ bool CartDetector::isProbablyX07(ByteSpan image)
+     { 0x0C, 0x1D, 0x08 },  // NOP $081D
+     { 0x0C, 0x2D, 0x08 }   // NOP $082D
+   }};
+-  return std::ranges::any_of(signature, [&](const auto& sig) {
++  return std::any_of(signature.begin(), signature.end(), [&](const auto& sig) {
+     return searchForBytes(image, sig);
+   });
+ }
+diff --git a/src/emucore/CartDevCard.cxx b/src/emucore/CartDevCard.cxx
+index 8315abb2b..d09b6c741 100644
+--- a/src/emucore/CartDevCard.cxx
++++ b/src/emucore/CartDevCard.cxx
+@@ -25,7 +25,8 @@ CartridgeDevCard::CartridgeDevCard(ByteSpan image, string_view md5,
+ {
+   const size_t len = std::min(image.size(), RAM_SIZE);
+   // copy towards end of buffer (supports smaller ROMs):
+-  std::ranges::copy(image.first(len), myImage.end() - len);
++  const auto source = image.first(len);
++  std::copy(source.begin(), source.end(), myImage.end() - len);
+   createRomAccessArrays(RAM_SIZE);
+ }
+ 
+diff --git a/src/emucore/CartFA2.cxx b/src/emucore/CartFA2.cxx
+index 5343c6a08..1777ce2eb 100644
+--- a/src/emucore/CartFA2.cxx
++++ b/src/emucore/CartFA2.cxx
+@@ -113,7 +113,7 @@ uInt8 CartridgeFA2::ramReadWrite()
+         }
+         catch(...)
+         {
+-          std::ranges::fill(myRAM, 0);
++          std::fill(myRAM.begin(), myRAM.end(), 0);
+         }
+         myRamAccessTimeout += 500;  // Add 0.5 ms delay for read
+       }
+@@ -178,7 +178,7 @@ void CartridgeFA2::flash(uInt8 operation)
+       }
+       catch(...)
+       {
+-        std::ranges::fill(myRAM, 0);
++        std::fill(myRAM.begin(), myRAM.end(), 0);
+       }
+     }
+     else if(operation == 2)  // write
+diff --git a/src/emucore/CompuMate.cxx b/src/emucore/CompuMate.cxx
+index f18513361..fd3108d57 100644
+--- a/src/emucore/CompuMate.cxx
++++ b/src/emucore/CompuMate.cxx
+@@ -137,7 +137,7 @@ void CompuMate::update()
+ 
+   // Returns true if any non-Enter character key is currently pressed
+   const auto anyCharPressed = [&]() -> bool {
+-    return std::ranges::any_of(columns, [&](const auto& cc) {
++    return std::any_of(columns.begin(), columns.end(), [&](const auto& cc) {
+       return (cc.lp6     != E::NoType && myEvent.get(cc.lp6))
+           || (cc.rp3     != E::NoType && myEvent.get(cc.rp3))
+           || (cc.rp6     != E::NoType && cc.rp6 != E::CompuMateEnter && myEvent.get(cc.rp6))
+diff --git a/src/emucore/Control.cxx b/src/emucore/Control.cxx
+index 35a39dc64..8330ed26c 100644
+--- a/src/emucore/Control.cxx
++++ b/src/emucore/Control.cxx
+@@ -54,7 +54,7 @@ bool Controller::read(DigitalPin pin)
+   {
+     const uInt64 pos = currentInputPos();
+     // Active low: read as pressed (false) when any bound event is active.
+-    return std::ranges::none_of(events, [&](const Event::Type event) {
++    return std::none_of(events.begin(), events.end(), [&](const Event::Type event) {
+       return event != Event::NoType && myEvent.get(event, pos) != 0;
+     });
+   }
+@@ -143,7 +143,7 @@ string_view Controller::getPropName(const Type type)
+ Controller::Type Controller::getType(string_view propName)
+ {
+   // NOLINTNEXTLINE(readability-qualified-auto)
+-  const auto it = std::ranges::find_if(CONTROLLER_INFO,
++  const auto it = std::find_if(CONTROLLER_INFO.begin(), CONTROLLER_INFO.end(),
+       [&](const auto& info) { return BSPF::equalsIgnoreCase(propName, info.propName); });
+   if(it != CONTROLLER_INFO.end())
+     return Type{static_cast<uInt8>(std::distance(CONTROLLER_INFO.begin(), it))};
+@@ -154,4 +154,3 @@ Controller::Type Controller::getType(string_view propName)
+ 
+   return Type::Unknown;
+ }
+-
+diff --git a/src/emucore/ControllerDetector.cxx b/src/emucore/ControllerDetector.cxx
+index 1778bad3c..f1c2f2008 100644
+--- a/src/emucore/ControllerDetector.cxx
++++ b/src/emucore/ControllerDetector.cxx
+@@ -159,13 +159,13 @@ bool ControllerDetector::usesJoystickButton(ByteSpan image, Controller::Jack por
+       { 0xb9, 0x0c, 0x00, 0x29, 0x80 }  // lda.w INPT4,y; and #$80 (joystick games only)
+     }};
+ 
+-    return std::ranges::any_of(signature_0, [&](const auto& sig) {
++    return std::any_of(signature_0.begin(), signature_0.end(), [&](const auto& sig) {
+              return searchForBytes(image, sig);
+            }) ||
+-           std::ranges::any_of(signature_1, [&](const auto& sig) {
++           std::any_of(signature_1.begin(), signature_1.end(), [&](const auto& sig) {
+              return searchForBytes(image, sig);
+            }) ||
+-           std::ranges::any_of(signature_2, [&](const auto& sig) {
++           std::any_of(signature_2.begin(), signature_2.end(), [&](const auto& sig) {
+              return searchForBytes(image, sig);
+            });
+   }
+@@ -205,13 +205,13 @@ bool ControllerDetector::usesJoystickButton(ByteSpan image, Controller::Jack por
+       { 0xad, 0x0d, 0x00, 0x29, 0x80 }  // lda.w INPT5|$30; and #$80 (joystick games only)
+     }};
+ 
+-    return std::ranges::any_of(signature_0, [&](const auto& sig) {
++    return std::any_of(signature_0.begin(), signature_0.end(), [&](const auto& sig) {
+              return searchForBytes(image, sig);
+            }) ||
+-           std::ranges::any_of(signature_1, [&](const auto& sig) {
++           std::any_of(signature_1.begin(), signature_1.end(), [&](const auto& sig) {
+              return searchForBytes(image, sig);
+            }) ||
+-           std::ranges::any_of(signature_2, [&](const auto& sig) {
++           std::any_of(signature_2.begin(), signature_2.end(), [&](const auto& sig) {
+              return searchForBytes(image, sig);
+            });
+   }
+@@ -234,7 +234,7 @@ bool ControllerDetector::usesJoystickDirections(ByteSpan image)
+     { 0xad, 0x88, 0x02 }, // lda SWCHA|8 (Jawbreaker)
+   }};
+ 
+-  return std::ranges::any_of(signature, [&](const auto& sig) {
++  return std::any_of(signature.begin(), signature.end(), [&](const auto& sig) {
+     return searchForBytes(image, sig);
+   });
+ }
+@@ -272,12 +272,12 @@ bool ControllerDetector::usesKeyboard(ByteSpan image, Controller::Jack port)
+     };
+ 
+     const bool found =
+-      std::ranges::any_of(signature_0_0, [&](const auto& sig) {
++      std::any_of(signature_0_0.begin(), signature_0_0.end(), [&](const auto& sig) {
+         return searchForBytes(image, sig);
+       }) || searchForBytes(image, signature_0_2);
+ 
+     if(found)
+-      return std::ranges::any_of(signature_1_0, [&](const auto& sig) {
++      return std::any_of(signature_1_0.begin(), signature_1_0.end(), [&](const auto& sig) {
+                return searchForBytes(image, sig);
+              }) || searchForBytes(image, signature_1_2);
+   }
+@@ -308,12 +308,12 @@ bool ControllerDetector::usesKeyboard(ByteSpan image, Controller::Jack port)
+     };
+ 
+     const bool found =
+-      std::ranges::any_of(signature_0_0, [&](const auto& sig) {
++      std::any_of(signature_0_0.begin(), signature_0_0.end(), [&](const auto& sig) {
+         return searchForBytes(image, sig);
+       }) || searchForBytes(image, signature_0_2);
+ 
+     if(found)
+-      return std::ranges::any_of(signature_1_0, [&](const auto& sig) {
++      return std::any_of(signature_1_0.begin(), signature_1_0.end(), [&](const auto& sig) {
+                return searchForBytes(image, sig);
+              }) || searchForBytes(image, signature_1_2);
+   }
+@@ -348,7 +348,7 @@ bool ControllerDetector::usesGenesisButton(ByteSpan image, Controller::Jack port
+       { 0x25, 0x39, 0x30 }, // and INPT1|$30; bmi (Genesis only)
+       { 0x25, 0x09, 0x10 }  // and INPT1; bpl (Genesis only)
+     }};
+-    return std::ranges::any_of(signature, [&](const auto& sig) {
++    return std::any_of(signature.begin(), signature.end(), [&](const auto& sig) {
+       return searchForBytes(image, sig);
+     });
+   }
+@@ -367,7 +367,7 @@ bool ControllerDetector::usesGenesisButton(ByteSpan image, Controller::Jack port
+       { 0xa6, 0x3b, 0x8e }, // ldx INPT3|$30; stx
+       { 0x25, 0x0b, 0x10 }  // and INPT3; bpl (Genesis only)
+     }};
+-    return std::ranges::any_of(signature, [&](const auto& sig) {
++    return std::any_of(signature.begin(), signature.end(), [&](const auto& sig) {
+       return searchForBytes(image, sig);
+     });
+   }
+@@ -411,13 +411,13 @@ bool ControllerDetector::usesPaddle(ByteSpan image, Controller::Jack port,
+       { 0xb1, 0xf2, 0x30, 0x02, 0xe6 }  // lda ($f2),y; bmi...; inc (Warplock)
+     }};
+ 
+-    return std::ranges::any_of(signature_0, [&](const auto& sig) {
++    return std::any_of(signature_0.begin(), signature_0.end(), [&](const auto& sig) {
+              return searchForBytes(image, sig);
+            }) ||
+-           std::ranges::any_of(signature_1, [&](const auto& sig) {
++           std::any_of(signature_1.begin(), signature_1.end(), [&](const auto& sig) {
+              return searchForBytes(image, sig);
+            }) ||
+-           std::ranges::any_of(signature_2, [&](const auto& sig) {
++           std::any_of(signature_2.begin(), signature_2.end(), [&](const auto& sig) {
+              return searchForBytes(image, sig);
+            });
+   }
+@@ -453,11 +453,11 @@ bool ControllerDetector::usesPaddle(ByteSpan image, Controller::Jack port,
+       { 0xb5, 0x38, 0x49, 0xff, 0x0a }  // lda INPT0|$30,x; eor #$ff; asl (Blackjack)
+     }};
+ 
+-    return std::ranges::any_of(signature_0, [&](const auto& sig) {
++    return std::any_of(signature_0.begin(), signature_0.end(), [&](const auto& sig) {
+              return searchForBytes(image, sig);
+            }) ||
+            searchForBytes(image, signature_1) ||
+-           std::ranges::any_of(signature_2, [&](const auto& sig) {
++           std::any_of(signature_2.begin(), signature_2.end(), [&](const auto& sig) {
+              return searchForBytes(image, sig);
+            });
+   }
+@@ -475,7 +475,7 @@ bool ControllerDetector::isProbablyTrakBall(ByteSpan image)
+     { 0x00, 0x01, 0x81, 0x01, 0x82, 0x03 }  // .MovementTab_1 (Omegamatrix)
+   }}; // all pattern checked, only TrakBall matches
+ 
+-  return std::ranges::any_of(signature, [&](const auto& sig) {
++  return std::any_of(signature.begin(), signature.end(), [&](const auto& sig) {
+     return searchForBytes(image, sig);
+   });
+ }
+@@ -490,7 +490,7 @@ bool ControllerDetector::isProbablyAtariMouse(ByteSpan image)
+     { 0x00, 0x81, 0x01, 0x00, 0x02, 0x83 }  // .MovementTab_1 (Omegamatrix)
+   }}; // all pattern checked, only Atari Mouse matches
+ 
+-  return std::ranges::any_of(signature, [&](const auto& sig) {
++  return std::any_of(signature.begin(), signature.end(), [&](const auto& sig) {
+     return searchForBytes(image, sig);
+   });
+ }
+@@ -506,7 +506,7 @@ bool ControllerDetector::isProbablyAmigaMouse(ByteSpan image)
+     { 0b100, 0b000, 0b000, 0b000, 0b101, 0b001} // NextTrackTbl (T. Jentzsch, MCTB)
+   }}; // all pattern checked, only Amiga Mouse matches
+ 
+-  return std::ranges::any_of(signature, [&](const auto& sig) {
++  return std::any_of(signature.begin(), signature.end(), [&](const auto& sig) {
+     return searchForBytes(image, sig);
+   });
+ }
+@@ -545,7 +545,7 @@ bool ControllerDetector::isProbablySaveKey(ByteSpan image, Controller::Jack port
+       }
+     }};
+ 
+-    return std::ranges::any_of(signature, [&](const auto& sig) {
++    return std::any_of(signature.begin(), signature.end(), [&](const auto& sig) {
+       return searchForBytes(image, sig);
+     });
+   }
+@@ -563,7 +563,7 @@ bool ControllerDetector::isProbablyLightGun(ByteSpan image, Controller::Jack por
+       { 0xea, 0xea, 0xea, 0x24, 0x3c, 0x10 }
+     }}; // all pattern checked, only 'Sentinel' and 'Shooting Arcade' match
+ 
+-    return std::ranges::any_of(signature, [&](const auto& sig) {
++    return std::any_of(signature.begin(), signature.end(), [&](const auto& sig) {
+       return searchForBytes(image, sig);
+     });
+   }
+@@ -575,7 +575,7 @@ bool ControllerDetector::isProbablyLightGun(ByteSpan image, Controller::Jack por
+       { 0xea, 0xea, 0xea, 0x24, 0x3d, 0x10 }
+     }}; // all pattern checked, only 'Bobby is Hungry' matches
+ 
+-    return std::ranges::any_of(signature, [&](const auto& sig) {
++    return std::any_of(signature.begin(), signature.end(), [&](const auto& sig) {
+       return searchForBytes(image, sig);
+     });
+   }
+@@ -591,7 +591,7 @@ bool ControllerDetector::isProbablyQuadTari(ByteSpan image, Controller::Jack por
+     { 'Q', 'U', 'A', 'D', 'T', 'A', 'R', 'I' }
+   }}; // "QUADTARI"
+ 
+-  if(std::ranges::any_of(signatureBoth, [&](const auto& sig) {
++  if(std::any_of(signatureBoth.begin(), signatureBoth.end(), [&](const auto& sig) {
+     return searchForBytes(image, sig);
+   }))
+     return true;
+diff --git a/src/emucore/Event.hxx b/src/emucore/Event.hxx
+index d920fa03b..843b8bb88 100644
+--- a/src/emucore/Event.hxx
++++ b/src/emucore/Event.hxx
+@@ -281,7 +281,7 @@ class Event
+       if(myRecording && value != myValues[type] && !isContinuous(type))
+       {
+         // Seed a baseline so reads before the first transition see the prior value
+-        if(std::ranges::none_of(myTransitions,
++        if(std::none_of(myTransitions.begin(), myTransitions.end(),
+             [type](const Transition& t){ return t.type == type; }))
+           myTransitions.push_back({type, 0, myValues[type], false});
+ 
+@@ -309,7 +309,7 @@ class Event
+       // at or beyond its actual length were never sampled; carry those
+       // transitions forward instead of dropping them.
+       if(myCyclesLastWindow != 0 &&
+-         std::ranges::any_of(myTransitions,
++         std::any_of(myTransitions.begin(), myTransitions.end(),
+            [this](const Transition& t){ return t.pos >= myCyclesLastWindow; }))
+       {
+         std::vector<Transition> carried;
+@@ -318,7 +318,7 @@ class Event
+           {
+             // Seed a baseline so reads before the carried transition see the
+             // held value rather than the new latch
+-            if(std::ranges::none_of(carried,
++            if(std::none_of(carried.begin(), carried.end(),
+                 [&t](const Transition& b){ return b.type == t.type; }))
+               carried.push_back(
+                 {t.type, 0, heldValueBefore(t.type, myCyclesLastWindow), false});
+diff --git a/src/emucore/EventHandler.cxx b/src/emucore/EventHandler.cxx
+index a6acd917a..ddd7c7d17 100644
+--- a/src/emucore/EventHandler.cxx
++++ b/src/emucore/EventHandler.cxx
+@@ -2254,7 +2254,7 @@ StringList EventHandler::getActionList(EventMode mode)
+   StringList l;
+ 
+   const auto collectActions = [&l](const auto& list) {
+-    std::ranges::transform(list, std::back_inserter(l),
++    std::transform(list.begin(), list.end(), std::back_inserter(l),
+       [](const auto& item) { return item.action; });
+   };
+ 
+diff --git a/src/emucore/FSNode.cxx b/src/emucore/FSNode.cxx
+index 845864052..6b5e07e2b 100644
+--- a/src/emucore/FSNode.cxx
++++ b/src/emucore/FSNode.cxx
+@@ -78,7 +78,7 @@ bool FSNode::getAllChildren(FSList& fslist, ListMode mode,
+ {
+   if(getChildren(fslist, mode, filter, true, includeParentDirectory, isCancelled))
+   {
+-    std::ranges::sort(fslist, [](const FSNode& node1, const FSNode& node2)
++    std::sort(fslist.begin(), fslist.end(), [](const FSNode& node1, const FSNode& node2)
+     {
+       if(node1.isDirectory() != node2.isDirectory())
+         return node1.isDirectory();
+@@ -124,7 +124,7 @@ bool FSNode::getChildren(FSList& fslist, ListMode mode,
+     if(isCancelled())
+       return false;
+ 
+-    std::ranges::sort(tmp,
++    std::sort(tmp.begin(), tmp.end(),
+         [](const AbstractFSNodePtr& node1, const AbstractFSNodePtr& node2)
+     {
+       if(node1->isDirectory() != node2->isDirectory())
+diff --git a/src/emucore/FSNode.hxx b/src/emucore/FSNode.hxx
+index b2ef1632e..c5f711aff 100644
+--- a/src/emucore/FSNode.hxx
++++ b/src/emucore/FSNode.hxx
+@@ -245,7 +245,7 @@ class FSNode
+      * Each extension should include the leading dot, e.g. {".zip", ".gz"}.
+      */
+     bool hasExtension(std::initializer_list<string_view> exts) const {
+-      return std::ranges::any_of(exts, [this](string_view ext) {
++      return std::any_of(exts.begin(), exts.end(), [this](string_view ext) {
+         return BSPF::endsWithIgnoreCase(getName(), ext);
+       });
+     }
+diff --git a/src/emucore/GlobalKeyHandler.cxx b/src/emucore/GlobalKeyHandler.cxx
+index d85021f9b..b9146aa45 100644
+--- a/src/emucore/GlobalKeyHandler.cxx
++++ b/src/emucore/GlobalKeyHandler.cxx
+@@ -75,7 +75,7 @@ bool GlobalKeyHandler::handleEvent(Event::Type event, bool pressed, bool repeate
+           {Group::DEBUG, {Setting::START_DEBUG_ADJ, "Debug"}},
+         }};
+         // NOLINTNEXTLINE(readability-qualified-auto)
+-        const auto result = std::ranges::find_if(GroupMap,
++        const auto result = std::find_if(GroupMap.begin(), GroupMap.end(),
+             [group](const auto& entry) { return entry.first == group; });
+ 
+         myOSystem.frameBuffer().showTextMessage(
+diff --git a/src/emucore/M6532.cxx b/src/emucore/M6532.cxx
+index 30176efcf..540982930 100644
+--- a/src/emucore/M6532.cxx
++++ b/src/emucore/M6532.cxx
+@@ -47,9 +47,9 @@ void M6532::reset()
+   // Initialize the 128 bytes of memory
+   const bool devSettings = mySettings.getBool("dev.settings");
+   if(mySettings.getString(devSettings ? "dev.console" : "plr.console") == "7800")
+-    std::ranges::copy(RAM_7800, myRAM.begin());
++    std::copy(RAM_7800.begin(), RAM_7800.end(), myRAM.begin());
+   else if(mySettings.getBool(devSettings ? "dev.ramrandom" : "plr.ramrandom"))
+-    std::ranges::generate(myRAM, [this]{ return mySystem->randGenerator().next(); });
++    std::generate(myRAM.begin(), myRAM.end(), [this]{ return mySystem->randGenerator().next(); });
+   else
+     myRAM.fill(0);
+ 
+diff --git a/src/emucore/OSystem.cxx b/src/emucore/OSystem.cxx
+index 4baeee393..2c37b0329 100644
+--- a/src/emucore/OSystem.cxx
++++ b/src/emucore/OSystem.cxx
+@@ -581,11 +581,11 @@ string OSystem::createConsole(const FSNode& rom, string_view md5sum, bool newrom
+         std::array<char, 32> id_chr{};
+         std::random_device rd;
+         std::array<std::random_device::result_type, std::mt19937::state_size> seedData{};
+-        std::ranges::generate(seedData, std::ref(rd));
++        std::generate(seedData.begin(), seedData.end(), std::ref(rd));
+         std::seed_seq seedSeq(seedData.begin(), seedData.end());
+         std::mt19937 gen(seedSeq);
+         std::uniform_int_distribution<int> dist(0, 15);
+-        std::ranges::generate(id_chr,
++        std::generate(id_chr.begin(), id_chr.end(),
+           [&]{ return HEX_DIGITS[dist(gen)]; });
+ 
+         settings().setValue("plusroms.fixedid",
+diff --git a/src/emucore/PlusROM.cxx b/src/emucore/PlusROM.cxx
+index 3dd3f2007..8d257373e 100644
+--- a/src/emucore/PlusROM.cxx
++++ b/src/emucore/PlusROM.cxx
+@@ -76,7 +76,7 @@ class PlusROMRequest {
+         myId{id},
+         myRequestSize{static_cast<uInt8>(request.size())}
+     {
+-      std::ranges::copy(request, myRequest.begin());
++      std::copy(request.begin(), request.end(), myRequest.begin());
+     }
+     PlusROMRequest()
+       : myDestination{Destination({}, {})},
+@@ -208,7 +208,7 @@ bool PlusROM::initialize(ByteSpan image)
+     return myIsPlusROM = false;  // Invalid NMI
+ 
+   // Path stored first, 0-terminated
+-  const auto pathNull = std::ranges::find(image.subspan(i), uInt8{0});
++  const auto pathNull = std::find(image.begin() + i, image.end(), uInt8{0});
+   const size_t pathLen = static_cast<size_t>(pathNull - (image.begin() + i));
+   const string path(reinterpret_cast<const char*>(image.data() + i), pathLen);
+   i += pathLen;
+@@ -220,7 +220,7 @@ bool PlusROM::initialize(ByteSpan image)
+   ++i;  // advance past 0 terminator
+ 
+   // Host stored next, 0-terminated
+-  const auto hostNull = std::ranges::find(image.subspan(i), uInt8{0});
++  const auto hostNull = std::find(image.begin() + i, image.end(), uInt8{0});
+   const size_t hostLen = static_cast<size_t>(hostNull - (image.begin() + i));
+   const string host(reinterpret_cast<const char*>(image.data() + i), hostLen);
+   i += hostLen;
+@@ -397,7 +397,7 @@ bool PlusROM::isValidHost(string_view host)
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ bool PlusROM::isValidPath(string_view path)
+ {
+-  return std::ranges::all_of(path, [](unsigned char c) {
++  return std::all_of(path.begin(), path.end(), [](unsigned char c) {
+     return (c > ',' && c < ':') || (c > '@' && c < '[') ||
+            (c > '`' && c <= 'z') || c == '_' || c == '~';
+   });
+diff --git a/src/emucore/Props.cxx b/src/emucore/Props.cxx
+index 32f5c2b00..08e519b10 100644
+--- a/src/emucore/Props.cxx
++++ b/src/emucore/Props.cxx
+@@ -145,12 +145,11 @@ string_view Properties::defaultValue(size_t pos)
+ PropType Properties::getPropType(string_view name)
+ {
+   // Binary search over the sorted table
+-  const auto it = std::ranges::lower_bound( // NOLINT(readability-qualified-auto)
+-    ourNameToPropType, name,
+-    [](string_view a, string_view b) {
+-      return BSPF::compareIgnoreCase(a, b) < 0;
+-    },
+-    &PropTypeEntry::first);  // projection: extract the key from each element
++  const auto it = std::lower_bound( // NOLINT(readability-qualified-auto)
++    ourNameToPropType.begin(), ourNameToPropType.end(), name,
++    [](const PropTypeEntry& entry, string_view value) {
++      return BSPF::compareIgnoreCase(entry.first, value) < 0;
++    });
+ 
+   if(it != ourNameToPropType.end() &&
+      BSPF::compareIgnoreCase(it->first, name) == 0)
+diff --git a/src/emucore/PropsSet.cxx b/src/emucore/PropsSet.cxx
+index 4517afbde..ca2b2e3b0 100644
+--- a/src/emucore/PropsSet.cxx
++++ b/src/emucore/PropsSet.cxx
+@@ -76,13 +76,11 @@ bool PropertiesSet::getMD5(string_view md5, Properties& properties,
+   // Otherwise, search the internal database using binary search
+   if(!found)
+   {
+-    const auto it = std::ranges::lower_bound( // NOLINT(readability-qualified-auto)
+-      DefProps, md5,
+-      [](string_view a, string_view b) {
+-          return BSPF::compareIgnoreCase(a, b) < 0;
+-      },
+-      [](const auto& entry) {
+-          return entry[std::to_underlying(PropType::Cart_MD5)];
++    const auto it = std::lower_bound( // NOLINT(readability-qualified-auto)
++      DefProps.begin(), DefProps.end(), md5,
++      [](const auto& entry, string_view value) {
++        return BSPF::compareIgnoreCase(
++          entry[std::to_underlying(PropType::Cart_MD5)], value) < 0;
+       });
+ 
+     if(it != DefProps.end() &&
+diff --git a/src/emucore/Serializer.cxx b/src/emucore/Serializer.cxx
+index 983a67b78..e212e0a40 100644
+--- a/src/emucore/Serializer.cxx
++++ b/src/emucore/Serializer.cxx
+@@ -107,7 +107,9 @@ inline T Serializer::readRaw()
+   if constexpr(std::is_same_v<T, double>)
+   {
+     const auto raw = readRaw<uInt64>();
+-    return std::bit_cast<double>(raw);
++    double value;
++    std::memcpy(&value, &raw, sizeof(value));
++    return value;
+   }
+   else
+   {
+@@ -140,7 +142,9 @@ inline void Serializer::writeRaw(T value)
+ {
+   if constexpr(std::is_same_v<T, double>)
+   {
+-    writeRaw<uInt64>(std::bit_cast<uInt64>(value));
++    uInt64 raw;
++    std::memcpy(&raw, &value, sizeof(raw));
++    writeRaw(raw);
+     return;
+   }
+   else
+@@ -206,7 +210,7 @@ void Serializer::getShortArray(ShortMSpan arr)
+                                                   arr.size_bytes()));
+   if constexpr(std::endian::native != std::endian::little)
+     for(auto& val: arr)
+-      val = std::byteswap(val);
++      val = BSPF::byteswap(val);
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@@ -222,7 +226,7 @@ void Serializer::getIntArray(IntMSpan arr)
+                          arr.size_bytes()));
+   if constexpr(std::endian::native != std::endian::little)
+     for(auto& val: arr)
+-      val = std::byteswap(val);
++      val = BSPF::byteswap(val);
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+diff --git a/src/emucore/Serializer.hxx b/src/emucore/Serializer.hxx
+index a9058c782..078c5351d 100644
+--- a/src/emucore/Serializer.hxx
++++ b/src/emucore/Serializer.hxx
+@@ -232,12 +232,12 @@ class Serializer
+     // Endian conversion helpers
+     template<typename T> static constexpr T toLittle(T v) {
+       if constexpr(std::endian::native != std::endian::little)
+-        return std::byteswap(v);
++        return BSPF::byteswap(v);
+       return v;
+     }
+     template<typename T> static constexpr T fromLittle(T v) {
+       if constexpr (std::endian::native != std::endian::little)
+-        return std::byteswap(v);
++        return BSPF::byteswap(v);
+       return v;
+     }
+ 
+diff --git a/src/emucore/Settings.cxx b/src/emucore/Settings.cxx
+index bfc258033..0aa57f1bf 100644
+--- a/src/emucore/Settings.cxx
++++ b/src/emucore/Settings.cxx
+@@ -397,7 +397,7 @@ void Settings::validate()
+                           std::initializer_list<string_view> valid,
+                           string_view def) {
+     string_view s = getString(key);
+-    if(std::ranges::none_of(valid, [&](string_view v){ return s == v; }))
++    if(std::none_of(valid.begin(), valid.end(), [&](string_view v){ return s == v; }))
+       setValue(key, def);
+   };
+ 
+@@ -406,7 +406,7 @@ void Settings::validate()
+   clampSetting("tia.vsizeadjust", -5, 5, 0);
+ 
+   string s{getString("tia.dbgcolors")};
+-  std::ranges::sort(s);
++  std::sort(s.begin(), s.end());
+   if(s != "bgopry") setValue("tia.dbgcolors", "roygpb");
+ 
+   if(PhosphorHandler::toPhosphorMode(getString(PhosphorHandler::SETTING_MODE)) == PhosphorHandler::ByRom)
+diff --git a/src/emucore/System.cxx b/src/emucore/System.cxx
+index d7ff00b17..414b52db6 100644
+--- a/src/emucore/System.cxx
++++ b/src/emucore/System.cxx
+@@ -84,7 +84,7 @@ bool System::isPageDirty(uInt16 start_addr, uInt16 end_addr) const
+   const uInt16 end_page   = (end_addr   & myAddressMask) >> PAGE_SHIFT;
+   const auto pages = std::span{myPageIsDirtyTable}.subspan(
+       start_page, end_page - start_page + 1U);
+-  return std::ranges::any_of(pages, std::identity{});
++  return std::any_of(pages.begin(), pages.end(), std::identity{});
+ }
+ 
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+diff --git a/src/gui/EditableWidget.cxx b/src/gui/EditableWidget.cxx
+index d638ae415..cb84cacc0 100644
+--- a/src/gui/EditableWidget.cxx
++++ b/src/gui/EditableWidget.cxx
+@@ -50,7 +50,7 @@ void EditableWidget::setText(string_view str, bool changed)
+   // Filter input string
+   _editString.clear();
+   _editString.reserve(str.size());
+-  std::ranges::copy_if(str, std::back_inserter(_editString),
++  std::copy_if(str.begin(), str.end(), std::back_inserter(_editString),
+     [this](char c) { return _filter(tolower(c)); });
+   if(_maxLen && std::cmp_greater(_editString.size(), _maxLen))
+     _editString.resize(_maxLen);
+diff --git a/src/gui/FavoritesManager.cxx b/src/gui/FavoritesManager.cxx
+index 3a132166f..c9ee67748 100644
+--- a/src/gui/FavoritesManager.cxx
++++ b/src/gui/FavoritesManager.cxx
+@@ -182,7 +182,7 @@ const FavoritesManager::UserList& FavoritesManager::userList() const
+   sortedList.assign(myUserSet.begin(), myUserSet.end());
+ 
+   if(!mySettings.getBool("altsorting"))
+-    std::ranges::sort(sortedList, [](string_view a, string_view b)
++    std::sort(sortedList.begin(), sortedList.end(), [](string_view a, string_view b)
+     {
+       // Sort without path
+       const FSNode aNode(a);
+@@ -220,7 +220,7 @@ void FavoritesManager::addRecent(string_view path)
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ void FavoritesManager::removeRecent(string_view path)
+ {
+-  const auto it = std::ranges::find(myRecentList, path);
++  const auto it = std::find(myRecentList.begin(), myRecentList.end(), path);
+ 
+   if(it != myRecentList.end())
+     myRecentList.erase(it);
+@@ -243,7 +243,7 @@ const FavoritesManager::RecentList& FavoritesManager::recentList() const
+   {
+     sortedList.assign(myRecentList.begin(), myRecentList.end());
+ 
+-    std::ranges::sort(sortedList, [](string_view a, string_view b)
++    std::sort(sortedList.begin(), sortedList.end(), [](string_view a, string_view b)
+     {
+       // Sort alphabetical, without path
+       const FSNode aNode(a);
+@@ -316,7 +316,8 @@ FavoritesManager::sortedPopularList(bool sortByName) const
+   sortedList.clear();
+   sortedList.assign(myPopularMap.begin(), myPopularMap.end());
+ 
+-  std::ranges::sort(sortedList, [sortByName](const PopularType& a, const PopularType& b)
++  std::sort(sortedList.begin(), sortedList.end(),
++    [sortByName](const PopularType& a, const PopularType& b)
+   {
+     // 1. sort by most popular
+     if(!sortByName && a.second != b.second)
+diff --git a/src/gui/FileListWidget.cxx b/src/gui/FileListWidget.cxx
+index 0f304b9e0..e84018ba1 100644
+--- a/src/gui/FileListWidget.cxx
++++ b/src/gui/FileListWidget.cxx
+@@ -58,7 +58,7 @@ void FileListWidget::setInitialDirectory(const FSNode& node, string_view select)
+     _history.emplace_back(_node);
+ 
+   // History is in reverse order; we need to fix that
+-  std::ranges::reverse(_history);
++  std::reverse(_history.begin(), _history.end());
+   _currentHistoryIdx = _history.size() - 1;
+   _historyHome = _currentHistoryIdx;
+ 
+diff --git a/src/gui/GameInfoDialog.cxx b/src/gui/GameInfoDialog.cxx
+index 423e44ab7..12c836dd8 100644
+--- a/src/gui/GameInfoDialog.cxx
++++ b/src/gui/GameInfoDialog.cxx
+@@ -1160,10 +1160,10 @@ void GameInfoDialog::updateMultiCart()
+   const string& selected = myBSType->getSelectedTag().toString();
+   const string& detected = myTypeDetected->getLabel();
+ 
+-  const bool isMulti = std::ranges::any_of(MultiCart,
++  const bool isMulti = std::any_of(MultiCart.begin(), MultiCart.end(),
+       [&](string_view entry) { return entry == selected; });
+ 
+-  const bool isInMulti = !isMulti && std::ranges::any_of(MultiCart,
++  const bool isInMulti = !isMulti && std::any_of(MultiCart.begin(), MultiCart.end(),
+       [&](string_view entry) {
+           return detected.contains(std::format("{} [", entry));
+       });
+diff --git a/src/gui/LauncherFileListWidget.cxx b/src/gui/LauncherFileListWidget.cxx
+index 19e11e7b8..8e72fc6fa 100644
+--- a/src/gui/LauncherFileListWidget.cxx
++++ b/src/gui/LauncherFileListWidget.cxx
+@@ -224,7 +224,7 @@ void LauncherFileListWidget::removeFavorite()
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ void LauncherFileListWidget::userFavor(string_view path)
+ {
+-  const auto it = std::ranges::find_if(_fileList,
++  const auto it = std::find_if(_fileList.begin(), _fileList.end(),
+     [&path](const FSNode& f) { return f.getPath() == path; });
+   if(it != _fileList.end())
+   {
+diff --git a/src/gui/RomImageWidget.cxx b/src/gui/RomImageWidget.cxx
+index c8f40ed05..803429932 100644
+--- a/src/gui/RomImageWidget.cxx
++++ b/src/gui/RomImageWidget.cxx
+@@ -238,7 +238,7 @@ bool RomImageWidget::getImageList(const string& propName, const string& romName,
+ 
+   // Sort again, not considering extensions, else <filename.png|jpg> would be at
+   // the end of the list
+-  std::ranges::sort(myImageList, [oldFileName]
++  std::sort(myImageList.begin(), myImageList.end(), [oldFileName]
+     (const FSNode& node1, const FSNode& node2)
+     {
+       const int compare = BSPF::compareIgnoreCase(
+diff --git a/src/os/windows/SerialPortWINDOWS.cxx b/src/os/windows/SerialPortWINDOWS.cxx
+index c28d261f1..47889d5fb 100644
+--- a/src/os/windows/SerialPortWINDOWS.cxx
++++ b/src/os/windows/SerialPortWINDOWS.cxx
+@@ -161,6 +161,6 @@ StringList SerialPortWINDOWS::portNames()
+     }
+   }
+ 
+-  std::ranges::sort(ports);
++  std::sort(ports.begin(), ports.end());
+   return ports;
+ }
+-- 
+2.43.0
+
