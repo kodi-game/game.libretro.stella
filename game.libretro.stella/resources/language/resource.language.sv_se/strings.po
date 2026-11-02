@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: game.libretro.stella\n"
 "Report-Msgid-Bugs-To: translations@kodi.tv\n"
 "POT-Creation-Date: 2021-05-02 00:45i\n"
-"PO-Revision-Date: 2025-07-15 11:29+0000\n"
+"PO-Revision-Date: 2026-11-02 20:47+0000\n"
 "Last-Translator: Daniel Nylander <daniel@danielnylander.se>\n"
 "Language-Team: Swedish <https://kodi.weblate.cloud/projects/kodi-add-ons-game/game-libretro-stella/sv_se/>\n"
 "Language: sv_se\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.10.1\n"
 
 msgctxt "Addon Summary"
 msgid "Atari - 2600 (Stella)"
@@ -66,20 +66,17 @@ msgctxt "#30009"
 msgid "Phosphor blend %"
 msgstr "Fosforblandning %"
 
-#, fuzzy
 msgctxt "#30010"
 msgid "Paddle joypad sensitivity"
-msgstr "Känslighet på paddelns joypad"
+msgstr "Känslighet för paddelhandkontroll"
 
-#, fuzzy
 msgctxt "#30011"
 msgid "Paddle analog sensitivity"
-msgstr "Paddelns analoga känslighet"
+msgstr "Analog känslighet för paddel"
 
-#, fuzzy
 msgctxt "#30012"
 msgid "Enable reload/next game"
-msgstr "Aktivera omladdning/nästa spel"
+msgstr "Aktivera läs om/nästa spel"
 
 msgctxt "#30013"
 msgid "Crop vertical overscan"
@@ -87,15 +84,15 @@ msgstr "Beskär vertikal överskanning"
 
 msgctxt "#30014"
 msgid "Paddle mouse sensitivity"
-msgstr ""
+msgstr "Muskänslighet för paddel"
 
 msgctxt "#30015"
 msgid "Paddle analog deadzone"
-msgstr ""
+msgstr "Analog dödzon för paddel"
 
 msgctxt "#30016"
 msgid "Paddle analog absolute"
-msgstr ""
+msgstr "Absolut analog paddel"
 
 msgctxt "#30017"
 msgid "Lightgun crosshair"
@@ -103,95 +100,95 @@ msgstr "Korshår för ljuspistol"
 
 msgctxt "#30018"
 msgid "Auto-detect PAL-60"
-msgstr ""
+msgstr "Identifiera PAL-60 automatiskt"
 
 msgctxt "#30019"
 msgid "Auto-detect NTSC-50"
-msgstr ""
+msgstr "Identifiera NTSC-50 automatiskt"
 
 msgctxt "#30020"
 msgid "Palette contrast"
-msgstr ""
+msgstr "Palettkontrast"
 
 msgctxt "#30021"
 msgid "Palette brightness"
-msgstr ""
+msgstr "Palettljusstyrka"
 
 msgctxt "#30022"
 msgid "Palette hue"
-msgstr ""
+msgstr "Palettnyans"
 
 msgctxt "#30023"
 msgid "Palette saturation"
-msgstr ""
+msgstr "Palettmättnad"
 
 msgctxt "#30024"
 msgid "Palette gamma"
-msgstr ""
+msgstr "Palettgamma"
 
 msgctxt "#30025"
 msgid "Pitfall II music pitch"
-msgstr ""
+msgstr "Tonhöjd för Pitfall II-musik"
 
 msgctxt "#30026"
 msgid "Info messages"
-msgstr ""
+msgstr "Informationsmeddelanden"
 
 msgctxt "#30027"
 msgid "System"
-msgstr ""
+msgstr "System"
 
 msgctxt "#30028"
 msgid "Video"
-msgstr ""
+msgstr "Video"
 
 msgctxt "#30029"
 msgid "Audio"
-msgstr ""
+msgstr "Ljud"
 
 msgctxt "#30030"
 msgid "Input"
-msgstr ""
+msgstr "Inmatning"
 
 msgctxt "#30031"
 msgid "ntsc"
-msgstr ""
+msgstr "ntsc"
 
 msgctxt "#30032"
 msgid "pal"
-msgstr ""
+msgstr "pal"
 
 msgctxt "#30033"
 msgid "secam"
-msgstr ""
+msgstr "secam"
 
 msgctxt "#30034"
 msgid "ntsc50"
-msgstr ""
+msgstr "ntsc50"
 
 msgctxt "#30035"
 msgid "pal60"
-msgstr ""
+msgstr "pal60"
 
 msgctxt "#30036"
 msgid "secam60"
-msgstr ""
+msgstr "secam60"
 
 msgctxt "#30037"
 msgid "composite"
-msgstr ""
+msgstr "komposit"
 
 msgctxt "#30038"
 msgid "s-video"
-msgstr ""
+msgstr "s-video"
 
 msgctxt "#30039"
 msgid "rgb"
-msgstr ""
+msgstr "rgb"
 
 msgctxt "#30040"
 msgid "badly adjusted"
-msgstr ""
+msgstr "dåligt justerad"
 
 #~ msgctxt "#30000"
 #~ msgid "Settings"
